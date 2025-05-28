@@ -114,6 +114,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerSpeed: 5
   _ballPrefab: {fileID: 4028342840811610211, guid: 09f50b0dccf45491d917716502e93435, type: 3}
+  _physxBallPrefab: {fileID: 6083921705537696542, guid: 1b61b65f7bc904a6f868037d8681061e, type: 3}
+  _spawnedProjectile: 0
+  _material: {fileID: 0}
 --- !u!1 &9117474183259379966
 GameObject:
   m_ObjectHideFlags: 0

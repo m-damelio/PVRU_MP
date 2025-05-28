@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
 using Fusion;
 using Fusion.Sockets;
+using Fusion.Addons.Physics;
 using System;
 using System.Collections.Generic;
 
@@ -19,6 +20,7 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     private float _moveY;
 
     private bool _mouseButton0;
+    private bool _mouseButton1;
 
     private float joinedCount;
 
@@ -28,6 +30,11 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
         _runner = gameObject.AddComponent<NetworkRunner>();
         _runner.ProvideInput = true;
 
+        //Add a physics simulation on the runner.
+        var runnerSimulatePhysics3D = gameObject.AddComponent<RunnerSimulatePhysics3D>();
+        runnerSimulatePhysics3D.ClientPhysicsSimulation = ClientPhysicsSimulation.SimulateAlways;
+
+
         //Create NetworkSceneInfo from current scene
         var scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex);
         var sceneInfo = new NetworkSceneInfo();
@@ -35,7 +42,7 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
             sceneInfo.AddSceneRef(scene, LoadSceneMode.Additive);
         }
 
-        //Start r joing (depends on gamemode) a session with a specific name.
+        //Start the runner for a session with a specific name, gamemode and scene.
         await _runner.StartGame(new StartGameArgs() 
         {
             GameMode = mode,
@@ -70,6 +77,8 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
         data.buttons.Set(NetworkInputData.MOUSEBUTTON0, _mouseButton0);
         _mouseButton0 = false;
+        data.buttons.Set(NetworkInputData.MOUSEBUTTON1, _mouseButton1);
+        _mouseButton1 = false;
 
         input.Set(data);
      }
@@ -100,6 +109,11 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     public void OnFire(InputValue value)
     {
         _mouseButton0 = true;
+    }
+
+    public void OnRightFire(InputValue value)
+    {
+        _mouseButton1 = true;
     }
     private void OnGUI()
     {
