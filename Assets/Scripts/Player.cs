@@ -22,7 +22,8 @@ public class Player : NetworkBehaviour
     }
     public override void FixedUpdateNetwork() 
     {
-        if(Object.HasInputAuthority == false) 
+        //Client with state authority (aka host) processes movement and input 
+        if(Object.HasStateAuthority == false) 
         {
             return;
         }
