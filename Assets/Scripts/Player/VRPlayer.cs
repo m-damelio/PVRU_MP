@@ -132,7 +132,7 @@ public class VRPlayer : NetworkBehaviour
             playerState = PlayerState.Walking;
         }
         
-        Debug.Log($"Sneak Value: {sneakValue}, State: {playerState}");
+        //Debug.Log($"Sneak Value: {sneakValue}, State: {playerState}");
     }
 
     private void UpdatePlayerState()
@@ -180,7 +180,7 @@ public class VRPlayer : NetworkBehaviour
         // Debug display for all clients
         if (NetworkedPlayerType == PlayerType.EnhancedSneaking)
         {
-            Debug.Log($"Player {Object.InputAuthority}: SneakValue={NetworkedSneakValue:F2}, State={NetworkedPlayerState}");
+            //Debug.Log($"Player {Object.InputAuthority}: SneakValue={NetworkedSneakValue:F2}, State={NetworkedPlayerState}");
         }
     }
     

@@ -461,6 +461,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 82848160101703959, guid: 477f02bca0b59924aa984e240cb28cc4, type: 3}
       insertIndex: -1
       addedObject: {fileID: -2764709657439359345}
+    - targetCorrespondingSourceObject: {fileID: 82848160101703959, guid: 477f02bca0b59924aa984e240cb28cc4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3756170042914632560}
+    - targetCorrespondingSourceObject: {fileID: 82848160101703959, guid: 477f02bca0b59924aa984e240cb28cc4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 539138653758203119}
     - targetCorrespondingSourceObject: {fileID: 82848159265621316, guid: 477f02bca0b59924aa984e240cb28cc4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5218145436689887437}
@@ -514,29 +520,64 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62640100a0e6c4fd190751688be2e8fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  headTransform: {fileID: 0}
-  leftHandTransform: {fileID: 0}
-  rightHandTransform: {fileID: 0}
   hardwareIndicator: {fileID: 0}
-  useHandTracking: 1
-  leftHandModel: {fileID: 0}
-  rightHandModel: {fileID: 0}
-  leftControllerModel: {fileID: 0}
-  rightControllerModel: {fileID: 0}
   sneakThreshold: 0.8
   playerType: 0
   playerState: 0
-  _HeadPosition: {x: 0, y: 0, z: 0}
-  _HeadRotation: {x: 0, y: 0, z: 0, w: 0}
-  _LeftHandPosition: {x: 0, y: 0, z: 0}
-  _LeftHandRotation: {x: 0, y: 0, z: 0, w: 0}
-  _RightHandPosition: {x: 0, y: 0, z: 0}
-  _RightHandRotation: {x: 0, y: 0, z: 0, w: 0}
-  _IsUsingHandTracking: 0
   _NetworkedPlayerType: 0
   _NetworkedPlayerState: 0
-  _LeftHandTracked: 0
-  _RightHandTracked: 0
+  _NetworkedSneakValue: 0
+  useHandTracking: 1
+--- !u!136 &3756170042914632560
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2549000073306557745}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.2
+  m_Height: 0.75
+  m_Direction: 1
+  m_Center: {x: 0, y: -0.2, z: -0.1}
+--- !u!54 &539138653758203119
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2549000073306557745}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!114 &2549000073931524548 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 82848159007237602, guid: 477f02bca0b59924aa984e240cb28cc4, type: 3}
