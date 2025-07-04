@@ -761,6 +761,61 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1194788408}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1645211723 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8024945065736129075, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+  m_PrefabInstance: {fileID: 6232156860657956134}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1645211729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1645211723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a591d221a634417e9827eb58e17de84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 1
+  _interpolationTarget: {fileID: 0}
+  UsePreciseRotation: 0
+  UseRenderSleepThresholds: 1
+  RenderThresholds:
+    UseEnergy: 1
+    Position: 0.01
+    Rotation: 0.01
+    Scale: 0.01
+--- !u!54 &1645211730
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1645211723}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 0
+  m_ImplicitTensor: 0
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!114 &1830682578 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4208948369037581448, guid: 72aacf5ad018ef84f8c2f1796da09345, type: 3}
@@ -1008,6 +1063,89 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6273758256367722809, guid: abb0cc465f1848c41a7615e8f773f101, type: 3}
   m_PrefabInstance: {fileID: 4935933730040116307}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &6232156860657956134
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 736101846847131057, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4041963595773950855, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: b5c759331739dc244a9cbda4c19a192f, type: 2}
+    - target: {fileID: 4584848357652715090, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: SortKey
+      value: 2758600229
+      objectReference: {fileID: 0}
+    - target: {fileID: 4584848357652715090, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: NetworkedBehaviours.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4584848357652715090, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: 'NetworkedBehaviours.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1645211729}
+    - target: {fileID: 7211817336708894857, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.184
+      objectReference: {fileID: 0}
+    - target: {fileID: 7211817336708894857, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.214
+      objectReference: {fileID: 0}
+    - target: {fileID: 7211817336708894857, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7211817336708894857, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7211817336708894857, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7211817336708894857, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7211817336708894857, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7211817336708894857, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7211817336708894857, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7211817336708894857, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8024945065736129075, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      propertyPath: m_Name
+      value: PrisonDoorWithAnimation
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8024945065736129075, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1645211730}
+    - targetCorrespondingSourceObject: {fileID: 8024945065736129075, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1645211729}
+  m_SourcePrefab: {fileID: 100100000, guid: a9eb391842262974f8b67310d89c1150, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1018,3 +1156,4 @@ SceneRoots:
   - {fileID: 4208948367642590981}
   - {fileID: 235608893858501070}
   - {fileID: 1194788408}
+  - {fileID: 6232156860657956134}

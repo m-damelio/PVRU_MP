@@ -186,42 +186,7 @@ public class VRPlayer : NetworkBehaviour
     
     void ApplySneakingEffects()
     {
-        if (NetworkedPlayerState == PlayerState.Sneaking && NetworkedPlayerType == PlayerType.EnhancedSneaking)
-        {
-            // Apply visual effects for sneaking
-            // You can access the NetworkRig's visual components:
-            // networkRig.leftHand, networkRig.rightHand, networkRig.headset
-            var renderers = networkRig.GetComponentsInChildren<Renderer>();
-            foreach (var renderer in renderers)
-            {
-                foreach (var material in renderer.materials)
-                {
-                    if (material.HasProperty("_Color"))
-                    {
-                        Color color = material.color;
-                        color.a = 0.5f;
-                        material.color = color;
-                    }
-                }
-            }
-        }
-        else
-        {
-            // Reset to normal appearance
-            var renderers = networkRig.GetComponentsInChildren<Renderer>();
-            foreach (var renderer in renderers)
-            {
-                foreach (var material in renderer.materials)
-                {
-                    if (material.HasProperty("_Color"))
-                    {
-                        Color color = material.color;
-                        color.a = 1.0f;
-                        material.color = color;
-                    }
-                }
-            }
-        }
+       
     }
 
     // Helper methods to access NetworkRig data if needed for gameplay
