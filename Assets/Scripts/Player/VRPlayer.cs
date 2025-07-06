@@ -19,8 +19,13 @@ public class VRPlayer : NetworkBehaviour
     [SerializeField] private PlayerType playerType;
     [SerializeField] private PlayerState playerState = PlayerState.Walking;
 
+    [Header("Movement")]
+    public CharacterController characterController;
+    [SerializeField] private float moveSpeed = 3f; 
     // Reference to the NetworkRig which handles visuals for hands/body, etc.
     private NetworkRig networkRig;
+    private Vector3 lastValidPlayAreaPosition;
+    private bool isFirstFrame = true;
     
     // Networked properties
     [Networked] public PlayerType NetworkedPlayerType { get; set; }
@@ -31,6 +36,10 @@ public class VRPlayer : NetworkBehaviour
     [Header("Quest 3 Hand Tracking")]
     [SerializeField] private XRHandSubsystem handSubsystem;
     [SerializeField] private bool useHandTracking = true;
+
+    [Header("For Testing Purposes")]
+    private DoorNetworkedController doorToOpen;
+    private bool hasSearchedForDoor = false;
     
     public enum PlayerType
     {
@@ -56,6 +65,16 @@ public class VRPlayer : NetworkBehaviour
         // Set player type based on hardware detection
         DetectPlayerType();
     }
+
+    void Update()
+    {
+        if (Object.HasInputAuthority && characterController != null)
+        {
+            Debug.Log($"CharacterController - IsGrounded: {characterController.isGrounded}, " +
+                    $"Position: {transform.position}, " +
+                    $"Velocity: {characterController.velocity}");
+        }
+    }
     
     void DetectPlayerType()
     {
@@ -80,16 +99,49 @@ public class VRPlayer : NetworkBehaviour
         return true;
     }
     
+    private DoorNetworkedController GetDoorToOpen()
+    {
+        if (!hasSearchedForDoor && Object.HasInputAuthority)
+        {
+            hasSearchedForDoor = true;
+            doorToOpen = FindObjectOfType<DoorNetworkedController>();
+            
+            if (doorToOpen != null)
+            {
+                Debug.Log($"Found door for player {Object.InputAuthority}");
+            }
+            else
+            {
+                Debug.LogWarning($"Could not find door for player {Object.InputAuthority}");
+            }
+        }
+        
+        return doorToOpen;
+    }
+    
     public override void FixedUpdateNetwork()
     {
         //update if we have input authority
         if (!Object.HasInputAuthority) return;
         
         // Handle sneaking input for enhanced sneaking players
-        if (playerType == PlayerType.EnhancedSneaking)
+        if(GetInput<RigInput>(out var rigInput))
         {
-            HandleSneakingInput();
+
+            HandleMovement(rigInput);
+
+            if(rigInput.customButtons.IsSet(RigInput.INTERACTIONBUTTON))
+            {
+                HandleInteraction();
+            }
+
+            if(playerType == PlayerType.EnhancedSneaking)
+            {
+                HandleSneakingInput(rigInput);
+            }
+
         }
+        
 
         UpdatePlayerState();
         
@@ -115,12 +167,74 @@ public class VRPlayer : NetworkBehaviour
         if (handSubsystem == null) return false;
         return handSubsystem.running;
     }
-    
-    void HandleSneakingInput()
+
+    void HandleMovement(RigInput rigInput)
     {
-        float sneakValue = GetPressurePlateInput();
+        if(characterController == null) return;
+
+        Vector3 targetPlayAreaPosition = rigInput.playAreaPosition;
+    
+        // Initialize on first frame
+        if (isFirstFrame)
+        {
+            lastValidPlayAreaPosition = targetPlayAreaPosition;
+            isFirstFrame = false;
+            return;
+        }
+
+        // Calculate the movement delta from the last valid position
+        Vector3 movementDelta = targetPlayAreaPosition - lastValidPlayAreaPosition;
         
-        // Update networked sneak value
+        // Apply gravity
+        if (!characterController.isGrounded)
+        {
+            movementDelta.y += Physics.gravity.y * Runner.DeltaTime;
+        }
+
+        // Apply movement through CharacterController
+        if (movementDelta.magnitude > 0.001f)
+        {
+            Vector3 positionBeforeMove = transform.position;
+            characterController.Move(movementDelta);
+            Vector3 actualMovement = transform.position - positionBeforeMove;
+            
+            // Update our tracking position based on actual movement
+            lastValidPlayAreaPosition += actualMovement;
+            
+            // Check if we were blocked by collision
+            if (actualMovement.magnitude < movementDelta.magnitude * 0.9f)
+            {
+                Debug.Log($"Movement blocked by collision. Player position: {transform.position}");
+                
+                var hardwareRig = networkRig.hardwareRig;
+                if (hardwareRig != null)
+                {
+                    Vector3 playAreaOffset = lastValidPlayAreaPosition - targetPlayAreaPosition;
+                    hardwareRig.transform.position += playAreaOffset;
+                }
+            }
+        }
+        else
+        {
+            // No movement, update tracking position
+            lastValidPlayAreaPosition = targetPlayAreaPosition;
+        }
+    }
+    
+    void HandleSneakingInput(RigInput rigInput)
+    {
+        float sneakValue = NetworkedSneakValue;
+        
+        if(rigInput.customButtons.IsSet(RigInput.SNEAKTESTBUTTON))
+        {
+            sneakValue = (sneakValue < sneakThreshold) ? 1.0f : 0.0f;
+            Debug.Log($"Sneak Test Button - Setting sneak value to {sneakValue}");
+        }
+        else
+        {
+            sneakValue = GetPressurePlateInput();
+        }
+
         NetworkedSneakValue = sneakValue;
 
         if(sneakValue < sneakThreshold)
@@ -131,10 +245,24 @@ public class VRPlayer : NetworkBehaviour
         {
             playerState = PlayerState.Walking;
         }
-        
-        //Debug.Log($"Sneak Value: {sneakValue}, State: {playerState}");
     }
 
+    private void HandleInteraction()
+    {
+        Debug.Log("VRPlayer: HandleInteraction called");
+
+        var door = GetDoorToOpen();
+        if (door != null)
+        {
+            Debug.Log($"VRPlayer: Door found: {door.name}, calling RequestOpen()");
+            door.RequestOpen();
+        }
+        else
+        {
+            Debug.LogWarning("No door found to interact with!");
+        }
+    }
+    
     private void UpdatePlayerState()
     {
         NetworkedPlayerState = playerState;
@@ -142,28 +270,8 @@ public class VRPlayer : NetworkBehaviour
 
     float GetPressurePlateInput()
     {
-        //To simulate Input of pressure plate
-#if UNITY_EDITOR
-        if(Keyboard.current != null)
-        {
-            if(Keyboard.current.digit1Key.wasPressedThisFrame)
-            {
-                Debug.Log("Key 1 pressed - Sneaking");
-                return 0.0f;
-            }
-            if(Keyboard.current.digit2Key.wasPressedThisFrame)
-            {
-                Debug.Log("Key 2 pressed - Walking");
-                return 1.0f;
-            }
-        }
-        
-        // Return the current networked value if no input this frame
+        //TODO 
         return NetworkedSneakValue;
-#else
-        //TODO implement getting the value of the pressure plate 
-        return 1.0f;   
-#endif
     }
     
     public override void Render()
@@ -187,6 +295,21 @@ public class VRPlayer : NetworkBehaviour
     void ApplySneakingEffects()
     {
        
+    }
+
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        Debug.Log($"CharacterController hit: {hit.collider.name} on layer {hit.collider.gameObject.layer}");
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        Debug.Log($"Trigger entered: {other.name} on layer {other.gameObject.layer}");
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log($"Collision entered: {collision.collider.name} on layer {collision.collider.gameObject.layer}");
     }
 
     // Helper methods to access NetworkRig data if needed for gameplay

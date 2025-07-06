@@ -4,7 +4,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Threading.Tasks;
+
 
 namespace Fusion.XR.Host.Rig
 {
@@ -32,6 +34,14 @@ namespace Fusion.XR.Host.Rig
         public HandCommand rightHandCommand;
         public GrabInfo leftGrabInfo;
         public GrabInfo rightGrabInfo;
+
+        //input fields not from fusion
+        public NetworkButtons customButtons;
+        public Vector3 movementDirection;
+
+        //Button constants
+        public const byte INTERACTIONBUTTON = 1 << 0;
+        public const byte SNEAKTESTBUTTON = 1 << 1;
     }
 
     /**
@@ -68,6 +78,14 @@ namespace Fusion.XR.Host.Rig
 
 
         public float InterpolationDelay => interpolationDelay;
+
+        [Header("Custom Fields")]
+        [SerializeField] private InputActionReference interactionAction;
+        [SerializeField] private InputActionReference sneakTestAction;
+        private VRPlayer vrPlayer; //Will be searched dynamically, change if performance is suffering
+        private bool hasSearchedForVRPlayer = false;
+        private bool _interactionButton = false;
+        private bool _sneakTestButton = false;
 
         public async Task<NetworkRunner> FindRunner()
         {
@@ -111,6 +129,9 @@ namespace Fusion.XR.Host.Rig
             {
                 useInputInterpolation = false;
             }
+
+            if(interactionAction != null) interactionAction.action.Enable();
+            if(sneakTestAction != null) sneakTestAction.action.Enable();
         }
 
         protected virtual async void Start()
@@ -122,11 +143,85 @@ namespace Fusion.XR.Host.Rig
             }
         }
 
+        private void Update()
+        {
+            // Debug logging to see if actions are being detected
+            if (interactionAction != null)
+            {
+                if (interactionAction.action.WasPressedThisFrame())
+                {
+                    Debug.Log("INTERACTION BUTTON PRESSED!");
+                }
+                
+                // Also check if the action is enabled
+                if (!interactionAction.action.enabled)
+                {
+                    Debug.LogWarning("Interaction action is not enabled!");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Interaction action reference is null!");
+            }
+
+            if (sneakTestAction != null)
+            {
+                if (sneakTestAction.action.WasPressedThisFrame())
+                {
+                    Debug.Log("SNEAK TEST BUTTON PRESSED!");
+                }
+                
+                if (!sneakTestAction.action.enabled)
+                {
+                    Debug.LogWarning("Sneak test action is not enabled!");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("Sneak test action reference is null!");
+            }
+
+            // Original button tracking
+            _interactionButton = _interactionButton | (interactionAction?.action.WasPressedThisFrame() ?? false);
+            _sneakTestButton = _sneakTestButton | (sneakTestAction?.action.WasPressedThisFrame() ?? false);
+        }
+
         private void OnDestroy()
         {
             if (searchingForRunner) Debug.LogError("Cancel searching for runner in HardwareRig");
             searchingForRunner = false;
             if (runner) runner.RemoveCallbacks(this);
+            if(interactionAction != null) interactionAction.action.Disable();
+            if(sneakTestAction != null) sneakTestAction.action.Disable();
+        }
+
+        private VRPlayer GetVRPlayer()
+        {
+            if(!hasSearchedForVRPlayer && runner != null && runner.LocalPlayer != null)
+            {
+                hasSearchedForVRPlayer = true;
+
+                var networkObjects = FindObjectsByType<NetworkObject>(FindObjectsSortMode.None);
+                foreach (var netObj in networkObjects)
+                {
+                    if(netObj.HasInputAuthority && netObj.InputAuthority == runner.LocalPlayer)
+                    {
+                        vrPlayer = netObj.GetComponent<VRPlayer>();
+                        if(vrPlayer != null)
+                        {
+                            Debug.Log($"Found VRPlayer for local player: {runner.LocalPlayer}");
+                            break;
+                        }
+                    }
+                }
+
+                if(vrPlayer == null)
+                {
+                    Debug.LogWarning($"Could not find VRPlayer for local player: {runner.LocalPlayer}");
+                }
+            }
+
+            return vrPlayer;
         }
 
 
@@ -198,14 +293,54 @@ namespace Fusion.XR.Host.Rig
             rigInput.leftGrabInfo = leftHand.grabber.GrabInfo;
             rigInput.rightGrabInfo = rightHand.grabber.GrabInfo;
 
+            GatherCustomInput(ref rigInput);
+
             input.Set(rigInput);
         }
 
+        private void GatherCustomInput(ref RigInput rigInput)
+        {
+            var currentVRPlayer = GetVRPlayer();
+
+            if(_interactionButton)
+            {
+                Debug.Log($"Setting interaction button in network input: {_interactionButton}");
+                rigInput.customButtons.Set(RigInput.INTERACTIONBUTTON, true);
+            }
+            _interactionButton = false;
+
+            if(currentVRPlayer != null && currentVRPlayer.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedSneaking)
+            {
+                if(_sneakTestButton)
+                {
+                    Debug.Log($"Setting sneak button in network input: {_sneakTestButton}");
+                    rigInput.customButtons.Set(RigInput.SNEAKTESTBUTTON, _sneakTestButton);
+                }
+            }
+            _sneakTestButton = false;
+        }
+
+        public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
+        {
+            if(player == runner.LocalPlayer)
+            {
+                hasSearchedForVRPlayer = false;
+                vrPlayer = null;
+            }
+        }
+
+        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
+        {
+            if(player == runner.LocalPlayer)
+            {
+                hasSearchedForVRPlayer = false;
+                vrPlayer = null;
+            }
+        }
         #endregion
 
         #region INetworkRunnerCallbacks (unused)
-        public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) { }
-        public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
+        
 
         public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
