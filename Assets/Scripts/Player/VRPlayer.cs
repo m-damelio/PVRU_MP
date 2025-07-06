@@ -24,7 +24,7 @@ public class VRPlayer : NetworkBehaviour
     [SerializeField] private float moveSpeed = 3f; 
     // Reference to the NetworkRig which handles visuals for hands/body, etc.
     private NetworkRig networkRig;
-    private Vector3 lastValidPlayAreaPosition;
+    private Vector3 lastHeadsetPosition;
     private bool isFirstFrame = true;
     
     // Networked properties
@@ -172,53 +172,46 @@ public class VRPlayer : NetworkBehaviour
     {
         if(characterController == null) return;
 
-        Vector3 targetPlayAreaPosition = rigInput.playAreaPosition;
+        Vector3 targetHeadsetPosition = rigInput.headsetPosition;
     
         // Initialize on first frame
         if (isFirstFrame)
         {
-            lastValidPlayAreaPosition = targetPlayAreaPosition;
+            transform.position = new Vector3(targetHeadsetPosition.x, transform.position.y, targetHeadsetPosition.z);
+            lastHeadsetPosition = targetHeadsetPosition;
             isFirstFrame = false;
             return;
         }
 
         // Calculate the movement delta from the last valid position
-        Vector3 movementDelta = targetPlayAreaPosition - lastValidPlayAreaPosition;
+        Vector3 headsetMovementDelta = targetHeadsetPosition - lastHeadsetPosition;
+        Vector3 movementToApply = new Vector3(headsetMovementDelta.x, 0, headsetMovementDelta.z);
         
         // Apply gravity
         if (!characterController.isGrounded)
         {
-            movementDelta.y += Physics.gravity.y * Runner.DeltaTime;
+            movementToApply.y += Physics.gravity.y * Runner.DeltaTime;
         }
 
-        // Apply movement through CharacterController
-        if (movementDelta.magnitude > 0.001f)
+        //Save position before applying movement
+        Vector3 psoitionBeforeMove = transform.position;
+        //Move character
+        characterController.Move(movementToApply);
+        //Calculate movement after collisions
+        Vector3 actualMovement = transform.position-psoitionBeforeMove;
+
+        if(actualMovement.magnitude < movementToApply.magnitude * 0.9f)
         {
-            Vector3 positionBeforeMove = transform.position;
-            characterController.Move(movementDelta);
-            Vector3 actualMovement = transform.position - positionBeforeMove;
-            
-            // Update our tracking position based on actual movement
-            lastValidPlayAreaPosition += actualMovement;
-            
-            // Check if we were blocked by collision
-            if (actualMovement.magnitude < movementDelta.magnitude * 0.9f)
+            //If movment sinificantly less than intended realign hardware rig to match charactercontrollers position
+            var hardwareRig = networkRig.hardwareRig;
+            if(hardwareRig != null)
             {
-                Debug.Log($"Movement blocked by collision. Player position: {transform.position}");
-                
-                var hardwareRig = networkRig.hardwareRig;
-                if (hardwareRig != null)
-                {
-                    Vector3 playAreaOffset = lastValidPlayAreaPosition - targetPlayAreaPosition;
-                    hardwareRig.transform.position += playAreaOffset;
-                }
+                Vector3 rigOffset = transform.position - new Vector3(targetHeadsetPosition.x, transform.position.y, targetHeadsetPosition.z);
+                hardwareRig.transform.position += rigOffset;
             }
         }
-        else
-        {
-            // No movement, update tracking position
-            lastValidPlayAreaPosition = targetPlayAreaPosition;
-        }
+        //Update last headset psoition for next frame
+        lastHeadsetPosition = transform.position;
     }
     
     void HandleSneakingInput(RigInput rigInput)
