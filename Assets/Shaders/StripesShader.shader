@@ -4,6 +4,8 @@ Shader "Unlit/StripesShader"
     {
         _Tiling ("Tiling", Range(1,500)) = 10
         _WidthShift ("Width Shift", Range(0,1)) = 0.5
+        _TopCut ("Top Cut", Range(0,0.5)) = 0.2
+        _BottomCut ("Bottom Cut", Range(0,0.5)) = 0.1
         _Color1 ("Color 1", Color) = (0,0,0,1)
         _Color2 ("Color 2", Color) = (1,1,1,1)
     }
@@ -19,6 +21,8 @@ Shader "Unlit/StripesShader"
 
             int _Tiling; 
             float _WidthShift;
+            float _BottomCut;
+            float _TopCut;
             fixed4 _Color1;
             fixed4 _Color2;
 
@@ -47,7 +51,19 @@ Shader "Unlit/StripesShader"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float pos = i.uv.y * _Tiling;
+                //Define regions 
+                float startY = _BottomCut;
+                float endY = 1.0 - _TopCut;
+                float regionHeight = endY - startY;
+                float uvy = i.uv.y;
+                //Cutoff bottom and top to be white
+                if (uvy < startY || uvy > endY)
+                {
+                    return fixed4(1,1,1,1);
+                }
+                //remap uvy to actual stripe region
+                float t = (uvy - startY) / regionHeight;
+                float pos = t * _Tiling;
                 fixed value = floor(frac(pos) + _WidthShift);
                 return lerp(_Color1, _Color2, value);
             }

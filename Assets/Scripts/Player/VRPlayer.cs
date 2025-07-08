@@ -21,7 +21,7 @@ public class VRPlayer : NetworkBehaviour
 
     [Header("Movement")]
     public CharacterController characterController;
-    [SerializeField] private float moveSpeed = 3f; 
+    //[SerializeField] private float moveSpeed = 3f; 
     // Reference to the NetworkRig which handles visuals for hands/body, etc.
     private NetworkRig networkRig;
     private Vector3 lastHeadsetPosition;
@@ -64,16 +64,6 @@ public class VRPlayer : NetworkBehaviour
         
         // Set player type based on hardware detection
         DetectPlayerType();
-    }
-
-    void Update()
-    {
-        if (Object.HasInputAuthority && characterController != null)
-        {
-            Debug.Log($"CharacterController - IsGrounded: {characterController.isGrounded}, " +
-                    $"Position: {transform.position}, " +
-                    $"Velocity: {characterController.velocity}");
-        }
     }
     
     void DetectPlayerType()
@@ -203,11 +193,15 @@ public class VRPlayer : NetworkBehaviour
         if(actualMovement.magnitude < movementToApply.magnitude * 0.9f)
         {
             //If movment sinificantly less than intended realign hardware rig to match charactercontrollers position
-            var hardwareRig = networkRig.hardwareRig;
-            if(hardwareRig != null)
+            if(networkRig != null && networkRig.hardwareRig != null)
             {
+                var hardwareRig = networkRig.hardwareRig;
                 Vector3 rigOffset = transform.position - new Vector3(targetHeadsetPosition.x, transform.position.y, targetHeadsetPosition.z);
                 hardwareRig.transform.position += rigOffset;
+            }
+            else
+            {
+                if(Object.HasInputAuthority) Debug.LogWarning($"HardwareRig not available for local player {Object.InputAuthority}. This is normal in the first few frames after spawning.");
             }
         }
         //Update last headset psoition for next frame
@@ -292,17 +286,17 @@ public class VRPlayer : NetworkBehaviour
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        Debug.Log($"CharacterController hit: {hit.collider.name} on layer {hit.collider.gameObject.layer}");
+        //Debug.Log($"CharacterController hit: {hit.collider.name} on layer {hit.collider.gameObject.layer}");
     }
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"Trigger entered: {other.name} on layer {other.gameObject.layer}");
+        //Debug.Log($"Trigger entered: {other.name} on layer {other.gameObject.layer}");
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log($"Collision entered: {collision.collider.name} on layer {collision.collider.gameObject.layer}");
+        //Debug.Log($"Collision entered: {collision.collider.name} on layer {collision.collider.gameObject.layer}");
     }
 
     // Helper methods to access NetworkRig data if needed for gameplay
