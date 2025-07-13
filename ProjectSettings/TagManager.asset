@@ -7,6 +7,25 @@ TagManager:
   - laser
   - Mirror
   - LoadTarget
+  - QDSUIBackplateGradient
+  - QDSUIToggleBorderlessButton
+  - QDSUISharedThemeColor
+  - QDSUISection
+  - QDSUIIcon
+  - QDSUISecondaryButton
+  - QDSUIAccentColor
+  - QDSUIToggleCheckboxRadio
+  - QDSUITooltip
+  - QDSUITextInputField
+  - QDSUITextSecondaryColor
+  - QDSUIPrimaryButton
+  - QDSUITextInvertedColor
+  - QDSUITextSecondaryInvertedColor
+  - QDSUIToggleButton
+  - QDSUIBorderlessButton
+  - QDSUIDestructiveButton
+  - QDSUIToggleSwitch
+  - StartGame
   layers:
   - Default
   - TransparentFX
@@ -17,6 +36,7 @@ TagManager:
   - Locomotion
   - InvisibleForLocalPlayer
   - NeonLayer
+  - Overlay UI
   - KeyCardLayer
   - 
   - 
@@ -33,7 +53,6 @@ TagManager:
   - 
   - 
   - EndGameDanceUI
-  - 
   - 
   - 
   - 
