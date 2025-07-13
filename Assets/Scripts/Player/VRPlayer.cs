@@ -26,8 +26,12 @@ public class VRPlayer : NetworkBehaviour
     private NetworkRig networkRig;
     private Vector3 lastHeadsetPosition;
     private bool isFirstFrame = true;
+
+    [Header("Key Card Interaction")]
+    [SerializeField] private float pickupRange = 2f;
+    [SerializeField] private LayerMask keyCardLayer = -1; //All layers by default
     
-    // Networked properties
+    [Header("Networked properties")]
     [Networked] public PlayerType NetworkedPlayerType { get; set; }
     [Networked] public PlayerState NetworkedPlayerState { get; set; }
     [Networked] public float NetworkedSneakValue { get; set; }
@@ -40,6 +44,7 @@ public class VRPlayer : NetworkBehaviour
     [Header("For Testing Purposes")]
     private DoorNetworkedController doorToOpen;
     private bool hasSearchedForDoor = false;
+    private NetworkedKeyCard heldKeyCard;
     
     public enum PlayerType
     {
@@ -114,6 +119,11 @@ public class VRPlayer : NetworkBehaviour
         //update if we have input authority
         if (!Object.HasInputAuthority) return;
         
+        if(heldKeyCard != null && heldKeyCard.Holder != Object.InputAuthority)
+        {
+            Debug.Log("VRPlayer: KEycard was dropped/ejected, clearing reference");
+            heldKeyCard = null;
+        }
         // Handle sneaking input for enhanced sneaking players
         if(GetInput<RigInput>(out var rigInput))
         {
@@ -238,6 +248,38 @@ public class VRPlayer : NetworkBehaviour
     {
         Debug.Log("VRPlayer: HandleInteraction called");
 
+        if(heldKeyCard != null)
+        {
+            if(heldKeyCard.Holder != Object.InputAuthority)
+            {
+                Debug.Log("VRPlayer: Keycard no longer held by this player, clearing reference");
+                heldKeyCard = null;
+                return;
+            }
+
+            var doorOpener = FindNearbyDoorOpener();
+            if(doorOpener != null)
+            {
+                Debug.Log($"VRPlayer: Inserting key card into door opener: {doorOpener.name}");
+                heldKeyCard.InsertInto(doorOpener);
+                return;
+            }
+        }
+
+        //if not holding key card pick one up
+        if(heldKeyCard == null)
+        {
+            var keyCard = FindNearbyKeyCard();
+            if(keyCard != null)
+            {
+                Debug.Log($"VRPlayer: Picking up key card: {keyCard.name}");
+                PickupKeyCard(keyCard);
+                return;
+            }
+        }
+
+        //Fallback to existing door testing logic
+        /*
         var door = GetDoorToOpen();
         if (door != null)
         {
@@ -248,6 +290,7 @@ public class VRPlayer : NetworkBehaviour
         {
             Debug.LogWarning("No door found to interact with!");
         }
+        */
     }
     
     private void UpdatePlayerState()
@@ -260,6 +303,63 @@ public class VRPlayer : NetworkBehaviour
         //TODO 
         return NetworkedSneakValue;
     }
+
+    private NetworkedKeyCard FindNearbyKeyCard()
+    {
+        Vector3 playerPosition = transform.position;
+        Collider[] colliders = Physics.OverlapSphere(playerPosition, pickupRange, keyCardLayer);
+
+        NetworkedKeyCard closestKeyCard = null;
+        float closestDistance = float.MaxValue;
+
+        foreach(var collider in colliders)
+        {
+            var keyCard = collider.GetComponent<NetworkedKeyCard>();
+            if(keyCard != null && keyCard.Holder == PlayerRef.None)
+            {
+                float distance = Vector3.Distance(playerPosition,collider.transform.position);
+                if(distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestKeyCard = keyCard;
+                }
+            }
+        }
+        return closestKeyCard;
+    }
+
+    private DoorOpener FindNearbyDoorOpener()
+    {
+        Vector3 playerPosition = transform.position;
+        Collider[] colliders = Physics.OverlapSphere(playerPosition, pickupRange, keyCardLayer);
+        DoorOpener closestDoorOpener = null;
+        float closestDistance = float.MaxValue;
+
+        foreach(var collider in colliders)
+        {
+            var doorOpener = collider.GetComponent<DoorOpener>();
+            if(doorOpener != null)
+            {
+                float distance = Vector3.Distance(playerPosition, collider.transform.position);
+                if(distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestDoorOpener = doorOpener;
+                }
+            }
+        } 
+        return closestDoorOpener;
+    }
+
+    private void PickupKeyCard(NetworkedKeyCard keyCard)
+    {
+        if(keyCard != null && Object.HasInputAuthority)
+        {
+            keyCard.RPC_PickUp(Object.InputAuthority);
+            heldKeyCard = keyCard;
+            Debug.Log($"VRPlayer: Picked up key card with ID: {keyCard.KeyID}");
+        }
+    }
     
     public override void Render()
     {
@@ -267,6 +367,12 @@ public class VRPlayer : NetworkBehaviour
         if (hardwareIndicator != null)
         {
             hardwareIndicator.SetActive(NetworkedPlayerType == PlayerType.EnhancedHacking);
+        }
+
+        //Show Key Card if held
+        if(heldKeyCard != null && Object.HasInputAuthority)
+        {
+            //Debug.Log($"Holding key card: {heldKeyCard.KeyID}");
         }
         
         // Apply sneaking effects

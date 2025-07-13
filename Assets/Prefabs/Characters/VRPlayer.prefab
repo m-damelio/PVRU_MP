@@ -543,6 +543,10 @@ MonoBehaviour:
   playerType: 0
   playerState: 0
   characterController: {fileID: 1475275693075936696}
+  pickupRange: 2
+  keyCardLayer:
+    serializedVersion: 2
+    m_Bits: 512
   _NetworkedPlayerType: 0
   _NetworkedPlayerState: 0
   _NetworkedSneakValue: 0

@@ -13,11 +13,9 @@ public class GuardNetworkedController : NetworkBehaviour
     [SerializeField] private float restDuration = 5f;
 
     [Header("Character Settings")]
-    [SerializeField] private bool setWomanWalk;
     //[SerializeField] private float moveSpeed; 
 
     [Header("Fusion synced")]
-    [Networked] public bool IsWoman {get;set;}
     [Networked] public bool IsAlert {get;set;}
     [Networked] public bool AlarmRunning {get;set;}
 
@@ -34,10 +32,11 @@ public class GuardNetworkedController : NetworkBehaviour
 
         if(Object.HasStateAuthority)
         {
-            IsWoman = setWomanWalk;
+            _animator.SetTrigger("IsSpawned");
         }
-
+        
         ApplyAnimParams();
+        
     }
 
     public override void FixedUpdateNetwork()
@@ -128,7 +127,6 @@ public class GuardNetworkedController : NetworkBehaviour
 
     private void ApplyAnimParams()
     {
-        _animator.SetBool("IsWoman", IsWoman);
         _animator.SetBool("IsAlert", IsAlert);
     }
 

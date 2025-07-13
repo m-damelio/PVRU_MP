@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f433f5ab4610249e1a02ec8126bcd451
+guid: ab5dc572bddec4e71a7c76ebd91aaa33
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -32,8 +32,8 @@ ModelImporter:
     clipAnimations:
     - serializedVersion: 16
       name: Walking_Man
-      takeName: Armature|Armature|walking_man|baselayer
-      internalID: -2901233246522174405
+      takeName: Armature|Action
+      internalID: 885944232402757753
       firstFrame: 0
       lastFrame: 31
       wrapMode: 0
