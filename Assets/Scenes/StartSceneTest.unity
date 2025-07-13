@@ -1335,7 +1335,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3616975863809003740, guid: 8fbd4b76d84610b48b0d0cb4222817dd, type: 3}
       propertyPath: SortKey
-      value: 1182571205
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3616975863809003740, guid: 8fbd4b76d84610b48b0d0cb4222817dd, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
@@ -1970,7 +1970,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6095333543647252589, guid: 71813bede6cf5634eb4bfd5f3ffd28e7, type: 3}
       propertyPath: SortKey
-      value: 21725454
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6095333543647252589, guid: 71813bede6cf5634eb4bfd5f3ffd28e7, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
