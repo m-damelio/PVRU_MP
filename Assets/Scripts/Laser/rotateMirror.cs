@@ -8,7 +8,10 @@ public class RotateMirror : NetworkBehaviour
     public Transform controlRotation; 
     private float rotate = 5.0f;
 
-    [Networked] public Quaternion NetworkedRotation { get; set; }
+    [Networked] public Quaternion NetworkedRotation {get;set;}
+    [Networked] public float NetworkedYRotation { get; set; }
+    [Networked] public float NetworkedZRotation { get; set; }
+
 
     // F�r Laser-Updates
     private Quaternion lastRot;
@@ -20,6 +23,8 @@ public class RotateMirror : NetworkBehaviour
         {
             Debug.Log("HierimIf");
             NetworkedRotation = controlRotation.rotation;
+            NetworkedYRotation = controlRotation.rotation.y;
+            NetworkedZRotation = controlRotation.rotation.z;
         }
 
         lastRot = controlRotation.rotation;
@@ -40,52 +45,6 @@ public class RotateMirror : NetworkBehaviour
         }
     }
 
-    private void HandleInput()
-    {
-        // Links/Rechts � drehen des Root-Objekts um Y
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            Rpc_RotateMirror(Vector3.up, -rotate);
-        }
-
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            Rpc_RotateMirror(Vector3.up, rotate);
-            //controlRotation.Rotate(Vector3.up * rotate, Space.World);
-            //NetworkedRotation = controlRotation.rotation;
-        }
-
-        // Hoch/Runter � kippen des Kindobjekts um lokale X
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            Rpc_RotateMirror(new Vector3(0,1,0), -rotate);
-            //transform.Rotate(Vector3.forward * -rotate, Space.World);
-            //NetworkedRotation = controlRotation.rotation;
-        }
-
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            Rpc_RotateMirror(new Vector3(0,1,0), rotate);
-            //transform.Rotate(Vector3.forward * rotate, Space.World);
-            //NetworkedRotation = controlRotation.rotation;
-        }
-    }
-
-    /*
-    public override void Render()
-    {
-        // Alle Clients synchronisieren ihre Rotation mit den networked values
-        if (controlRotation.rotation != NetworkedParentRotation)
-        {
-            controlRotation.rotation = NetworkedParentRotation;
-        }
-
-        if (controlRotation.rotation != NetworkedChildRotation)
-        {
-            controlRotation.rotation = NetworkedChildRotation;
-        }
-    }
-    */
     private void TriggerLaserUpdate()
     {
         // Finde alle LaserBean Objekte und aktualisiere sie
@@ -115,14 +74,44 @@ public class RotateMirror : NetworkBehaviour
         }
     }
 
-    // RPC f�r externe Trigger (falls ben�tigt)
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void Rpc_RotateMirror(Vector3 axis, float angle)
+    private void HandleInput()
     {
-        controlRotation.Rotate(axis * angle, Space.Self);
-        
-        NetworkedRotation = controlRotation.rotation;
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            Rpc_RotateY(-rotate);
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            Rpc_RotateY(rotate);
+        }
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            Rpc_RotateZ(-rotate);
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            Rpc_RotateZ(rotate);
+        }
+    }
 
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void Rpc_RotateY(float angle)
+    {
+        NetworkedYRotation += angle;
+        UpdateRotation();
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void Rpc_RotateZ(float angle)
+    {
+        NetworkedZRotation += angle;
+        UpdateRotation();
+    }
+
+    private void UpdateRotation()
+    {
+        controlRotation.rotation = Quaternion.Euler(0, NetworkedYRotation, NetworkedZRotation);
+        NetworkedRotation = controlRotation.rotation;
         TriggerLaserUpdate();
     }
 
