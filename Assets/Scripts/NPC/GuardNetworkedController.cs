@@ -10,7 +10,8 @@ public class GuardNetworkedController : NetworkBehaviour
     [Header("Pathway settings")]
     [SerializeField] private List<Transform> patrolPoints;
     [SerializeField] private Transform alarmSpot;
-    [SerializeField] private float restDuration = 5f;
+    [SerializeField] private float restDuration = 10f;
+    [SerializeField] private NetworkedAlarmBooth alarmBooth;
 
     [Header("Character Settings")]
     //[SerializeField] private float moveSpeed; 
@@ -69,6 +70,10 @@ public class GuardNetworkedController : NetworkBehaviour
                     StartCoroutine(DelayThen(_ => 
                     {
                         _animator.SetTrigger("AlarmFixed");
+                        if(alarmBooth != null)
+                        {
+                            alarmBooth.RPC_GuardResetAlarm();
+                        }
                         _state = State.Return;
                     }, restDuration));
                 }
@@ -119,7 +124,7 @@ public class GuardNetworkedController : NetworkBehaviour
     }
 
     //Called from alarm 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_TriggerAlarm()
     {
         if(_state != State.RunToAlarm && _state != State.Rest) _state = State.RunToAlarm;

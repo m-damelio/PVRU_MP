@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5617642228297694445}
   - component: {fileID: 9039347274475306163}
   - component: {fileID: 4834214032520512791}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: DoorKeyCardReceiver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -167,7 +167,7 @@ GameObject:
   - component: {fileID: 880714451203453197}
   - component: {fileID: 787276714775842290}
   - component: {fileID: 8591802369073193416}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: StatusLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}

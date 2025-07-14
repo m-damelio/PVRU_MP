@@ -30,6 +30,7 @@ public class VRPlayer : NetworkBehaviour
     [Header("Key Card Interaction")]
     [SerializeField] private float pickupRange = 2f;
     [SerializeField] private LayerMask keyCardLayer = -1; //All layers by default
+    [SerializeField] private LayerMask interactionLayer = -1;
     
     [Header("Networked properties")]
     [Networked] public PlayerType NetworkedPlayerType { get; set; }
@@ -331,7 +332,7 @@ public class VRPlayer : NetworkBehaviour
     private DoorOpener FindNearbyDoorOpener()
     {
         Vector3 playerPosition = transform.position;
-        Collider[] colliders = Physics.OverlapSphere(playerPosition, pickupRange, keyCardLayer);
+        Collider[] colliders = Physics.OverlapSphere(playerPosition, pickupRange, interactionLayer);
         DoorOpener closestDoorOpener = null;
         float closestDistance = float.MaxValue;
 

@@ -9,8 +9,8 @@ public class NetworkedKeyCard : NetworkBehaviour
     private string defaultKeyID = "1234";
 
     [Header("Visual components")]
-    [SerializeField] private GameObject visualModel;
-    [SerializeField] private Collider keyCardCollider;
+    public GameObject visualModel;
+    public Collider keyCardCollider;
 
     [Header("Networked properties")]
     [Networked] public int KeyIDHash {get;set;}
@@ -82,7 +82,7 @@ public class NetworkedKeyCard : NetworkBehaviour
     }
     //Client asks to pick it ip (RPCSources is all since i didn't assign input authority correctly on the key cards.)
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_PickUp(PlayerRef requester, RpcInfo info = default)
+    public virtual void RPC_PickUp(PlayerRef requester, RpcInfo info = default)
     {
         //Allow pick up if not held already
         if(Holder != PlayerRef.None)
@@ -103,7 +103,7 @@ public class NetworkedKeyCard : NetworkBehaviour
     
     //Client asks to drop it
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)] 
-    public void RPC_Drop(Vector3 worldPos, Quaternion worldRot, RpcInfo info = default)
+    public virtual void RPC_Drop(Vector3 worldPos, Quaternion worldRot, RpcInfo info = default)
     {
         //Only holder can drop key
         if(Holder != info.Source)
