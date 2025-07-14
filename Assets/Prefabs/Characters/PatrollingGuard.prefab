@@ -228,15 +228,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.13303947
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.20000005
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.656637
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -297,6 +297,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7221475763751908140}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7862312633369877648}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 512832532206865664}
     - targetCorrespondingSourceObject: {fileID: -4372093788385109707, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3165249347837282096}
@@ -321,6 +327,7 @@ MonoBehaviour:
   patrolPoints: []
   alarmSpot: {fileID: 0}
   restDuration: 5
+  alarmBooth: {fileID: 0}
   _IsAlert: 0
   _AlarmRunning: 0
 --- !u!114 &875307369792087486
@@ -342,6 +349,8 @@ MonoBehaviour:
   - {fileID: 2568265624331797996}
   NetworkedBehaviours:
   - {fileID: 1960845541868426003}
+  - {fileID: 7862312633369877648}
+  - {fileID: 512832532206865664}
   ForceRemoteRenderTimeframe: 0
 --- !u!195 &7221475763751908140
 NavMeshAgent:
@@ -365,6 +374,59 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &7862312633369877648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2649851729155381337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8872a05ae259e4859b4c29dd35f8bfc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncPosition: 1
+  syncRotation: 1
+  positionThreshold: 0.1
+  rotationThreshold: 5
+  boolParameters:
+  - IsAlert
+  intParameters: []
+  floatParameters: []
+  triggerParameters:
+  - IsSpawned
+  - AlarmFixed
+  - AlarmTriggered
+  - AtAlarmLocation
+  _CurrentStateHash: 0
+  _StateTime: 0
+  _LayerIndex: 0
+  _BoolParams:
+    _items: []
+  _IntParams:
+    _items: []
+  _FloatParams:
+    _items: []
+  _TriggerHash: 0
+  _TriggerFrame: 0
+--- !u!114 &512832532206865664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2649851729155381337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!4 &3426670556281471715 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}

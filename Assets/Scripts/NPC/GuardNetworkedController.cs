@@ -4,7 +4,7 @@ using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 
-[RequireComponent(typeof(Animator), typeof(NavMeshAgent))]
+[RequireComponent(typeof(Animator), typeof(NavMeshAgent), typeof(AnimatorStateSync))]
 public class GuardNetworkedController : NetworkBehaviour
 {
     [Header("Pathway settings")]
@@ -22,6 +22,7 @@ public class GuardNetworkedController : NetworkBehaviour
 
     private Animator _animator; 
     private NavMeshAgent _agent;
+    private AnimatorStateSync _animatorSync;
     private int _patrolIndex = 0;
     private enum State {Patrol, Alert, RunToAlarm, Rest, Return}
     private State _state = State.Patrol;
@@ -30,10 +31,11 @@ public class GuardNetworkedController : NetworkBehaviour
     {
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
+        _animatorSync = GetComponent<AnimatorStateSync>();
 
         if(Object.HasStateAuthority)
         {
-            _animator.SetTrigger("IsSpawned");
+            _animatorSync.NetworkTrigger("IsSpawned");
         }
         
         ApplyAnimParams();
@@ -58,7 +60,7 @@ public class GuardNetworkedController : NetworkBehaviour
                 break;
             
             case State.RunToAlarm:
-                _animator.SetTrigger("AlarmTriggered");
+                _animatorSync.NetworkTrigger("AlarmTriggered");
                 _agent.destination = alarmSpot.position;
                 _state = State.Rest;
                 break;
@@ -66,10 +68,10 @@ public class GuardNetworkedController : NetworkBehaviour
             case State.Rest:
                 if(Vector3.Distance(transform.position, alarmSpot.position) < 0.5f)
                 {
-                    _animator.SetTrigger("AtAlarmLocation");
+                    _animatorSync.NetworkTrigger("AtAlarmLocation");
                     StartCoroutine(DelayThen(_ => 
                     {
-                        _animator.SetTrigger("AlarmFixed");
+                        _animatorSync.NetworkTrigger("AlarmFixed");
                         if(alarmBooth != null)
                         {
                             alarmBooth.RPC_GuardResetAlarm();
@@ -132,7 +134,7 @@ public class GuardNetworkedController : NetworkBehaviour
 
     private void ApplyAnimParams()
     {
-        _animator.SetBool("IsAlert", IsAlert);
+        _animatorSync.SetNetworkBool("IsAlert", IsAlert);
     }
 
     //Helper to trigger an action after a delay

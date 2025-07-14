@@ -6,6 +6,7 @@ using System.Collections;
 public class DoorNetworkedController : NetworkBehaviour
 {
     private Animator _animator;
+    private AnimatorStateSync _animatorSync;
     [SerializeField] private Collider doorCollider;
 
     [Networked] public bool IsOpen {get; set;}
@@ -13,6 +14,7 @@ public class DoorNetworkedController : NetworkBehaviour
     void Awake()
     {
         _animator = GetComponent<Animator>();
+        _animatorSync = GetComponent<AnimatorStateSync>();
         if (doorCollider == null) doorCollider = GetComponent<Collider>();
     }
 
@@ -44,7 +46,7 @@ public class DoorNetworkedController : NetworkBehaviour
     public void RPC_OpenDoor()
     {
         Debug.Log($"Door: RPC_OpenDoor called!");
-        _animator.SetTrigger("OpenDoor");
+        _animatorSync.NetworkTrigger("OpenDoor");
         StartCoroutine(RemoveColliderAfterAnimation());
     }
 
@@ -59,11 +61,11 @@ public class DoorNetworkedController : NetworkBehaviour
         var state = _animator.GetCurrentAnimatorStateInfo(0);
         Debug.Log($"Door: Current animation state: {state.fullPathHash}, Length: {state.length}");
         
-        float speedMultiplier = _animator.GetFloat("SpeedMultiplier");
+        float speedMultiplier = _animator.GetFloat("Speed");
         if (speedMultiplier == 0)
         {
             speedMultiplier = 1f; // Fallback to prevent division by zero
-            Debug.LogWarning("Door: SpeedMultiplier was 0, using fallback value of 1");
+            Debug.LogWarning("Door: Speed was 0, using fallback value of 1");
         }
         
         float duration = state.length / speedMultiplier;

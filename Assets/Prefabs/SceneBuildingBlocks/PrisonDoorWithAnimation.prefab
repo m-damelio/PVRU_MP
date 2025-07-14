@@ -92,6 +92,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 61eca20e230cd4342b9f35fbb5ae2a2e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1474845134093892047}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 61eca20e230cd4342b9f35fbb5ae2a2e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 642547897229876418}
   m_SourcePrefab: {fileID: 100100000, guid: 61eca20e230cd4342b9f35fbb5ae2a2e, type: 3}
 --- !u!1 &8024945065736129075 stripped
 GameObject:
@@ -138,6 +141,7 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 131503889267022754}
+  - {fileID: 642547897229876418}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &131503889267022754
 MonoBehaviour:
@@ -152,6 +156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   doorCollider: {fileID: 1474845134093892047}
+  _IsOpen: 0
 --- !u!65 &1474845134093892047
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -173,3 +178,35 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.2, y: 2.2, z: 1.6}
   m_Center: {x: 0, y: 1.1, z: 0}
+--- !u!114 &642547897229876418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8024945065736129075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8872a05ae259e4859b4c29dd35f8bfc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncPosition: 1
+  syncRotation: 1
+  positionThreshold: 0.1
+  rotationThreshold: 5
+  boolParameters: []
+  intParameters: []
+  floatParameters: []
+  triggerParameters:
+  - OpenDoor
+  _CurrentStateHash: 0
+  _StateTime: 0
+  _LayerIndex: 0
+  _BoolParams:
+    _items: []
+  _IntParams:
+    _items: []
+  _FloatParams:
+    _items: []
+  _TriggerHash: 0
+  _TriggerFrame: 0
