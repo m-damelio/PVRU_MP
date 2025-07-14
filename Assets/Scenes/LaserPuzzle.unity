@@ -325,6 +325,11 @@ MonoBehaviour:
   ClientPhysicsSimulation: 3
   DeltaTimeMultiplier: 1
   SetUnityFixedTimestep: 0
+--- !u!1 &257713446 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6879676042153690125, guid: cbbfa0175c12c5e43916bd4cf9489da3, type: 3}
+  m_PrefabInstance: {fileID: 897874616}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &359342750
 GameObject:
   m_ObjectHideFlags: 0
@@ -837,7 +842,7 @@ PrefabInstance:
     - target: {fileID: 882560541906309601, guid: cbbfa0175c12c5e43916bd4cf9489da3, type: 3}
       propertyPath: laserObj
       value: 
-      objectReference: {fileID: 8109352755228482501, guid: 229bacf05145a45b7b4160d5c6a18a71, type: 3}
+      objectReference: {fileID: 257713446}
     - target: {fileID: 2552048235822879572, guid: cbbfa0175c12c5e43916bd4cf9489da3, type: 3}
       propertyPath: Flags
       value: 262145
@@ -1371,6 +1376,10 @@ PrefabInstance:
     - target: {fileID: 8089749110794597075, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
       propertyPath: m_Name
       value: MirrorRoot_2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8089749110794597075, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
+      propertyPath: m_TagString
+      value: Mirror
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

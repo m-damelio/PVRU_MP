@@ -44,47 +44,47 @@ public class RotateLaser : NetworkBehaviour
         bool rotationChanged = false;
 
         // A/D - Horizontal rotation (Y-axis)
-        if (Input.GetKeyDown(KeyCode.A) && !aPressed)
+        if (Input.GetKeyDown(KeyCode.B) && !aPressed)
         {
             NetworkedYaw += rotationSpeed;
             rotationChanged = true;
             aPressed = true;
         }
-        if (Input.GetKeyUp(KeyCode.A))
+        if (Input.GetKeyUp(KeyCode.B))
         {
             aPressed = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.D) && !dPressed)
+        if (Input.GetKeyDown(KeyCode.M) && !dPressed)
         {
             NetworkedYaw -= rotationSpeed;
             rotationChanged = true;
             dPressed = true;
         }
-        if (Input.GetKeyUp(KeyCode.D))
+        if (Input.GetKeyUp(KeyCode.M))
         {
             dPressed = false;
         }
 
         // W/S - Roll rotation (Z-axis)
-        if (Input.GetKeyDown(KeyCode.W) && !wPressed)
+        if (Input.GetKeyDown(KeyCode.H) && !wPressed)
         {
             NetworkedRoll -= rotationSpeed;
             rotationChanged = true;
             wPressed = true;
         }
-        if (Input.GetKeyUp(KeyCode.W))
+        if (Input.GetKeyUp(KeyCode.H))
         {
             wPressed = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.S) && !sPressed)
+        if (Input.GetKeyDown(KeyCode.N) && !sPressed)
         {
             NetworkedRoll += rotationSpeed;
             rotationChanged = true;
             sPressed = true;
         }
-        if (Input.GetKeyUp(KeyCode.S))
+        if (Input.GetKeyUp(KeyCode.N))
         {
             sPressed = false;
         }
@@ -117,6 +117,7 @@ public class RotateLaser : NetworkBehaviour
 
         if (laser != null)
         {
+            laser.SetupLaser(laser.transform.position, laser.transform.forward);
             laser.RpcForceUpdate();
         }
 

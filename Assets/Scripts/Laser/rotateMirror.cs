@@ -13,15 +13,13 @@ public class RotateMirror : NetworkBehaviour
     [Networked] public float NetworkedZRotation { get; set; }
 
 
-    // F�r Laser-Updates
+    // For Laser-Updates
     private Quaternion lastRot;
 
     public override void Spawned()
     {
-        Debug.Log("Hier");
         if (HasStateAuthority)
         {
-            Debug.Log("HierimIf");
             NetworkedRotation = controlRotation.rotation;
             NetworkedYRotation = controlRotation.rotation.y;
             NetworkedZRotation = controlRotation.rotation.z;

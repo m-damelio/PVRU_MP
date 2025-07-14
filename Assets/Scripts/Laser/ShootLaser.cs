@@ -5,7 +5,6 @@ public class ShootLaser : NetworkBehaviour
 {
     public Material material;
     public GameObject laserObj;
-    private LaserBean beam;
 
     [Networked] public Vector3 NetworkedPosition { get; set; }
     [Networked] public Vector3 NetworkedDirection { get; set; }
@@ -38,7 +37,7 @@ public class ShootLaser : NetworkBehaviour
         Vector3 currentPosition = transform.position;
         Vector3 currentDirection = transform.right;
 
-        // Nur bei �nderungen aktualisieren
+        // Nur bei Änderungen aktualisieren
         if (currentPosition != lastPosition || currentDirection != lastDirection)
         {
             NetworkedPosition = currentPosition;
@@ -51,14 +50,15 @@ public class ShootLaser : NetworkBehaviour
     public override void Render()
     {
         // Sicherstellen, dass das Laser-Objekt existiert
-        if (beam == null && laserObj == null)
+        if (laserObj == null)
         {
             CreateLaserObject();
         }
-        // F�r alle Clients (auch Non-Authority) den Laser aktualisieren
-        if (beam != null && (NetworkedPosition != Vector3.zero || NetworkedDirection != Vector3.zero))
+
+        // Für alle Clients (auch Non-Authority) den Laser aktualisieren
+        if (laserObj != null && (NetworkedPosition != Vector3.zero || NetworkedDirection != Vector3.zero))
         {
-            beam.SetupLaser(NetworkedPosition, NetworkedDirection);
+            laserObj.GetComponent<LaserBean>().SetupLaser(NetworkedPosition, NetworkedDirection);
         }
     }
 }

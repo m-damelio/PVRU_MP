@@ -77,19 +77,19 @@ public class LaserBean : NetworkBehaviour
             hitMaterial.EnableKeyword("_EMISSION");
             laserHitInstance.GetComponent<MeshRenderer>().material = hitMaterial;
 
-            // Optional: Deaktiviere initial
+            // Deaktiviere initial
             laserHitInstance.SetActive(false);
         }
     }
 
-    public void SetMaterial(Material mat)
+    /*public void SetMaterial(Material mat)
     {
         laserMaterial = mat;
         if (laser != null)
         {
             laser.material = laserMaterial;
         }
-    }
+    }*/
 
     // Diese Methode wird vom ShootLaser Script aufgerufen
     public void SetupLaser(Vector3 startPos, Vector3 dir)
@@ -195,6 +195,7 @@ public class LaserBean : NetworkBehaviour
         return networkObj?.gameObject;
     }
 
+    //Autoritative Laserberechnung: Führt die physikalische Berechnung des Laserpfads aus (inkl.Spiegelung, Treffer, Netzwerk-Update). Wird nur von der Authority ausgeführt.
     private void CalculateLaserPath()
     {
         hitCount = 0;
@@ -214,9 +215,10 @@ public class LaserBean : NetworkBehaviour
         NetworkedTargetId = targetId;
     }
 
+    // Lokale Berechnung für Visual Updates (alle Clients) zeichnet den Laser strahl
     void UpdateLaserBeam()
     {
-        // Lokale Berechnung für Visual Updates (alle Clients)
+        
         hitCount = 0;
         laserIndices.Clear();
 
@@ -322,6 +324,7 @@ public class LaserBean : NetworkBehaviour
         if (HasStateAuthority)
         {
             CalculateLaserPath();
+            
         }
     }
 
