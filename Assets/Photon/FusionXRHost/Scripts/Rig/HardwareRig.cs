@@ -42,6 +42,12 @@ namespace Fusion.XR.Host.Rig
         //Button constants
         public const byte INTERACTIONBUTTON = 1 << 0;
         public const byte SNEAKTESTBUTTON = 1 << 1;
+
+        public KeyCode keyPressed1; 
+        public KeyCode keyPressed2;
+        public KeyCode keyPressed3;
+        public KeyCode keyPressed4;
+        
     }
 
     /**
@@ -82,10 +88,13 @@ namespace Fusion.XR.Host.Rig
         [Header("Custom Fields")]
         [SerializeField] private InputActionReference interactionAction;
         [SerializeField] private InputActionReference sneakTestAction;
+        public bool enableKeyboardInput = true;
         private VRPlayer vrPlayer; //Will be searched dynamically, change if performance is suffering
         private bool hasSearchedForVRPlayer = false;
         private bool _interactionButton = false;
         private bool _sneakTestButton = false;
+
+        private List<KeyCode> keyPressBuffer = new List<KeyCode>();
 
         public async Task<NetworkRunner> FindRunner()
         {
@@ -184,6 +193,29 @@ namespace Fusion.XR.Host.Rig
             // Original button tracking
             _interactionButton = _interactionButton | (interactionAction?.action.WasPressedThisFrame() ?? false);
             _sneakTestButton = _sneakTestButton | (sneakTestAction?.action.WasPressedThisFrame() ?? false);
+
+            if(enableKeyboardInput)
+            {
+                UpdateKeyboardInput();
+            }
+        }
+
+        //Only tracks one keyboard key per frame.
+        private void UpdateKeyboardInput()
+        {
+            foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
+            {
+                if(Input.GetKeyDown(key))
+                {
+                    keyPressBuffer.Add(key);
+                    Debug.Log($"Key pressed: {key}");
+
+                    if(keyPressBuffer.Count > 4)
+                    {
+                        keyPressBuffer.RemoveAt(0);
+                    }
+                }
+            }
         }
 
         private void OnDestroy()
@@ -318,6 +350,19 @@ namespace Fusion.XR.Host.Rig
                 }
             }
             _sneakTestButton = false;
+
+            if(enableKeyboardInput)
+            {
+                rigInput.keyPressed1 = keyPressBuffer.Count > 0 ? keyPressBuffer[0] : KeyCode.None;
+                rigInput.keyPressed2 = keyPressBuffer.Count > 1 ? keyPressBuffer[1] : KeyCode.None;
+                rigInput.keyPressed3 = keyPressBuffer.Count > 2 ? keyPressBuffer[2] : KeyCode.None;
+                rigInput.keyPressed4 = keyPressBuffer.Count > 3 ? keyPressBuffer[3] : KeyCode.None;
+
+                keyPressBuffer.Clear();
+
+                if(rigInput.keyPressed1 != KeyCode.None) Debug.Log($"Sending keyboard input over network: {rigInput.keyPressed1}, {rigInput.keyPressed2}, {rigInput.keyPressed3}, {rigInput.keyPressed4}");
+                
+            }
         }
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 

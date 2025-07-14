@@ -141,6 +141,28 @@ public class VRPlayer : NetworkBehaviour
                 HandleSneakingInput(rigInput);
             }
 
+            KeyCode pressedKey1 = rigInput.keyPressed1;
+            KeyCode pressedKey2 = rigInput.keyPressed2;
+            KeyCode pressedKey3 = rigInput.keyPressed3;
+            KeyCode pressedKey4 = rigInput.keyPressed4;
+
+            if(pressedKey1 != KeyCode.None)
+            {
+                Debug.Log($"Key {pressedKey1} arrived at VRPlayer script");
+            }
+            if(pressedKey2 != KeyCode.None)
+            {
+                Debug.Log($"Key {pressedKey2} arrived at VRPlayer script");
+            }
+            if(pressedKey3 != KeyCode.None)
+            {
+                Debug.Log($"Key {pressedKey3} arrived at VRPlayer script");
+            }
+            if(pressedKey4 != KeyCode.None)
+            {
+                Debug.Log($"Key {pressedKey4} arrived at VRPlayer script");
+            }
+
         }
         
 
