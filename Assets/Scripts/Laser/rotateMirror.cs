@@ -5,21 +5,13 @@ using Fusion;
 public class RotateMirror : NetworkBehaviour
 {
     [Header("Mirror Settings")]
-    public Transform mirrorChild; // das Kindobjekt mit dem Spiegel
+    public Transform controlRotation; 
     private float rotate = 5.0f;
 
-    [Networked] public Quaternion NetworkedParentRotation { get; set; }
-    [Networked] public Quaternion NetworkedChildRotation { get; set; }
+    [Networked] public Quaternion NetworkedRotation { get; set; }
 
-    // Für Input-Handling
-    private bool leftPressed = false;
-    private bool rightPressed = false;
-    private bool upPressed = false;
-    private bool downPressed = false;
-
-    // Für Laser-Updates
-    private Quaternion lastParentRot;
-    private Quaternion lastChildRot;
+    // Fï¿½r Laser-Updates
+    private Quaternion lastRot;
 
     public override void Spawned()
     {
@@ -27,12 +19,10 @@ public class RotateMirror : NetworkBehaviour
         if (HasStateAuthority)
         {
             Debug.Log("HierimIf");
-            NetworkedParentRotation = transform.rotation;
-            NetworkedChildRotation = mirrorChild.rotation;
+            NetworkedRotation = controlRotation.rotation;
         }
 
-        lastParentRot = transform.rotation;
-        lastChildRot = mirrorChild.rotation;
+        lastRot = controlRotation.rotation;
     }
 
     public override void FixedUpdateNetwork()
@@ -42,78 +32,60 @@ public class RotateMirror : NetworkBehaviour
         // Input-Handling
         HandleInput();
 
-        // Prüfen auf Änderungen und Laser-Update triggern
-        if (transform.rotation != lastParentRot || mirrorChild.rotation != lastChildRot)
+        // Prï¿½fen auf ï¿½nderungen und Laser-Update triggern
+        if (controlRotation.rotation != lastRot)
         {
             TriggerLaserUpdate();
-            lastParentRot = transform.rotation;
-            lastChildRot = mirrorChild.rotation;
+            lastRot = controlRotation.rotation;
         }
     }
 
     private void HandleInput()
     {
-        // Links/Rechts – drehen des Root-Objekts um Y
-        if (Input.GetKeyDown(KeyCode.LeftArrow) && !leftPressed)
+        // Links/Rechts ï¿½ drehen des Root-Objekts um Y
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            transform.Rotate(Vector3.up * -rotate, Space.World);
-            NetworkedParentRotation = transform.rotation;
-            leftPressed = true;
-        }
-        if (Input.GetKeyUp(KeyCode.LeftArrow))
-        {
-            leftPressed = false;
+            Rpc_RotateMirror(Vector3.up, -rotate);
         }
 
-        if (Input.GetKeyDown(KeyCode.RightArrow) && !rightPressed)
+        if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            transform.Rotate(Vector3.up * rotate, Space.World);
-            NetworkedParentRotation = transform.rotation;
-            rightPressed = true;
-        }
-        if (Input.GetKeyUp(KeyCode.RightArrow))
-        {
-            rightPressed = false;
+            Rpc_RotateMirror(Vector3.up, rotate);
+            //controlRotation.Rotate(Vector3.up * rotate, Space.World);
+            //NetworkedRotation = controlRotation.rotation;
         }
 
-        // Hoch/Runter – kippen des Kindobjekts um lokale X
-        if (Input.GetKeyDown(KeyCode.UpArrow) && !upPressed)
+        // Hoch/Runter ï¿½ kippen des Kindobjekts um lokale X
+        if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            mirrorChild.Rotate(Vector3.forward * -rotate, Space.Self);
-            NetworkedChildRotation = mirrorChild.rotation;
-            upPressed = true;
-        }
-        if (Input.GetKeyUp(KeyCode.UpArrow))
-        {
-            upPressed = false;
+            Rpc_RotateMirror(new Vector3(0,1,0), -rotate);
+            //transform.Rotate(Vector3.forward * -rotate, Space.World);
+            //NetworkedRotation = controlRotation.rotation;
         }
 
-        if (Input.GetKeyDown(KeyCode.DownArrow) && !downPressed)
+        if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            mirrorChild.Rotate(Vector3.forward * rotate, Space.Self);
-            NetworkedChildRotation = mirrorChild.rotation;
-            downPressed = true;
-        }
-        if (Input.GetKeyUp(KeyCode.DownArrow))
-        {
-            downPressed = false;
+            Rpc_RotateMirror(new Vector3(0,1,0), rotate);
+            //transform.Rotate(Vector3.forward * rotate, Space.World);
+            //NetworkedRotation = controlRotation.rotation;
         }
     }
 
+    /*
     public override void Render()
     {
         // Alle Clients synchronisieren ihre Rotation mit den networked values
-        if (transform.rotation != NetworkedParentRotation)
+        if (controlRotation.rotation != NetworkedParentRotation)
         {
-            transform.rotation = Quaternion.Lerp(transform.rotation, NetworkedParentRotation, Time.deltaTime * 10f);
+            controlRotation.rotation = NetworkedParentRotation;
         }
 
-        if (mirrorChild.rotation != NetworkedChildRotation)
+        if (controlRotation.rotation != NetworkedChildRotation)
         {
-            mirrorChild.rotation = Quaternion.Lerp(mirrorChild.rotation, NetworkedChildRotation, Time.deltaTime * 10f);
+            controlRotation.rotation = NetworkedChildRotation;
         }
     }
-
+    */
     private void TriggerLaserUpdate()
     {
         // Finde alle LaserBean Objekte und aktualisiere sie
@@ -143,20 +115,13 @@ public class RotateMirror : NetworkBehaviour
         }
     }
 
-    // RPC für externe Trigger (falls benötigt)
+    // RPC fï¿½r externe Trigger (falls benï¿½tigt)
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RpcRotateMirror(Vector3 axis, float angle, bool isParent)
+    public void Rpc_RotateMirror(Vector3 axis, float angle)
     {
-        if (isParent)
-        {
-            transform.Rotate(axis * angle, Space.World);
-            NetworkedParentRotation = transform.rotation;
-        }
-        else
-        {
-            mirrorChild.Rotate(axis * angle, Space.Self);
-            NetworkedChildRotation = mirrorChild.rotation;
-        }
+        controlRotation.Rotate(axis * angle, Space.Self);
+        
+        NetworkedRotation = controlRotation.rotation;
 
         TriggerLaserUpdate();
     }

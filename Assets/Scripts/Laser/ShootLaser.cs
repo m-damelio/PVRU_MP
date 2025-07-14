@@ -4,7 +4,7 @@ using Fusion;
 public class ShootLaser : NetworkBehaviour
 {
     public Material material;
-    private GameObject laserObj;
+    public GameObject laserObj;
     private LaserBean beam;
 
     [Networked] public Vector3 NetworkedPosition { get; set; }
@@ -16,18 +16,15 @@ public class ShootLaser : NetworkBehaviour
     public override void Spawned()
     {
         Debug.Log($"ShootLaser spawned on: {gameObject.name}");
-        // Laser-Objekt für alle Clients erstellen
+        // Laser-Objekt fï¿½r alle Clients erstellen
         CreateLaserObject();
     }
 
     private void CreateLaserObject()
     {
-        if (laserObj == null)
+        if (laserObj != null)
         {
-            laserObj = new GameObject("Laser Beam");
-            laserObj.transform.SetParent(transform, false);
-            beam = laserObj.AddComponent<LaserBean>();
-            beam.laserMaterial = material;
+            laserObj.GetComponent<LaserBean>().laserMaterial = material;
 
             Debug.Log("Laser object created successfully");
         }
@@ -41,7 +38,7 @@ public class ShootLaser : NetworkBehaviour
         Vector3 currentPosition = transform.position;
         Vector3 currentDirection = transform.right;
 
-        // Nur bei Änderungen aktualisieren
+        // Nur bei ï¿½nderungen aktualisieren
         if (currentPosition != lastPosition || currentDirection != lastDirection)
         {
             NetworkedPosition = currentPosition;
@@ -58,18 +55,10 @@ public class ShootLaser : NetworkBehaviour
         {
             CreateLaserObject();
         }
-        // Für alle Clients (auch Non-Authority) den Laser aktualisieren
+        // Fï¿½r alle Clients (auch Non-Authority) den Laser aktualisieren
         if (beam != null && (NetworkedPosition != Vector3.zero || NetworkedDirection != Vector3.zero))
         {
             beam.SetupLaser(NetworkedPosition, NetworkedDirection);
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (laserObj != null)
-        {
-            DestroyImmediate(laserObj);
         }
     }
 }
