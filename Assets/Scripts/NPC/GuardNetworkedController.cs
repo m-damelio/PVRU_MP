@@ -18,7 +18,7 @@ public class GuardNetworkedController : NetworkBehaviour
 
     [Header("Fusion synced")]
     [Networked] public bool IsAlert {get;set;}
-    [Networked] public bool AlarmRunning {get;set;}
+    [Networked] public bool IsAlarmRunning {get;set;}
 
     private Animator _animator; 
     private NavMeshAgent _agent;
@@ -26,6 +26,9 @@ public class GuardNetworkedController : NetworkBehaviour
     private int _patrolIndex = 0;
     private enum State {Patrol, Alert, RunToAlarm, Rest, Return}
     private State _state = State.Patrol;
+    private State _previousState = State.Patrol;
+    private bool _alertCoroutineStarted = false;
+    private bool _restCoroutineStarted = false;
     [HideInInspector] public bool IsSpawnedAndValid => Object != null && Object.IsValid;
 
     public override void Spawned()
@@ -38,9 +41,6 @@ public class GuardNetworkedController : NetworkBehaviour
         {
             _animatorSync.NetworkTrigger("IsSpawned");
         }
-        
-        ApplyAnimParams();
-        
     }
 
     public override void FixedUpdateNetwork()
@@ -55,29 +55,70 @@ public class GuardNetworkedController : NetworkBehaviour
                 break;
 
             case State.Alert:
-                //For now a few seconds delay before returning to patroling
-                StartCoroutine(DelayThen(_ => _state = State.Patrol, 2f));
-                _state = State.Patrol; //makes sure no re-enter happens next frame
+                if(!_alertCoroutineStarted)
+                {
+                    _alertCoroutineStarted = true;
+
+                    //Stop Movement
+                    _agent.ResetPath();
+                    _agent.velocity = Vector3.zero;
+                    
+                    _animatorSync.SetNetworkBool("IsAlert", true);
+
+                    //For now a few seconds delay before returning to patroling
+                    StartCoroutine(DelayThen(_ => {
+                        _alertCoroutineStarted = false; 
+                        _animatorSync.SetNetworkBool("IsAlert", false);
+
+                        if(_previousState == State.RunToAlarm)
+                        {
+                            _state = State.RunToAlarm;
+                            _animatorSync.SetNetworkBool("IsAlarmRunning", true);
+                        }
+                        else
+                        {
+                            _state = State.Patrol;
+                        }
+                        }, 5f));
+                }
                 break;
             
             case State.RunToAlarm:
-                _animatorSync.NetworkTrigger("AlarmTriggered");
+                if(!IsAlarmRunning)
+                {
+                    _animatorSync.SetNetworkBool("IsAlarmRunning", true);
+                    IsAlarmRunning = true;
+                }
                 _agent.destination = alarmSpot.position;
-                _state = State.Rest;
+                _agent.speed = 5f;
+
+                //Check if guard reached alarm spot 
+                if(Vector3.Distance(transform.position, alarmSpot.position) < 0.5f)
+                {
+                    _state = State.Rest;
+                }
                 break;
             
             case State.Rest:
-                if(Vector3.Distance(transform.position, alarmSpot.position) < 0.5f)
+                if(!_restCoroutineStarted)
                 {
+                    _restCoroutineStarted = true;
                     _animatorSync.NetworkTrigger("AtAlarmLocation");
+
+                    _agent.ResetPath();
+                    _agent.velocity = Vector3.zero;
+
                     StartCoroutine(DelayThen(_ => 
                     {
                         _animatorSync.NetworkTrigger("AlarmFixed");
                         if(alarmBooth != null)
                         {
                             alarmBooth.RPC_GuardResetAlarm();
-                        }
+                         }
                         _state = State.Return;
+                        _restCoroutineStarted = false;
+                        IsAlarmRunning = false;
+                        _animatorSync.SetNetworkBool("IsAlarmRunning", false);
                     }, restDuration));
                 }
                 break;
@@ -91,11 +132,11 @@ public class GuardNetworkedController : NetworkBehaviour
 
         //Sync booleans so clients update their animators
         IsAlert = (_state == State.Alert);
-        ApplyAnimParams();
     }
 
     private void RunPatrol()
     {
+        _agent.speed = 1f;
         _agent.destination = patrolPoints[_patrolIndex].position;
         if(Vector3.Distance(transform.position, _agent.destination) < 0.2f)
         {
@@ -123,19 +164,22 @@ public class GuardNetworkedController : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_NotifyPlayerSpotted()
     {
-        if(_state == State.Patrol) _state = State.Alert;
+        //Fixing alarm state aka rest state will not be interrupted by vision so players can steal
+        if(_state != State.Alert && _state != State.Rest) 
+        {
+            _previousState = _state; //remember what guard was doing (running to alarm/patrolling)
+            _state = State.Alert;
+        }
     }
 
     //Called from alarm 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_TriggerAlarm()
     {
-        if(_state != State.RunToAlarm && _state != State.Rest) _state = State.RunToAlarm;
-    }
-
-    private void ApplyAnimParams()
-    {
-        _animatorSync.SetNetworkBool("IsAlert", IsAlert);
+        if(_state != State.RunToAlarm && _state != State.Rest) 
+        {
+            _state = State.RunToAlarm;
+        }
     }
 
     //Helper to trigger an action after a delay

@@ -179,7 +179,7 @@ public class StealableKeyCard : NetworkedKeyCard
     private bool CanPlayerSteal(PlayerRef player)
     {
         // Find the VR player
-        var playerObjects = FindObjectsOfType<VRPlayer>();
+        var playerObjects = FindObjectsByType<VRPlayer>(FindObjectsSortMode.None);
         VRPlayer vrPlayer = null;
         
         foreach(var p in playerObjects)
@@ -193,7 +193,7 @@ public class StealableKeyCard : NetworkedKeyCard
 
         if(vrPlayer == null) return false;
 
-        if(!attachedGuard.AlarmRunning) return false;
+        if(!attachedGuard.IsAlarmRunning) return false;
 
         // Check distance
         float distance = Vector3.Distance(vrPlayer.transform.position, transform.position);

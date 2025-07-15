@@ -5,31 +5,56 @@ using System.Collections;
 public class GuardVisionDetection : MonoBehaviour
 {
     [Header("Vision Settings")]
-    [SerializeField] private float visionRange = 12f;
-    [SerializeField] private float visionAngle = 60f;
+    [SerializeField] private float visionRange = 6f;
+    [SerializeField] private float visionAngle = 45f;
     [SerializeField] private LayerMask playerLayer = 1 << 8;
     [SerializeField] private LayerMask obstacleLayer = 1 << 0;
-    [SerializeField] private float detectionTime = 5f;
+    [SerializeField] private float timeToAlert = 2.5f;
     [SerializeField] private float scanFrequency = 0.1f;
+    [SerializeField] private Transform eyeHeight;
 
     [Header("Raycast Settings")]
     [SerializeField] private int raysPerFrame = 5; //Spreads raycast over multiple frames
     [SerializeField] private float playerHeightOffset = 1.7f; //VR Player head height
     [SerializeField] private float[] additionalHeights = {0.5f, 1.0f}; // VR Player head height if crouching 
 
+    [Header("Vision Visualization Settings")]
+    [SerializeField] private bool useRadarSweep = true;
+    [SerializeField] private Color normalVisionColor = new Color(0.8f, 0.8f, 0.2f, 0.3f); //Yellow
+    [SerializeField] private Color warningVisionColor = new Color(1f, 0.5f, 0f, 0.6f); //orange
+    [SerializeField] private Color alertVisionColor = new Color(0.8f, 0.2f, 0.2f, 0.5f); //Red
+    [SerializeField] private LineRenderer radarSweepLine;
+    [SerializeField] private float sweepSpeed = 30f; //degrees per second
+    [SerializeField] private int sweepResolution = 20; //points in sweep line
+    [SerializeField] private float groundLevel = 0f; //ground level
+    private Gradient gradientNormalColor;
+    private Gradient gradientWarningColor;
+    private Gradient gradientAlertColor;
+
+
     private GuardNetworkedController _guardController;
-    private Dictionary<GameObject, float> _detectedPlayers = new Dictionary<GameObject, float>();
+    private Dictionary<GameObject, float> _playersInVision = new Dictionary<GameObject, float>();
     private Dictionary<GameObject, Vector3> _lastKnownPositions = new Dictionary<GameObject, Vector3>();
 
     private int _currentRayIndex = 0;
     private float _lastScanTime = 0f;
     private Collider[] _playerColliders;
 
+    private float _currentSweepAngle = 0f;
+    private bool _sweepingRight = true;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _guardController = GetComponent<GuardNetworkedController>();
         _playerColliders = new Collider[10];
+
+        if(radarSweepLine == null)
+        {
+            useRadarSweep = false;
+        }
+
+        ConfigureRadarSweep();
     }
 
     // Update is called once per frame
@@ -44,7 +69,8 @@ public class GuardVisionDetection : MonoBehaviour
             _lastScanTime = Time.time;
         }
 
-        UpdateDetectionTimers();
+        UpdateDetectionAndTriggerAlert();
+        UpdateRadarSweep();
     }
 
     private void ScanForPlayers()
@@ -108,9 +134,9 @@ public class GuardVisionDetection : MonoBehaviour
 
         if(playerVisible)
         {
-            if(!_detectedPlayers.ContainsKey(player))
+            if(!_playersInVision.ContainsKey(player))
             {
-                _detectedPlayers[player] = 0f;
+                _playersInVision[player] = 0f;
             }
             _lastKnownPositions[player] = playerPosition;
         }
@@ -123,17 +149,17 @@ public class GuardVisionDetection : MonoBehaviour
 
     private bool HasLineOfSight(Vector3 targetPosition)
     {
-        Vector3 rayOrigin = transform.position + Vector3.up * 1.6f; //ca. guard eye height 
+        Vector3 rayOrigin = transform.position + Vector3.up * eyeHeight.position.y;
         Vector3 rayDirection = (targetPosition - rayOrigin).normalized;
         float distance = Vector3.Distance(rayOrigin, targetPosition);
 
         return !Physics.SphereCast(rayOrigin, 0.1f, rayDirection, out RaycastHit hit, distance, obstacleLayer);
     }
 
-    private void UpdateDetectionTimers()
+    private void UpdateDetectionAndTriggerAlert()
     {
         var playersToAlert = new List<GameObject>();
-        var playersToUpdate = new List<GameObject>(_detectedPlayers.Keys); //Copy to avoid modification when iterating through dictionary
+        var playersToUpdate = new List<GameObject>(_playersInVision.Keys); //Copy to avoid modification when iterating through dictionary
 
         foreach (var player in playersToUpdate)
         {   
@@ -143,11 +169,11 @@ public class GuardVisionDetection : MonoBehaviour
                 continue;
             }
 
-            float timeDetected = _detectedPlayers[player];
-            _detectedPlayers[player] = timeDetected + Time.deltaTime;
+            float timeDetected = _playersInVision[player];
+            _playersInVision[player] = timeDetected + Time.deltaTime;
             
             //Trigger alert when detection time is reached
-            if(timeDetected >= detectionTime)
+            if(timeDetected >= timeToAlert)
             {
                 _guardController.RPC_NotifyPlayerSpotted();
                 playersToAlert.Add(player);
@@ -165,14 +191,14 @@ public class GuardVisionDetection : MonoBehaviour
 
     private void RemovePlayerFromDetection(GameObject player)
     {
-        _detectedPlayers.Remove(player);
+        _playersInVision.Remove(player);
         _lastKnownPositions.Remove(player);
     }
 
     private void CleanupDetectedPlayers()
     {
         var playersToRemove = new List<GameObject>();
-        foreach (var player in _detectedPlayers.Keys)
+        foreach (var player in _playersInVision.Keys)
         {
             if(player == null)
             {
@@ -192,6 +218,152 @@ public class GuardVisionDetection : MonoBehaviour
         //TODO add ui effect for players when they trigger a guard
     }
 
+    private void ConfigureRadarSweep()
+    {
+        if(radarSweepLine == null) return;
+
+        //Set colors as in particle system
+        gradientNormalColor = new Gradient();
+        gradientNormalColor.SetKeys(
+            new GradientColorKey[] { new GradientColorKey(normalVisionColor, 0f), new GradientColorKey(normalVisionColor, 1f) },
+            new GradientAlphaKey[] { new GradientAlphaKey(normalVisionColor.a, 0f), new GradientAlphaKey(normalVisionColor.a * 0.5f, 1f) }
+        );
+
+        gradientAlertColor = new Gradient();
+        gradientAlertColor.SetKeys(
+            new GradientColorKey[] { new GradientColorKey(alertVisionColor, 0f), new GradientColorKey(alertVisionColor, 1f) },
+            new GradientAlphaKey[] { new GradientAlphaKey(alertVisionColor.a, 0f), new GradientAlphaKey(alertVisionColor.a * 0.5f, 1f) }
+        );
+
+        gradientWarningColor = new Gradient();
+        gradientWarningColor.SetKeys(
+            new GradientColorKey[] { new GradientColorKey(warningVisionColor, 0f), new GradientColorKey(warningVisionColor, 1f) },
+            new GradientAlphaKey[] { new GradientAlphaKey(warningVisionColor.a, 0f), new GradientAlphaKey(warningVisionColor.a * 0.5f, 1f) }
+        );
+
+        radarSweepLine.colorGradient = gradientNormalColor;
+        radarSweepLine.startWidth = 0.05f;
+        radarSweepLine.endWidth = 0.2f;
+        radarSweepLine.positionCount = sweepResolution;
+        radarSweepLine.useWorldSpace = false;
+
+        //Init sweep angle and visibility
+        _currentSweepAngle = -visionAngle * 0.5f;
+        radarSweepLine.enabled = useRadarSweep;
+    }
+
+    private void UpdateRadarSweep()
+    {
+        if(radarSweepLine == null || !useRadarSweep) return;
+
+        float angleStep = sweepSpeed * Time.deltaTime;
+
+        if(_sweepingRight)
+        {
+            _currentSweepAngle += angleStep;
+            if(_currentSweepAngle >= visionAngle * 0.5f)
+            {
+                _currentSweepAngle = visionAngle *0.5f;
+                _sweepingRight = false;
+            }
+        }
+        else
+        {
+            _currentSweepAngle -= angleStep;
+            if(_currentSweepAngle <= -visionAngle * 0.5f)
+            {
+                _currentSweepAngle = -visionAngle * 0.5f;
+                _sweepingRight = true;
+            }
+        }
+
+        Gradient currentGradient = gradientNormalColor;
+        if(_guardController.IsAlert)
+        {
+            currentGradient = gradientAlertColor;
+        }
+        else if(_playersInVision.Count > 0)
+        {
+            currentGradient = gradientWarningColor;
+        }
+        radarSweepLine.colorGradient = currentGradient;
+
+        GenerateSweepLine();
+    }
+
+    private void GenerateSweepLine()
+    {
+        Vector3[] points = new Vector3[sweepResolution];
+        Vector3 eyePosition = Vector3.zero;
+        Vector3 wordlEyePosition = transform.position + Vector3.up * eyeHeight.position.y;
+
+        Vector3 sweepDirection = Quaternion.Euler(0, _currentSweepAngle, 0) * Vector3.forward;
+        
+        bool hitObstacle = false;
+        int actualPointCount = sweepResolution;
+        float groundOffset = groundLevel - eyeHeight.position.y;
+
+        //check if obstacle along sweep line
+        Vector3 fullSweepTarget = transform.position + sweepDirection * visionRange + Vector3.up * groundOffset;
+        Vector3 sweepRayDirection = (fullSweepTarget-wordlEyePosition).normalized;
+        float maxSweepDistance = Vector3.Distance(wordlEyePosition, fullSweepTarget);
+
+        float obstacleDistance = visionRange;
+        if(Physics.SphereCast(wordlEyePosition, 0.1f, sweepRayDirection, out RaycastHit hit, maxSweepDistance, obstacleLayer))
+        {
+            hitObstacle = true;
+            obstacleDistance = hit.distance;
+        }
+
+        for(int i = 0; i < sweepResolution; i++)
+        {
+            float t = (float) i / (sweepResolution -1);
+
+            //Distance along sweep
+            float distance = t * visionRange;
+
+            if(hitObstacle && distance > obstacleDistance)
+            {
+                actualPointCount = i;
+                break;
+            }
+
+            //Height interpolation from eye level to ground
+            float height = Mathf.Lerp(0f, groundOffset, t);
+
+            Vector3 position = sweepDirection * distance + Vector3.up * height;
+
+            //Adds noise except at the end 
+            if(!hitObstacle || distance < obstacleDistance * 0.9f)
+            {
+                position += Random.insideUnitSphere * 0.1f *t;
+            }
+
+            points[i] = position;
+
+        }
+
+        //Update line renderer with actual hit count
+        radarSweepLine.positionCount = actualPointCount;
+
+        if(actualPointCount > 0)
+        {
+            Vector3[] finalPoints = new Vector3[actualPointCount];
+            for(int i = 0; i < actualPointCount; i++)
+            {
+                finalPoints[i] = points[i];
+            }
+            radarSweepLine.SetPositions(finalPoints);
+        }
+        
+
+    }
+
+    public void ToggleRadarSweep(bool enabled)
+    {
+        useRadarSweep = enabled;
+    }
+
     private void OnDrawGizmos()
     {
         if(!Application.isPlaying) return;
@@ -206,7 +378,7 @@ public class GuardVisionDetection : MonoBehaviour
 
         //Draw detection rays
         Gizmos.color = Color.red;
-        foreach (var kvp in _detectedPlayers)
+        foreach (var kvp in _playersInVision)
         {
             if(kvp.Key != null && _lastKnownPositions.ContainsKey(kvp.Key))
             {

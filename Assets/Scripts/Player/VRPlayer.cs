@@ -40,7 +40,7 @@ public class VRPlayer : NetworkBehaviour
     // Quest 3 specific
     [Header("Quest 3 Hand Tracking")]
     [SerializeField] private XRHandSubsystem handSubsystem;
-    [SerializeField] private bool useHandTracking = true;
+    //[SerializeField] private bool useHandTracking = true;
 
     [Header("For Testing Purposes")]
     private DoorNetworkedController doorToOpen;
@@ -100,7 +100,7 @@ public class VRPlayer : NetworkBehaviour
         if (!hasSearchedForDoor && Object.HasInputAuthority)
         {
             hasSearchedForDoor = true;
-            doorToOpen = FindObjectOfType<DoorNetworkedController>();
+            doorToOpen = FindObjectsByType<DoorNetworkedController>(FindObjectsSortMode.None)[0];
             
             if (doorToOpen != null)
             {
@@ -146,21 +146,22 @@ public class VRPlayer : NetworkBehaviour
             KeyCode pressedKey3 = rigInput.keyPressed3;
             KeyCode pressedKey4 = rigInput.keyPressed4;
 
+            //TODO: Put hardware interactions here, i.e. what they should/call
             if(pressedKey1 != KeyCode.None)
             {
-                Debug.Log($"Key {pressedKey1} arrived at VRPlayer script");
+                //Debug.Log($"Key {pressedKey1} arrived at VRPlayer script");
             }
             if(pressedKey2 != KeyCode.None)
             {
-                Debug.Log($"Key {pressedKey2} arrived at VRPlayer script");
+                //Debug.Log($"Key {pressedKey2} arrived at VRPlayer script");
             }
             if(pressedKey3 != KeyCode.None)
             {
-                Debug.Log($"Key {pressedKey3} arrived at VRPlayer script");
+                //Debug.Log($"Key {pressedKey3} arrived at VRPlayer script");
             }
             if(pressedKey4 != KeyCode.None)
             {
-                Debug.Log($"Key {pressedKey4} arrived at VRPlayer script");
+                //Debug.Log($"Key {pressedKey4} arrived at VRPlayer script");
             }
 
         }

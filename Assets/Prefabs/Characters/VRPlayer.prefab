@@ -550,14 +550,13 @@ MonoBehaviour:
   pickupRange: 2
   keyCardLayer:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 1024
   interactionLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 7169
   _NetworkedPlayerType: 0
   _NetworkedPlayerState: 0
   _NetworkedSneakValue: 0
-  useHandTracking: 1
 --- !u!143 &1475275693075936696
 CharacterController:
   m_ObjectHideFlags: 0

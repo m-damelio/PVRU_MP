@@ -61,15 +61,8 @@ public class DoorNetworkedController : NetworkBehaviour
         var state = _animator.GetCurrentAnimatorStateInfo(0);
         Debug.Log($"Door: Current animation state: {state.fullPathHash}, Length: {state.length}");
         
-        float speedMultiplier = _animator.GetFloat("Speed");
-        if (speedMultiplier == 0)
-        {
-            speedMultiplier = 1f; // Fallback to prevent division by zero
-            Debug.LogWarning("Door: Speed was 0, using fallback value of 1");
-        }
-        
-        float duration = state.length / speedMultiplier;
-        Debug.Log($"Door: Animation duration: {duration} seconds (SpeedMultiplier: {speedMultiplier})");
+        float duration = state.length / 1f;
+        Debug.Log($"Door: Animation duration: {duration} seconds");
 
         yield return new WaitForSeconds(duration);
 
@@ -83,8 +76,7 @@ public class DoorNetworkedController : NetworkBehaviour
         {
             Debug.LogWarning("Door: No collider to disable");
         }
-    }
-    
+    }    
 }
 
 
