@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2994292159373780137}
   - component: {fileID: 400398750479129598}
   - component: {fileID: 972185374470085400}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 5316591817830570292}
   - component: {fileID: 5267942086646193083}
   - component: {fileID: 8513553143753976082}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: SneakZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -266,9 +266,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4372093788385109707, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
+      propertyPath: m_Layer
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
       propertyPath: m_Name
       value: PatrollingGuard
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
       propertyPath: m_Controller
@@ -303,6 +311,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 512832532206865664}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8925586211561525598}
     - targetCorrespondingSourceObject: {fileID: -4372093788385109707, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3165249347837282096}
@@ -344,7 +355,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 3659874036
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 786433
   NestedObjects:
   - {fileID: 2568265624331797996}
   NetworkedBehaviours:
@@ -386,10 +397,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8872a05ae259e4859b4c29dd35f8bfc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncPosition: 1
-  syncRotation: 1
-  positionThreshold: 0.1
-  rotationThreshold: 5
   boolParameters:
   - IsAlert
   intParameters: []
@@ -427,6 +434,33 @@ MonoBehaviour:
   SyncParent: 0
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
+--- !u!114 &8925586211561525598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2649851729155381337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 421caa50ef43042e6bab40b46ab1fb04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visionRange: 12
+  visionAngle: 90
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  detectionTime: 1.5
+  scanFrequency: 0.1
+  raysPerFrame: 5
+  playerHeightOffset: 1.7
+  additionalHeights:
+  - 0.5
+  - 1
 --- !u!4 &3426670556281471715 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a79862b4ca78a4b09b3ebcb8f9d6eaf1, type: 3}

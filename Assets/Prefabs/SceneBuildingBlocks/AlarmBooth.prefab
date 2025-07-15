@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5181281165130976852}
   - component: {fileID: 6008551356884859124}
   - component: {fileID: 2491231327301575897}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: North
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -119,7 +119,7 @@ GameObject:
   - component: {fileID: 6489322057565306972}
   - component: {fileID: 4765512613171863680}
   - component: {fileID: 605035519570198643}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: AlarmBooth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -209,7 +209,7 @@ GameObject:
   - component: {fileID: 5993844885070262637}
   - component: {fileID: 6449685916651678139}
   - component: {fileID: 8539852321727683860}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: East
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -316,7 +316,7 @@ GameObject:
   - component: {fileID: 5098227315110458434}
   - component: {fileID: 7336518879341121699}
   - component: {fileID: 1856833418783359862}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: HackThis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -521,7 +521,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7080047909455274677}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: OuterWalls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -743,7 +743,7 @@ GameObject:
   - component: {fileID: 8674036174030582170}
   - component: {fileID: 1085600654714059011}
   - component: {fileID: 5394438391801281026}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: West
   m_TagString: Untagged
   m_Icon: {fileID: 0}

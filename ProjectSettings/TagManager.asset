@@ -38,10 +38,10 @@ TagManager:
   - NeonLayer
   - Overlay UI
   - KeyCardLayer
-  - Interactable
-  - 
-  - 
-  - 
+  - Obstacle
+  - NotObstacle
+  - NPC
+  - Player
   - 
   - 
   - 

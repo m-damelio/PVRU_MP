@@ -26,6 +26,7 @@ public class GuardNetworkedController : NetworkBehaviour
     private int _patrolIndex = 0;
     private enum State {Patrol, Alert, RunToAlarm, Rest, Return}
     private State _state = State.Patrol;
+    [HideInInspector] public bool IsSpawnedAndValid => Object != null && Object.IsValid;
 
     public override void Spawned()
     {
@@ -118,8 +119,8 @@ public class GuardNetworkedController : NetworkBehaviour
         return idx;
     }
 
-    //Called from vision-cone logic on any client to be implemented 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    //Called from vision-cone logic on any client
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_NotifyPlayerSpotted()
     {
         if(_state == State.Patrol) _state = State.Alert;

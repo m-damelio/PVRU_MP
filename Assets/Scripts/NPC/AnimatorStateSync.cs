@@ -5,12 +5,6 @@ using System.Collections.Generic;
 [RequireComponent(typeof(Animator))]
 public class AnimatorStateSync : NetworkBehaviour
 {
-    [Header("Sync Settings")]
-    [SerializeField] private bool syncPosition = true;
-    [SerializeField] private bool syncRotation = true;
-    [SerializeField] private float positionThreshold = 0.1f;
-    [SerializeField] private float rotationThreshold = 5f;
-
     [Header("Parameter Sync")]
     [SerializeField] private List<string> boolParameters = new List<string>();
     [SerializeField] private List<string> intParameters = new List<string>();
@@ -25,12 +19,12 @@ public class AnimatorStateSync : NetworkBehaviour
     [Networked] public float StateTime { get; set; }
     [Networked] public int LayerIndex { get; set; }
     
-    // Networked parameters - adjust size based on your needs
-    [Networked, Capacity(10)] public NetworkDictionary<int, bool> BoolParams { get; }
-    [Networked, Capacity(10)] public NetworkDictionary<int, int> IntParams { get; }
-    [Networked, Capacity(10)] public NetworkDictionary<int, float> FloatParams { get; }
+    // Networked parameters
+    [Networked, Capacity(5)] public NetworkDictionary<int, bool> BoolParams { get; }
+    [Networked, Capacity(5)] public NetworkDictionary<int, int> IntParams { get; }
+    [Networked, Capacity(5)] public NetworkDictionary<int, float> FloatParams { get; }
     
-    // For triggers - we'll use a different approach
+    // For triggers - use a different approach
     [Networked] public int TriggerHash { get; set; }
     [Networked] public byte TriggerFrame { get; set; }
     
