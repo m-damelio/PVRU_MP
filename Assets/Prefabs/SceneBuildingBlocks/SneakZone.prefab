@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 5f0aea8df8f86472998282c0b3d59875, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 5316591817830570292}
   - component: {fileID: 5267942086646193083}
   - component: {fileID: 8513553143753976082}
+  - component: {fileID: 2270067598631943934}
   m_Layer: 12
   m_Name: SneakZone
   m_TagString: Untagged
@@ -154,6 +155,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d5cba96af2eb6241b6100995276ba75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allowTeleport: 6
+  disallowTeleport: 12
+  _IsSneakZoneActive: 0
 --- !u!114 &8513553143753976082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,4 +176,23 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 5267942086646193083}
+  - {fileID: 2270067598631943934}
   ForceRemoteRenderTimeframe: 0
+--- !u!114 &2270067598631943934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3582637877193375365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae2ce0080ed8b4353b51644a6a3201ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activeColor: {r: 0, g: 1, b: 1, a: 1}
+  inactiveColor: {r: 1, g: 0, b: 0, a: 1}
+  activeScanlineIntensity: 0.1
+  inactiveScanlineIntensity: 0.05
+  _IsActive: 0
+  objectRenderer: {fileID: 972185374470085400}
