@@ -8,6 +8,9 @@ public class RotateMirror : NetworkBehaviour
     public Transform controlRotation; 
     private float rotate = 5.0f;
 
+    [Header("Laser Reference")]
+    public LaserBean laser;
+
     [Networked] public Quaternion NetworkedRotation {get;set;}
     [Networked] public float NetworkedYRotation { get; set; }
     [Networked] public float NetworkedZRotation { get; set; }
@@ -35,41 +38,28 @@ public class RotateMirror : NetworkBehaviour
         // Input-Handling
         HandleInput();
 
-        // Pr�fen auf �nderungen und Laser-Update triggern
+        // Prüfen auf Änderungen und Laser-Update triggern
         if (controlRotation.rotation != lastRot)
         {
+            Debug.Log("Rotation change");
             TriggerLaserUpdate();
             lastRot = controlRotation.rotation;
+        }
+        else
+        {
+            //Clients folgen der NetworkedRotation
+            controlRotation.rotation = NetworkedRotation;
         }
     }
 
     private void TriggerLaserUpdate()
     {
-        // Finde alle LaserBean Objekte und aktualisiere sie
-        LaserBean[] lasers = FindObjectsOfType<LaserBean>();
-        foreach (LaserBean laser in lasers)
+        if (laser != null)
         {
-            if (laser != null)
-            {
-                laser.RpcForceUpdate();
-            }
+            Debug.Log("Trigger update mirror");
+            laser.RpcForceUpdate();
         }
-    }
-
-    // Alternative: Spezifische Laser-Referenz setzen
-    [Header("Laser Reference (Optional)")]
-    public LaserBean specificLaser;
-
-    private void TriggerSpecificLaserUpdate()
-    {
-        if (specificLaser != null)
-        {
-            specificLaser.RpcForceUpdate();
-        }
-        else
-        {
-            TriggerLaserUpdate();
-        }
+        
     }
 
     private void HandleInput()

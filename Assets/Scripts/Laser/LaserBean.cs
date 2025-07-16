@@ -5,11 +5,11 @@ using Fusion;
 
 public class LaserBean : NetworkBehaviour
 {
-    // Singleton sollte nicht in einer NetworkBehaviour verwendet werden
-    // Stattdessen über das NetworkObject verwalten
 
     private LineRenderer laser;
     public Material laserMaterial;
+
+    public bool laserNeedsChange = false;
 
     [Networked] public Vector3 NetworkedStartPosition { get; set; }
     [Networked] public Vector3 NetworkedDirection { get; set; }
@@ -41,10 +41,11 @@ public class LaserBean : NetworkBehaviour
     void Start()
     {
         Debug.Log($"LaserBean started on: {gameObject.name}");
-        SetupLaser();
+        SetupLaserVisuals();
     }
 
-    void SetupLaser()
+    //Set up vom laser und der kleinen Kugel am Ende, das passiert einmal am Anfang
+    void SetupLaserVisuals()
     {
         if (laser == null)
         {
@@ -106,11 +107,12 @@ public class LaserBean : NetworkBehaviour
         if (HasStateAuthority)
         {
             // Nur Authority berechnet die Laser-Physik
-            if (NetworkedStartPosition != lastStartPos || NetworkedDirection != lastDirection)
+            if (laserNeedsChange = true || NetworkedStartPosition != lastStartPos || NetworkedDirection != lastDirection)
             {
                 CalculateLaserPath();
                 lastStartPos = NetworkedStartPosition;
                 lastDirection = NetworkedDirection;
+                laserNeedsChange = false;
             }
         }
     }
@@ -120,7 +122,7 @@ public class LaserBean : NetworkBehaviour
         // Alle Clients rendern basierend auf den networked values
         if (laser == null)
         {
-            SetupLaser();
+            SetupLaserVisuals();
         }
 
         // Prüfe auf Änderungen in den Load Target States
@@ -253,6 +255,7 @@ public class LaserBean : NetworkBehaviour
 
             if (hit.collider.CompareTag("Mirror"))
             {
+              
                 if (hitCount >= maxHit)
                 {
                     return;
@@ -323,8 +326,8 @@ public class LaserBean : NetworkBehaviour
     {
         if (HasStateAuthority)
         {
-            CalculateLaserPath();
-            
+            //CalculateLaserPath();
+            laserNeedsChange = true;
         }
     }
 
