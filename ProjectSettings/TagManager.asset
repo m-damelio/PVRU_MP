@@ -26,6 +26,7 @@ TagManager:
   - QDSUIDestructiveButton
   - QDSUIToggleSwitch
   - StartGame
+  - NeonLight
   layers:
   - Default
   - TransparentFX

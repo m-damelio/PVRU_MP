@@ -1,1 +1,11 @@
+Idea for material:
 NEON LOVE Fix by gelami - for endcredits, adapted from glsl. (https://www.shadertoy.com/view/7l3GDS#)
+
+
+Assets:
+Guard from meshy.ai 
+VR Main character (Fusion 2 sdk)
+
+Textures:
+VFX Beams Texture: https://opengameart.org/content/fire-texture-laser-texture-for-unity
+BlueMetalSheet & MetalSheet: poliigon.com
