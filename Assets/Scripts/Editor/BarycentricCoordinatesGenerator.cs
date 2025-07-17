@@ -3,6 +3,8 @@ using UnityEditor;
 using System.Collections.Generic;
 using System.IO;
 
+
+//Creates a new mesh with barycentric coordinates such that a shader can create a wireframe look
 public class BarycentricCoordinatesGenerator
 {
     // Adds a menu item to the GameObject context menu and the Assets menu.
@@ -17,19 +19,12 @@ public class BarycentricCoordinatesGenerator
             return;
         }
 
-        // Determine if we are working with a SkinnedMeshRenderer or a regular MeshFilter.
         SkinnedMeshRenderer skinnedRenderer = selectedGo.GetComponent<SkinnedMeshRenderer>();
         MeshFilter meshFilter = selectedGo.GetComponent<MeshFilter>();
         Mesh sourceMesh = null;
 
-        if (skinnedRenderer != null)
-        {
-            sourceMesh = skinnedRenderer.sharedMesh;
-        }
-        else if (meshFilter != null)
-        {
-            sourceMesh = meshFilter.sharedMesh;
-        }
+        if (skinnedRenderer != null) sourceMesh = skinnedRenderer.sharedMesh;
+        else if (meshFilter != null) sourceMesh = meshFilter.sharedMesh;
 
         if (sourceMesh == null)
         {
@@ -46,96 +41,98 @@ public class BarycentricCoordinatesGenerator
         Mesh newMesh = new Mesh();
         newMesh.name = newMeshName;
 
-        // Copy all essential data from the source mesh.
-        newMesh.vertices = sourceMesh.vertices;
-        newMesh.normals = sourceMesh.normals;
-        newMesh.uv = sourceMesh.uv;
-        newMesh.uv2 = sourceMesh.uv2;
-        newMesh.uv3 = sourceMesh.uv3;
-        newMesh.uv4 = sourceMesh.uv4;
-        newMesh.tangents = sourceMesh.tangents;
-        newMesh.subMeshCount = sourceMesh.subMeshCount;
-        for(int i = 0; i < sourceMesh.subMeshCount; i++)
+        // --- UNWELD MESH LOGIC ---
+        int[] sourceTriangles = sourceMesh.triangles;
+        Vector3[] sourceVertices = sourceMesh.vertices;
+        Vector3[] sourceNormals = sourceMesh.normals;
+        Vector2[] sourceUVs = sourceMesh.uv;
+        BoneWeight[] sourceBoneWeights = sourceMesh.boneWeights;
+
+        int triangleCount = sourceTriangles.Length;
+        int newVertexCount = triangleCount;
+
+        var newVertices = new List<Vector3>(newVertexCount);
+        var newNormals = new List<Vector3>(newVertexCount);
+        var newUVs = new List<Vector2>(newVertexCount);
+        var newColors = new List<Color>(newVertexCount);
+        var newTriangles = new int[newVertexCount];
+        var newBoneWeights = new List<BoneWeight>(newVertexCount);
+        var originalVertexMap = new List<int>(newVertexCount); // Map to link new vertices to original ones
+
+        bool hasNormals = sourceNormals != null && sourceNormals.Length > 0;
+        bool hasUVs = sourceUVs != null && sourceUVs.Length > 0;
+        bool hasBoneWeights = sourceBoneWeights != null && sourceBoneWeights.Length > 0;
+
+        Color[] barycentricValues = { new Color(1, 0, 0, 0), new Color(0, 1, 0, 0), new Color(0, 0, 1, 0) };
+
+        for (int i = 0; i < triangleCount; i++)
         {
-            newMesh.SetTriangles(sourceMesh.GetTriangles(i), i);
+            int originalVertexIndex = sourceTriangles[i];
+            originalVertexMap.Add(originalVertexIndex); // Store the original index
+
+            newVertices.Add(sourceVertices[originalVertexIndex]);
+            if (hasNormals) newNormals.Add(sourceNormals[originalVertexIndex]);
+            if (hasUVs) newUVs.Add(sourceUVs[originalVertexIndex]);
+            if (hasBoneWeights) newBoneWeights.Add(sourceBoneWeights[originalVertexIndex]);
+
+            newColors.Add(barycentricValues[i % 3]);
+            newTriangles[i] = i;
         }
 
-        // Copy bone weights and bind poses if they exist.
-        if (skinnedRenderer != null)
+        newMesh.SetVertices(newVertices);
+        newMesh.SetNormals(newNormals);
+        newMesh.SetUVs(0, newUVs);
+        newMesh.SetColors(newColors);
+        newMesh.SetTriangles(newTriangles, 0);
+
+        if (hasBoneWeights)
         {
+            newMesh.boneWeights = newBoneWeights.ToArray();
             newMesh.bindposes = sourceMesh.bindposes;
-            newMesh.boneWeights = sourceMesh.boneWeights;
         }
-
-        //copy blend shapes for facial animation, etc
+        
+        // --- HANDLE BLEND SHAPES ---
         if (sourceMesh.blendShapeCount > 0)
         {
             for (int shapeIndex = 0; shapeIndex < sourceMesh.blendShapeCount; shapeIndex++)
             {
                 string shapeName = sourceMesh.GetBlendShapeName(shapeIndex);
                 int frameCount = sourceMesh.GetBlendShapeFrameCount(shapeIndex);
-                
+
                 for (int frameIndex = 0; frameIndex < frameCount; frameIndex++)
                 {
-                    float frameWeight = sourceMesh.GetBlendShapeFrameWeight(shapeIndex, frameIndex);
-                    
-                    // The delta arrays must be the same size as the source mesh's vertex count.
+                    // Get the original delta values for the blend shape frame
                     Vector3[] deltaVertices = new Vector3[sourceMesh.vertexCount];
                     Vector3[] deltaNormals = new Vector3[sourceMesh.vertexCount];
                     Vector3[] deltaTangents = new Vector3[sourceMesh.vertexCount];
-                    
                     sourceMesh.GetBlendShapeFrameVertices(shapeIndex, frameIndex, deltaVertices, deltaNormals, deltaTangents);
-                    
-                    newMesh.AddBlendShapeFrame(shapeName, frameWeight, deltaVertices, deltaNormals, deltaTangents);
+
+                    // Create new delta arrays sized for the unwelded mesh
+                    Vector3[] newDeltaVertices = new Vector3[newVertexCount];
+                    Vector3[] newDeltaNormals = new Vector3[newVertexCount];
+                    Vector3[] newDeltaTangents = new Vector3[newVertexCount];
+
+                    // Remap the deltas from the original vertices to the new vertices
+                    for (int i = 0; i < newVertexCount; i++)
+                    {
+                        int originalIndex = originalVertexMap[i];
+                        newDeltaVertices[i] = deltaVertices[originalIndex];
+                        newDeltaNormals[i] = deltaNormals[originalIndex];
+                        newDeltaTangents[i] = deltaTangents[originalIndex];
+                    }
+
+                    float frameWeight = sourceMesh.GetBlendShapeFrameWeight(shapeIndex, frameIndex);
+                    newMesh.AddBlendShapeFrame(shapeName, frameWeight, newDeltaVertices, newDeltaNormals, newDeltaTangents);
                 }
             }
         }
 
-        // Get triangles and vertices from the source mesh.
-        int[] triangles = sourceMesh.triangles;
-        Vector3[] vertices = sourceMesh.vertices;
-        int vertexCount = vertices.Length;
-        int triangleCount = triangles.Length;
-
-        // Create an array for the new vertex colors.
-        Color[] barycentricColors = new Color[vertexCount];
-        bool[] vertexProcessed = new bool[vertexCount]; // To avoid overwriting colors on shared vertices
-
-        // Define the barycentric coordinates to be assigned to each vertex of a triangle.
-        Color[] barycentricValues = new Color[] {
-            new Color(1, 0, 0, 0),
-            new Color(0, 1, 0, 0),
-            new Color(0, 0, 1, 0)
-        };
-        
-        // Iterate through each triangle in the mesh.
-        for (int i = 0; i < triangleCount; i += 3)
-        {
-            // Get the indices of the three vertices that form the triangle.
-            int vertexIndex1 = triangles[i];
-            int vertexIndex2 = triangles[i + 1];
-            int vertexIndex3 = triangles[i + 2];
-
-            // Assign barycentric coordinates if the vertex hasn't been processed for another triangle.
-            // This approach works for simple models.
-            if (!vertexProcessed[vertexIndex1]) { barycentricColors[vertexIndex1] = barycentricValues[0]; vertexProcessed[vertexIndex1] = true; }
-            if (!vertexProcessed[vertexIndex2]) { barycentricColors[vertexIndex2] = barycentricValues[1]; vertexProcessed[vertexIndex2] = true; }
-            if (!vertexProcessed[vertexIndex3]) { barycentricColors[vertexIndex3] = barycentricValues[2]; vertexProcessed[vertexIndex3] = true; }
-        }
-
-        // Assign the new colors to the mesh.
-        newMesh.colors = barycentricColors;
-
-        // Recalculate bounds and normals for proper rendering.
         newMesh.RecalculateBounds();
-        newMesh.RecalculateNormals();
 
-        // Save the new mesh as an asset.
         AssetDatabase.CreateAsset(newMesh, AssetDatabase.GenerateUniqueAssetPath(newPath));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        // Assign the new mesh back to the renderer component.
         if (skinnedRenderer != null)
         {
             Undo.RecordObject(skinnedRenderer, "Assign Barycentric Mesh");
@@ -148,12 +145,9 @@ public class BarycentricCoordinatesGenerator
         }
 
         EditorUtility.DisplayDialog("Success", "Barycentric mesh created and assigned at:\n" + newPath, "OK");
-        
-        // Select the newly created mesh in the Project window.
         Selection.activeObject = newMesh;
     }
 
-    // Validation function to enable the menu item only if a valid GameObject is selected.
     [MenuItem("GameObject/Generate Barycentric Mesh", true)]
     [MenuItem("Assets/Generate Barycentric Mesh", true)]
     private static bool ValidateGenerateBarycentricMesh()
