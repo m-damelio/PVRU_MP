@@ -108,7 +108,7 @@ Material:
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _ScanlineFrequency: 50
+    - _ScanlineFrequency: 100
     - _ScanlineIntensity: 0.1
     - _ScanlineSpeed: 0.1
     - _Smoothness: 0.5

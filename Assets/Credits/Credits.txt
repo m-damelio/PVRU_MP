@@ -1,10 +1,11 @@
 Idea for material:
-NEON LOVE Fix by gelami - for endcredits, adapted from glsl. (https://www.shadertoy.com/view/7l3GDS#)
+NEON LOVE Fix by gelami - for endcredits, adapted from glsl - by Marco. (https://www.shadertoy.com/view/7l3GDS#)
 
 
 Assets:
-Guard from meshy.ai 
-VR Main character (Fusion 2 sdk)
+Guard from meshy.ai - adjusted and animated - Marco.
+VR Main character from Fusion 2 sdk - adjusted, reskined - Marco.
+Elevator "First-Person Game Elevator Design" (https://skfb.ly/oMU8t) by Inditrion Dradnon is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/). - adjusted and animated - Marco.
 
 Textures:
 VFX Beams Texture: https://opengameart.org/content/fire-texture-laser-texture-for-unity

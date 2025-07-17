@@ -219,6 +219,7 @@ MonoBehaviour:
   floatParameters: []
   triggerParameters:
   - OpenDoor
+  - CloseDoor
   _CurrentStateHash: 0
   _StateTime: 0
   _LayerIndex: 0

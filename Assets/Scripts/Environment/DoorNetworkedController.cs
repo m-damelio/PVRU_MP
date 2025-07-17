@@ -40,6 +40,17 @@ public class DoorNetworkedController : NetworkBehaviour
         }   
     }
 
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_RequestCloseDoor()
+    {
+        Debug.Log("Door: RPC_RequestCloseDoor received by state authority");
+        if(IsOpen)
+        {
+            IsOpen = false;
+            RPC_CloseDoor();
+        }
+    }
+
     //Called on all peers when the door should open
     //Triggers animation and removes collider afterwards so passage is possible
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
@@ -47,10 +58,18 @@ public class DoorNetworkedController : NetworkBehaviour
     {
         Debug.Log($"Door: RPC_OpenDoor called!");
         _animatorSync.NetworkTrigger("OpenDoor");
-        StartCoroutine(RemoveColliderAfterAnimation());
+        StartCoroutine(SwitchColliderActiveStateAfterAnimation());
     }
 
-    private IEnumerator RemoveColliderAfterAnimation()
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_CloseDoor()
+    {
+        Debug.Log($"Door: RPC_CloseDoor called!");
+        _animatorSync.NetworkTrigger("CloseDoor");
+        StartCoroutine(SwitchColliderActiveStateAfterAnimation());
+    }
+
+    private IEnumerator SwitchColliderActiveStateAfterAnimation()
     {
         Debug.Log("Door: Starting collider removal coroutine");
         
@@ -66,17 +85,29 @@ public class DoorNetworkedController : NetworkBehaviour
 
         yield return new WaitForSeconds(duration);
 
-        Debug.Log("Door: Removing collider");
+        Debug.Log("Door: Switch collider state");
         if (doorCollider != null) 
         {
-            doorCollider.enabled = false;
-            Debug.Log("Door: Collider disabled");
+            doorCollider.enabled = !IsOpen;
+            Debug.Log("Door: Collider switched");
         }
         else
         {
-            Debug.LogWarning("Door: No collider to disable");
+            Debug.LogWarning("Door: No collider to switch");
         }
     }    
+
+    [ContextMenu("Test Open Door")]
+    public void TestOpenDoor()
+    {
+        RPC_RequestOpenDoor();
+    }
+
+    [ContextMenu("Test Close Door")]
+    public void TestCloseDoor()
+    {
+        RPC_RequestCloseDoor();
+    }
 }
 
 

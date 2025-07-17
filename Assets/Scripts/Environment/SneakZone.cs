@@ -30,6 +30,7 @@ public class SneakZone : NetworkBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        if(Object == null) return;
         if (!Object.HasStateAuthority) return;
         if(!IsSneakZoneActive) return;
 
