@@ -2,7 +2,7 @@ using UnityEngine;
 using Fusion;
 
 [RequireComponent(typeof(Collider), typeof(ScanlineController))]
-public class SneakZone : NetworkBehaviour
+public class SneakZone : NetworkBehaviour, ILevelResettable
 {
     [Header("Layer allowing/disallowing teleport")]
     [SerializeField][Layer] private int allowTeleport;
@@ -11,9 +11,13 @@ public class SneakZone : NetworkBehaviour
     [Header("Networked Proeperties")]
     [Networked] public bool IsSneakZoneActive {get; set;}
 
+    [Header("Initial State")]
+    [SerializeField] private bool startActive = true;
+
     private ScanlineController _scanlineController;
     private Collider _sneakZoneCollider;
     private GameObject _visualGameobject;
+
 
     void Start()
     {
@@ -22,10 +26,23 @@ public class SneakZone : NetworkBehaviour
         _visualGameobject = transform.GetChild(0).gameObject;
     }
 
-    public override void Spawned()
+    public void SetInitialState()
     {
-        IsSneakZoneActive = true;
-    
+        if(Object.HasStateAuthority)
+        {
+            IsSneakZoneActive = startActive;
+            RPC_UpdateSneakZoneVisuals();
+        }
+        
+    }
+
+    public void ResetToInitialState()
+    {
+        if(Object.HasStateAuthority)
+        {
+            IsSneakZoneActive = startActive;
+            RPC_UpdateSneakZoneVisuals();
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -61,35 +78,48 @@ public class SneakZone : NetworkBehaviour
         }
     }
 
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_SetActive(bool enabled)
+    public void SetActive(bool shouldEnable)
     {
-        IsSneakZoneActive = enabled;
-        _sneakZoneCollider.enabled = enabled;
-        if(_visualGameobject != null)
+        if(Object.HasStateAuthority)
         {
-            if(IsSneakZoneActive)
-            {
-                _visualGameobject.layer = allowTeleport;
-            }
-            else
-            {
-                _visualGameobject.layer = disallowTeleport;
-            }
+            IsSneakZoneActive = shouldEnable;
+            RPC_UpdateSneakZoneVisuals();
+        }
+        else
+        {
+            RPC_RequestSetActive(shouldEnable);
+        }
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_RequestSetActive(bool shouldEnable)
+    {
+        if(IsSneakZoneActive != shouldEnable)
+        {
+            IsSneakZoneActive = shouldEnable;
+            RPC_UpdateSneakZoneVisuals();
         }
     }
     
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_UpdateSneakZoneVisuals()
+    {
+        if(_sneakZoneCollider != null) _sneakZoneCollider.enabled = IsSneakZoneActive;
+
+        if(_scanlineController != null) _scanlineController.RPC_SetActive(IsSneakZoneActive);
+
+        //Don't allow teleport when sneak zone is active
+        if(_visualGameobject != null) _visualGameobject.layer = IsSneakZoneActive ? disallowTeleport : allowTeleport;
+
+        Debug.Log($"SneakZone: Updated to active={IsSneakZoneActive}");
+    }
+
     [ContextMenu("Test switch active")]
     public void TestSwitchActive()
     {
-        if(_scanlineController == null) return;
-
         //State to test
         bool newState = !IsSneakZoneActive;
-
         //Switch scanline and test sneak zone rpc
-        RPC_SetActive(newState);
-        _scanlineController.RPC_SetActive(newState);
-        
+        SetActive(newState);
     }
 }

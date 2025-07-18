@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(Animator), typeof(NavMeshAgent), typeof(AnimatorStateSync))]
-public class GuardNetworkedController : NetworkBehaviour
+public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
 {
     [Header("Pathway settings")]
     [SerializeField] private List<Transform> patrolPoints;
@@ -19,6 +19,11 @@ public class GuardNetworkedController : NetworkBehaviour
     [Header("Fusion synced")]
     [Networked] public bool IsAlert {get;set;}
     [Networked] public bool IsAlarmRunning {get;set;}
+    [Networked] public bool ResetCalled {get; set;}
+
+    [Header("Initial State")]
+    [SerializeField] private Vector3 initialPosition;
+    [SerializeField] private Quaternion initialRotation;
 
     private Animator _animator; 
     private NavMeshAgent _agent;
@@ -30,6 +35,10 @@ public class GuardNetworkedController : NetworkBehaviour
     private bool _alertCoroutineStarted = false;
     private bool _restCoroutineStarted = false;
     [HideInInspector] public bool IsSpawnedAndValid => Object != null && Object.IsValid;
+
+    private Coroutine _alertCoroutine;
+    private Coroutine _restCoroutine;
+    private Coroutine _resetCoroutine;
 
     public override void Spawned()
     {
@@ -43,9 +52,61 @@ public class GuardNetworkedController : NetworkBehaviour
         }
     }
 
+    public void SetInitialState()
+    {
+        if (!Object.HasStateAuthority) return;
+
+        initialPosition = transform.position;
+        initialRotation = transform.rotation;
+    }
+
+    public void ResetToInitialState()
+    {
+        if(!Object.HasStateAuthority) return;
+
+        //Stop coroutines if running
+        if(_alertCoroutine !=null) StopCoroutine(_alertCoroutine);
+        if(_restCoroutine != null) StopCoroutine(_restCoroutine);
+        if(_resetCoroutine != null) StopCoroutine(_resetCoroutine);
+
+        // Reset networked properties
+        IsAlert = false;
+        IsAlarmRunning = false;
+
+        //NavMeshAgent reset
+        _agent.ResetPath();
+        _agent.velocity = Vector3.zero;
+        _agent.speed = 1f;
+
+        //Transform reset
+        transform.position = initialPosition;
+        transform.rotation = initialRotation;
+
+        //animation state reset
+        _animatorSync.SetNetworkBool("IsAlert", false);
+        _animatorSync.SetNetworkBool("IsAlarmRunning", false);
+        _animatorSync.NetworkTrigger("RestartAnimator");
+
+        //Reset state
+        _state = State.Patrol;
+        _previousState = State.Patrol;
+        _patrolIndex = 0;
+
+        _alertCoroutineStarted = false;
+        _restCoroutineStarted = false;
+
+        //Wait a bit before allowing movement again
+        ResetCalled = true;
+        _resetCoroutine = StartCoroutine(DelayThen(_ => {
+            ResetCalled = false; 
+            }, 1f));
+
+    }
+
     public override void FixedUpdateNetwork()
     {
         if(!Object.HasStateAuthority) return;
+        if(ResetCalled) return;
         if(patrolPoints.Count == 0) return;
 
         switch (_state)
@@ -66,7 +127,7 @@ public class GuardNetworkedController : NetworkBehaviour
                     _animatorSync.SetNetworkBool("IsAlert", true);
 
                     //For now a few seconds delay before returning to patroling
-                    StartCoroutine(DelayThen(_ => {
+                    _alertCoroutine = StartCoroutine(DelayThen(_ => {
                         _alertCoroutineStarted = false; 
                         _animatorSync.SetNetworkBool("IsAlert", false);
 
@@ -108,7 +169,7 @@ public class GuardNetworkedController : NetworkBehaviour
                     _agent.ResetPath();
                     _agent.velocity = Vector3.zero;
 
-                    StartCoroutine(DelayThen(_ => 
+                    _restCoroutine = StartCoroutine(DelayThen(_ => 
                     {
                         _animatorSync.NetworkTrigger("AlarmFixed");
                         if(alarmBooth != null)

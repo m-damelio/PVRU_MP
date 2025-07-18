@@ -3,7 +3,7 @@ using Fusion;
 using Fusion.Sockets;
 using System.Collections;
 
-public class DoorNetworkedController : NetworkBehaviour
+public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
 {
     private Animator _animator;
     private AnimatorStateSync _animatorSync;
@@ -11,11 +11,43 @@ public class DoorNetworkedController : NetworkBehaviour
 
     [Networked] public bool IsOpen {get; set;}
 
+    public AudioSource doorAudioSource;
+
+    [Header("Initial state")]
+    [SerializeField] private bool startOpen = false;
+
     void Awake()
     {
         _animator = GetComponent<Animator>();
         _animatorSync = GetComponent<AnimatorStateSync>();
         if (doorCollider == null) doorCollider = GetComponent<Collider>();
+    }
+
+    //Interface ILevelResettable implementation
+    public void SetInitialState()
+    {
+        if(Object.HasStateAuthority)
+        {
+            IsOpen = startOpen;
+            if(doorCollider != null) doorCollider.enabled = !startOpen;
+        }
+    }
+
+    public void ResetToInitialState()
+    {
+        if(Object.HasStateAuthority)
+        {
+            IsOpen = startOpen;
+
+            if(startOpen)
+            {
+                RequestOpen();
+            }
+            else
+            {
+                RequestClose();
+            }
+        }
     }
 
     public void RequestOpen()
@@ -26,50 +58,57 @@ public class DoorNetworkedController : NetworkBehaviour
             Debug.Log("Door: Already open, ignoring request");
             return;
         }
-        RPC_RequestOpenDoor();
+        RPC_SetDoorState(true);
+    }
+
+    public void RequestClose()
+    {
+        if(!IsOpen)
+        {
+            Debug.Log("Door: Already closed, ignoring request");
+            return;
+        }
+
+        RPC_SetDoorState(false);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_RequestOpenDoor()
+    public void RPC_SetDoorState(bool shouldOpen)
     {
-        Debug.Log("Door: RPC_RequestOpenDoor received by state authority");
-        if(!IsOpen)
+        Debug.Log($"Door: RPC_SetDoorState received: {shouldOpen}");
+        if(IsOpen != shouldOpen)
         {
-            IsOpen = true;
-            RPC_OpenDoor();
+            IsOpen = shouldOpen;
+
+            //Notify clients to play animation
+            if(shouldOpen)
+            {
+                RPC_PlayOpenAnimation();
+            }
+            else
+            {
+                RPC_PlayCloseAnimation();
+            }
         }   
     }
 
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void RPC_RequestCloseDoor()
-    {
-        Debug.Log("Door: RPC_RequestCloseDoor received by state authority");
-        if(IsOpen)
-        {
-            IsOpen = false;
-            RPC_CloseDoor();
-        }
-    }
-
-    //Called on all peers when the door should open
-    //Triggers animation and removes collider afterwards so passage is possible
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_OpenDoor()
+    public void RPC_PlayOpenAnimation()
     {
-        Debug.Log($"Door: RPC_OpenDoor called!");
+        Debug.Log("Door: Playing open animation");
         _animatorSync.NetworkTrigger("OpenDoor");
-        StartCoroutine(SwitchColliderActiveStateAfterAnimation());
+        StartCoroutine(UpdateColliderAfterAnimation());
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_CloseDoor()
+    public void RPC_PlayCloseAnimation()
     {
-        Debug.Log($"Door: RPC_CloseDoor called!");
+        Debug.Log("Door: Playing close animation");
         _animatorSync.NetworkTrigger("CloseDoor");
-        StartCoroutine(SwitchColliderActiveStateAfterAnimation());
+        StartCoroutine(UpdateColliderAfterAnimation());
     }
 
-    private IEnumerator SwitchColliderActiveStateAfterAnimation()
+    private IEnumerator UpdateColliderAfterAnimation()
     {
         Debug.Log("Door: Starting collider removal coroutine");
         
@@ -78,14 +117,10 @@ public class DoorNetworkedController : NetworkBehaviour
         
         //Grabs current state info and assumes openDoor animation to be in layer 0
         var state = _animator.GetCurrentAnimatorStateInfo(0);
-        Debug.Log($"Door: Current animation state: {state.fullPathHash}, Length: {state.length}");
-        
         float duration = state.length / 1f;
-        Debug.Log($"Door: Animation duration: {duration} seconds");
 
         yield return new WaitForSeconds(duration);
 
-        Debug.Log("Door: Switch collider state");
         if (doorCollider != null) 
         {
             doorCollider.enabled = !IsOpen;
@@ -100,13 +135,13 @@ public class DoorNetworkedController : NetworkBehaviour
     [ContextMenu("Test Open Door")]
     public void TestOpenDoor()
     {
-        RPC_RequestOpenDoor();
+        RequestOpen();
     }
 
     [ContextMenu("Test Close Door")]
     public void TestCloseDoor()
     {
-        RPC_RequestCloseDoor();
+        RequestClose();
     }
 }
 

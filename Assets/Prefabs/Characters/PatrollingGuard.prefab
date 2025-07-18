@@ -483,6 +483,9 @@ MonoBehaviour:
   alarmBooth: {fileID: 0}
   _IsAlert: 0
   _IsAlarmRunning: 0
+  _ResetCalled: 0
+  initialPosition: {x: 0, y: 0, z: 0}
+  initialRotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &875307369792087486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -548,6 +551,7 @@ MonoBehaviour:
   - IsSpawned
   - AlarmFixed
   - AtAlarmLocation
+  - RestartAnimator
   _CurrentStateHash: 0
   _StateTime: 0
   _LayerIndex: 0
@@ -588,15 +592,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421caa50ef43042e6bab40b46ab1fb04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visionRange: 12
-  visionAngle: 90
+  visionRange: 6
+  visionAngle: 60
   playerLayer:
     serializedVersion: 2
     m_Bits: 16384
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 3073
-  timeToAlert: 5
+    m_Bits: 3072
+  timeToAlert: 2.5
   scanFrequency: 0.1
   eyeHeight: {fileID: 8307230907433214137}
   raysPerFrame: 5
@@ -605,11 +609,11 @@ MonoBehaviour:
   - 0.5
   - 1
   useRadarSweep: 1
-  normalVisionColor: {r: 0.8, g: 0.8, b: 0.2, a: 0.29803923}
+  normalVisionColor: {r: 0.2, g: 0.3, b: 0.8, a: 0.29803923}
   warningVisionColor: {r: 1, g: 0.5, b: 0, a: 0.6}
   alertVisionColor: {r: 0.8, g: 0.2, b: 0.2, a: 0.5}
   radarSweepLine: {fileID: 6714743656053212437}
-  sweepSpeed: 30
+  sweepSpeed: 50
   sweepResolution: 20
   groundLevel: 0
 --- !u!4 &3426670556281471715 stripped
