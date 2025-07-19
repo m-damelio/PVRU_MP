@@ -3,7 +3,7 @@ Shader "Custom/ScanLines"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        [PerRendererData] _ScanlineColor ("Scanline Color", Color) = (0,1,1,1)
+        _ScanlineColor ("Scanline Color", Color) = (0,1,1,1)
         _ScanlineFrequency("Scanline Frequency", Range(50,500)) = 200.0
         [PerRendererData] _ScanlineIntensity("Scanline Intensity", Range(0,1))= 0.3
         _ScanlineSpeed("Scanline Speed", Range(-10,10)) = 1.0

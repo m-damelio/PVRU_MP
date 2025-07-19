@@ -43,8 +43,8 @@ TagManager:
   - NotObstacle
   - NPC
   - Player
-  - 
-  - 
+  - HackerOnly
+  - SneakerOnly
   - 
   - 
   - 

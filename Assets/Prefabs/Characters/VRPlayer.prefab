@@ -546,6 +546,12 @@ MonoBehaviour:
   sneakThreshold: 0.8
   playerType: 0
   playerState: 0
+  hackerOnlyLayers:
+    serializedVersion: 2
+    m_Bits: 32768
+  sneakerOnlyLayers:
+    serializedVersion: 2
+    m_Bits: 65536
   characterController: {fileID: 1475275693075936696}
   pickupRange: 2
   keyCardLayer:

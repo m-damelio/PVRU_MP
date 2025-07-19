@@ -18,6 +18,9 @@ public class VRPlayer : NetworkBehaviour
     [Header("Player Settings")]
     [SerializeField] private PlayerType playerType;
     [SerializeField] private PlayerState playerState = PlayerState.Walking;
+    [SerializeField] private LayerMask hackerOnlyLayers;
+    [SerializeField] private LayerMask sneakerOnlyLayers;
+    private LayerMask originalCullingMask;
 
     [Header("Movement")]
     public CharacterController characterController;
@@ -59,7 +62,7 @@ public class VRPlayer : NetworkBehaviour
         Sneaking //Player is sneaking
     }
     
-    void Start()
+    public override void Spawned()
     {
         // Get reference to NetworkRig
         networkRig = GetComponent<NetworkRig>();
@@ -67,9 +70,15 @@ public class VRPlayer : NetworkBehaviour
         {
             Debug.LogError("VRPlayer requires a NetworkRig component!");
         }
+        else
+        {
+            originalCullingMask = networkRig.hardwareRig.playerCamera.cullingMask;
+        }
         
         // Set player type based on hardware detection
         DetectPlayerType();
+        UpdateCameraLayers();
+
     }
     
     void DetectPlayerType()
@@ -88,31 +97,33 @@ public class VRPlayer : NetworkBehaviour
             hardwareIndicator.SetActive(playerType == PlayerType.EnhancedHacking);
         }
     }
+
+    void UpdateCameraLayers()
+    {
+        //Updates the culling mask for the players when spawned once
+        if (networkRig == null) return;
+        LayerMask newCullingMask = originalCullingMask;
+
+        switch (NetworkedPlayerType)
+        {
+            case PlayerType.EnhancedSneaking:
+                newCullingMask = originalCullingMask | sneakerOnlyLayers;
+                newCullingMask &= ~hackerOnlyLayers; //remove hacker only
+                break;
+            case PlayerType.EnhancedHacking:
+                newCullingMask = originalCullingMask | hackerOnlyLayers;
+                newCullingMask &= ~sneakerOnlyLayers; //remove sneaker only 
+                break;
+        }
+
+        networkRig.hardwareRig.playerCamera.cullingMask = newCullingMask;
+
+    }
     
     bool DetectPressurePlate() 
     {
         //TODO: Implement detecting of hardware
         return true;
-    }
-    
-    private DoorNetworkedController GetDoorToOpen()
-    {
-        if (!hasSearchedForDoor && Object.HasInputAuthority)
-        {
-            hasSearchedForDoor = true;
-            doorToOpen = FindObjectsByType<DoorNetworkedController>(FindObjectsSortMode.None)[0];
-            
-            if (doorToOpen != null)
-            {
-                Debug.Log($"Found door for player {Object.InputAuthority}");
-            }
-            else
-            {
-                Debug.LogWarning($"Could not find door for player {Object.InputAuthority}");
-            }
-        }
-        
-        return doorToOpen;
     }
     
     public override void FixedUpdateNetwork()
@@ -301,20 +312,6 @@ public class VRPlayer : NetworkBehaviour
                 return;
             }
         }
-
-        //Fallback to existing door testing logic
-        /*
-        var door = GetDoorToOpen();
-        if (door != null)
-        {
-            Debug.Log($"VRPlayer: Door found: {door.name}, calling RequestOpen()");
-            door.RequestOpen();
-        }
-        else
-        {
-            Debug.LogWarning("No door found to interact with!");
-        }
-        */
     }
     
     private void UpdatePlayerState()

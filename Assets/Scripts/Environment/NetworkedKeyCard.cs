@@ -80,7 +80,7 @@ public class NetworkedKeyCard : NetworkBehaviour
         if(visualModel != null) visualModel.SetActive(!isHeld);
         if(keyCardCollider != null) keyCardCollider.enabled = !isHeld;
     }
-    //Client asks to pick it ip (RPCSources is all since i didn't assign input authority correctly on the key cards.)
+    //Client asks to pick it ip 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public virtual void RPC_PickUp(PlayerRef requester, RpcInfo info = default)
     {

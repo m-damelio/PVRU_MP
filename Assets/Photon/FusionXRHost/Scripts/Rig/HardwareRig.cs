@@ -88,6 +88,7 @@ namespace Fusion.XR.Host.Rig
         [Header("Custom Fields")]
         [SerializeField] private InputActionReference interactionAction;
         [SerializeField] private InputActionReference sneakTestAction;
+        public Camera playerCamera;
         public bool enableKeyboardInput = true;
         private VRPlayer vrPlayer; //Will be searched dynamically, change if performance is suffering
         private bool hasSearchedForVRPlayer = false;

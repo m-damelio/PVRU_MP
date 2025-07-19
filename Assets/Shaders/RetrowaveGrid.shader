@@ -15,7 +15,7 @@ Shader "Custom/RetrowaveGrid"
     }
     SubShader
     {
-        Tags { "RenderType"="Transparent" "Queue"="Transparent" }
+        Tags { "RenderType"="Transparent" "Queue"="Transparent-100" } //Used this shader for the ground therefor put it earlier in the queue
         LOD 100
 
         Blend SrcAlpha OneMinusSrcAlpha

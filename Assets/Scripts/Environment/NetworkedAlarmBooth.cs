@@ -2,10 +2,10 @@ using UnityEngine;
 using Fusion;
 using System.Collections;
 
-public class NetworkedAlarmBooth : NetworkBehaviour
+public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
 {
     [Header("Hack settings")]
-    [SerializeField] private GameObject hackThis;
+    [SerializeField] private GameObject hackThis; //TODO how to hack this
     [SerializeField] private float hackDuration = 5f;
     [SerializeField] private float interactionRange = 2f;
 
@@ -40,6 +40,19 @@ public class NetworkedAlarmBooth : NetworkBehaviour
     public override void Spawned()
     {
         UpdateVisuals();
+    }
+
+    public void SetInitialState()
+    {
+        //Nothing needs to be tracked here currently
+    }
+
+    public void ResetToInitialState()
+    {
+        if(Object.HasStateAuthority)
+        {
+            RPC_ResetAlarmBooth();
+        }
     }
 
     public override void FixedUpdateNetwork()
