@@ -904,6 +904,10 @@ PrefabInstance:
       propertyPath: SortKey
       value: 1589015964
       objectReference: {fileID: 0}
+    - target: {fileID: 4978855793285328137, guid: cbbfa0175c12c5e43916bd4cf9489da3, type: 3}
+      propertyPath: door
+      value: 
+      objectReference: {fileID: 2049408401}
     - target: {fileID: 7687359393229090108, guid: cbbfa0175c12c5e43916bd4cf9489da3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.63
@@ -1276,6 +1280,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16eb8d554c636c9479b4cfc59dbdf775, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2049408401 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8024945065736129075, guid: a9eb391842262974f8b67310d89c1150, type: 3}
+  m_PrefabInstance: {fileID: 6232156860657956134}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &235608893858501070
 PrefabInstance:
   m_ObjectHideFlags: 0

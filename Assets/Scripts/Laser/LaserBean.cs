@@ -24,6 +24,7 @@ public class LaserBean : NetworkBehaviour
     [SerializeField]
     private List<Vector3> laserIndices = new List<Vector3>();
 
+    public GameObject door;
     private bool wasHittingLoadTarget = false;
     private GameObject loadTargetHit;
     private GameObject targetHit;
@@ -295,6 +296,9 @@ public class LaserBean : NetworkBehaviour
                 }
 
                 openD = hit.collider.gameObject.GetComponent<openDoor>();
+
+                //Versuche die Tür aufzumachen
+                door.GetComponent<DoorNetworkedController>().RPC_RequestOpenDoor();
             }
         }
         else

@@ -31,12 +31,19 @@ public class RotateMirror : NetworkBehaviour
         lastRot = controlRotation.rotation;
     }
 
-    public override void FixedUpdateNetwork()
+    void Update()
     {
         if (!HasStateAuthority) return;
 
-        // Input-Handling
         HandleInput();
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        /*if (!HasStateAuthority) return;
+
+        // Input-Handling
+        HandleInput();*/
 
         // Prüfen auf Änderungen und Laser-Update triggern
         if (controlRotation.rotation != lastRot)
