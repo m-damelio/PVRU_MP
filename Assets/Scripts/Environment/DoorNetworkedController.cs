@@ -10,6 +10,7 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
     [SerializeField] private Collider doorCollider;
 
     [Networked] public bool IsOpen {get; set;}
+    [Networked] public bool HasInitialized {get; set;}
 
     public AudioSource doorAudioSource;
 
@@ -21,6 +22,43 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
         _animator = GetComponent<Animator>();
         _animatorSync = GetComponent<AnimatorStateSync>();
         if (doorCollider == null) doorCollider = GetComponent<Collider>();
+    }
+
+    //Doors didnt appear open when spawned with startOPen = true there added spawned and other methods
+    public override void Spawned()
+    {
+        if(Object.HasStateAuthority)
+        {
+            IsOpen = startOpen;
+            HasInitialized = false;
+        }
+
+        StartCoroutine(InitializeAfterFrame());
+    }
+
+    private IEnumerator InitializeAfterFrame()
+    {
+        yield return null;
+
+        if(Object.HasStateAuthority && !HasInitialized)
+        {
+            if(startOpen)
+            {
+                RPC_SetInitialOpenState();
+            }
+            HasInitialized = true;
+        }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_SetInitialOpenState()
+    {
+        int openStateHash = Animator.StringToHash("Base Layer.OpenDoor");
+        _animator.Play(openStateHash, 0, 1.0f); //Jump to end of animation
+
+        if(doorCollider != null) doorCollider.enabled = false;
+
+        Debug.Log("Door: Set to initial open state");
     }
 
     //Interface ILevelResettable implementation
@@ -41,7 +79,7 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
 
             if(startOpen)
             {
-                RequestOpen();
+                RPC_SetInitialOpenState();
             }
             else
             {
@@ -70,6 +108,13 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
         }
 
         RPC_SetDoorState(false);
+    }
+
+    public void RequestToggle()
+    {
+        Debug.Log("Door: Request to toggle state received");
+        if(!IsOpen) RPC_SetDoorState(true);
+        else RPC_SetDoorState(false);
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 9039347274475306163}
   - component: {fileID: 4834214032520512791}
   m_Layer: 10
-  m_Name: DoorKeyCardReceiver
+  m_Name: SingleDoorKeyCardReceiver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

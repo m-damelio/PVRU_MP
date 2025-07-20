@@ -47,7 +47,7 @@ public class VRPlayer : NetworkBehaviour
 
     [Header("For Testing Purposes")]
     private DoorNetworkedController doorToOpen;
-    private bool hasSearchedForDoor = false;
+    //private bool hasSearchedForDoor = false;
     private NetworkedKeyCard heldKeyCard;
     
     public enum PlayerType

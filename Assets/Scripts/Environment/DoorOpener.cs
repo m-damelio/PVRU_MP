@@ -5,10 +5,10 @@ using System.Collections;
 public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
 {
     [Header("Door Opener Settings")]
-    [SerializeField] private string requireKeyID = "1234";
+    [SerializeField] protected string requireKeyID = "1234";
     [SerializeField] private DoorNetworkedController doorController;
-    [SerializeField] private bool consumeKeyOnUse = false;
-    [SerializeField] private float keyCardEjectDelay = 2f;
+    [SerializeField] protected bool consumeKeyOnUse = false;
+    [SerializeField] protected float keyCardEjectDelay = 2f;
 
     [Header("Audio & Visual Feedback")]
     [SerializeField] private Light statusLight;
@@ -17,11 +17,13 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip successSound;
     [SerializeField] private AudioClip failureSound;
-    [SerializeField] private AudioClip insertSound;
+    [SerializeField] protected AudioClip insertSound;
 
     [Header("Networked properties")]
     [Networked] public bool HasKeyCardInserted {get;set;}
     [Networked] public NetworkId InsertedKeyCardId {get;set;}
+
+    
 
     void Awake()
     {
@@ -31,7 +33,7 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
         }     
     }
 
-    public void OnKeyCardInserted(NetworkedKeyCard card)
+    public virtual void OnKeyCardInserted(NetworkedKeyCard card)
     {
         Debug.Log($"DoorOpener: OnKeyCardInserted called with card: {(card != null ? card.name : "NULL")}");
         if(!Object.HasStateAuthority) 
@@ -84,7 +86,7 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
         }
     }
 
-    private IEnumerator EjectKeyCardAfterDelay(NetworkedKeyCard card, float delay)
+    protected IEnumerator EjectKeyCardAfterDelay(NetworkedKeyCard card, float delay)
     {
         yield return new WaitForSeconds(delay);
 
@@ -100,7 +102,7 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
         InsertedKeyCardId = default;
     }
 
-    private IEnumerator DestroyKeyCardAfterDelay(NetworkedKeyCard card, float delay)
+    protected IEnumerator DestroyKeyCardAfterDelay(NetworkedKeyCard card, float delay)
     {
         yield return new WaitForSeconds(delay);
         if(card != null && card.Object != null)
@@ -113,7 +115,7 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    void RPC_ShowFeedback(bool success)
+    protected void RPC_ShowFeedback(bool success)
     {
         AudioClip soundToPlay = success ? successSound : failureSound;
         if(soundToPlay != null && audioSource!= null)
@@ -129,7 +131,7 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    void RPC_PlaySound(string soundName)
+    protected void RPC_PlaySound(string soundName)
     {
         if(audioSource != null && insertSound != null && insertSound.name == soundName)
         {
@@ -176,7 +178,7 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
     }
 
     [ContextMenu("Test Open Door")]
-    public void TestOpenDoor()
+    public virtual void TestOpenDoor()
     {
         if(doorController != null)
         {
