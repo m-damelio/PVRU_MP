@@ -10,7 +10,6 @@ Shader "Custom/ScanLines"
         _FlickerSpeed("Flicker Speed", Range(0,20)) = 5.0
         _FlickerIntensity("Flicker Intensity", Range(0,1)) = 0.1
         _EmissionIntensity ("Emission Intensity", Range(0,5)) = 1.0
-        
     }
     SubShader
     {
@@ -22,8 +21,10 @@ Shader "Custom/ScanLines"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            // make fog work
+            // VR stereo rendering support
             #pragma multi_compile_fog
+            #pragma multi_compile _ STEREO_INSTANCING_ON STEREO_MULTIVIEW_ON
+            #pragma multi_compile _ UNITY_SINGLE_PASS_STEREO
 
             #include "UnityCG.cginc"
 
@@ -31,6 +32,7 @@ Shader "Custom/ScanLines"
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct v2f
@@ -39,6 +41,7 @@ Shader "Custom/ScanLines"
                 UNITY_FOG_COORDS(1)
                 float4 vertex : SV_POSITION;
                 float4 screenPos : TEXCOORD2;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
 
             sampler2D _MainTex;
@@ -54,6 +57,10 @@ Shader "Custom/ScanLines"
             v2f vert (appdata v)
             {
                 v2f o;
+                
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+                
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 o.screenPos = ComputeScreenPos(o.vertex);
@@ -63,24 +70,27 @@ Shader "Custom/ScanLines"
 
             fixed4 frag (v2f i) : SV_Target
             {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+                
                 // base texture
                 fixed4 col = tex2D(_MainTex, i.uv);
 
-                //Screen position for scanlines
-                float2 screenUV = i.screenPos.xy / i.screenPos.w;
+                // Use UV coordinates instead of screen position for VR compatibility
+                // This ensures scanlines appear consistently in both eyes
+                float2 scanlineUV = i.uv;
 
-                //moving scanlines
-                float4 scanline = sin((screenUV.y + _Time.y * _ScanlineSpeed) * _ScanlineFrequency);
-                scanline = scanline * 0.5 + 0.5; //Convert from -1,1 to 0,1
+                // moving scanlines - use UV.y instead of screen coordinates
+                float scanline = sin((scanlineUV.y + _Time.y * _ScanlineSpeed) * _ScanlineFrequency);
+                scanline = scanline * 0.5 + 0.5; // Convert from -1,1 to 0,1
 
-                //Flicker effect
+                // Flicker effect
                 float flicker = sin(_Time.y * _FlickerSpeed) * _FlickerIntensity + 1.0;
 
-                //Apply scanlines
+                // Apply scanlines
                 float scanlineEffect = lerp(1.0, scanline, _ScanlineIntensity);
                 col.rgb *= scanlineEffect * flicker;
 
-                //Add emission glow to scanlines
+                // Add emission glow to scanlines
                 float scanlineGlow = smoothstep(0.7, 1.0, scanline) * _ScanlineIntensity;
                 col.rgb += _ScanlineColor.rgb * scanlineGlow * _EmissionIntensity;
 

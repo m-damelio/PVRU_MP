@@ -412,7 +412,7 @@ MonoBehaviour:
   connectionCriterias: 1
   additionalSessionProperties: []
   runner: {fileID: 0}
-  userPrefab: {fileID: 2549000073306557744, guid: e263782ae517b5e46a1d6228d8ee88b7, type: 3}
+  userPrefab: {fileID: 2549000073306557744, guid: bc638e68f45c74e57af62d5f3a545830, type: 3}
   onWillConnect:
     m_PersistentCalls:
       m_Calls: []
@@ -1202,7 +1202,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deviceIP: 192.168.178.51
   checkInterval: 0.5
-  simulateDevice: 0
+  simulateDevice: 1
   enableLogs: 1
   maxRetries: 3
   retryDelay: 0.2

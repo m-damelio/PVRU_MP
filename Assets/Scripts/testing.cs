@@ -64,7 +64,7 @@ public class SneakVisualizerCube : MonoBehaviour
             if (simulateDevice)
             {
                 bool wasSneaking = isSneaking;
-                isSneaking = Input.GetKey(KeyCode.S);
+                isSneaking = Input.GetKey(KeyCode.LeftShift);
                 
                 if (enableLogs && wasSneaking != isSneaking)
                 {
@@ -219,7 +219,7 @@ public class SneakVisualizerCube : MonoBehaviour
             Debug.Log($"Consecutive Failures: {consecutiveFailures}");
             Debug.Log($"Last Successful Request: {Time.time - lastSuccessfulRequest:F1}s ago");
             Debug.Log($"Current Material: {cubeRenderer.material.name}");
-            Debug.Log($"S Key Pressed: {Input.GetKey(KeyCode.S)}");
+            Debug.Log($"S Key Pressed: {Input.GetKey(KeyCode.LeftShift)}");
         }
         
         if (Input.GetKeyDown(KeyCode.F4))
