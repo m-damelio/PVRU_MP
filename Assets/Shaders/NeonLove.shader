@@ -23,25 +23,31 @@ Shader "Custom/NeonHeart"
             //Blend One One 
             ZWrite Off
             
-            CGPROGRAM
+            HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #pragma target 3.0
+
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ UNITY_STEREO_INSTANCING_ENABLED
+            #pragma multi_compile _ UNITY_STEREO_MULTIVIEW_ENABLED
+            #pragma multi_compile _ UNITY_SINGLE_PASS_STEREO
             
-            #include "UnityCG.cginc"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             
             #define POINT_COUNT 8
             
-            struct appdata
+            struct Attributes
             {
-                float4 vertex : POSITION;
+                float4 positionOS : POSITION;
                 float2 uv : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             
-            struct v2f
+            struct Varyings
             {
-                float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
+                float4 positionCS : SV_POSITION;
+                float2 uv: TEXCOORD0;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
             
             float _Speed;
@@ -53,10 +59,12 @@ Shader "Custom/NeonHeart"
             float4 _Color1;
             float4 _Color2;
             
-            v2f vert (appdata v)
+            Varyings vert (Attributes v)
             {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                Varyings o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+                o.positionCS = TransformObjectToHClip(v.positionOS.xyz);
                 o.uv = v.uv;
                 return o;
             }
@@ -169,8 +177,9 @@ Shader "Custom/NeonHeart"
                 return max(0.0, light);
             }
             
-            fixed4 frag (v2f i) : SV_Target
+            half4 frag (Varyings i) : SV_Target
             {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
                 float2 uv = i.uv;
                 float widthHeightRatio = _ScreenParams.x / _ScreenParams.y;
                 float2 centre = float2(0.5, 0.5);
@@ -202,9 +211,10 @@ Shader "Custom/NeonHeart"
                 // Gamma correction
                 col = pow(col, float3(0.4545, 0.4545, 0.4545));
 
-                return fixed4(col, alpha);
+                return half4(col, alpha);
             }
-            ENDCG
+            ENDHLSL
         }
     }
+    Fallback "Universal Render Pipeline/Unlit"
 }

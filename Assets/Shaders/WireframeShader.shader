@@ -16,7 +16,7 @@ Shader "Custom/WireframeShader"
     }
     SubShader
     {
-        Tags { "RenderType"="Transparent" "Queue"="Transparent" "RenderPipeline"="UniversalRenderPipeline" }
+        Tags { "RenderType"="Transparent" "Queue"="Transparent" "RenderPipeline"="UniversalRenderPipeline"}
 
         Pass
         {
@@ -27,6 +27,15 @@ Shader "Custom/WireframeShader"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ _Main_LIGHT_SHADOWS
+            #pragma multi_compile _ _Main_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile _ _SHADOWS_SOFT
+
+            #pragma multi_compile _ UNITY_STEREO_INSTANCING_ENABLED
+            #pragma multi_compile _ UNITY_STEREO_MULTIVIEW_ENABLED
+            #pragma multi_compile _ UNITY_SINGLE_PASS_STEREO
+
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
@@ -42,6 +51,7 @@ Shader "Custom/WireframeShader"
             {
                 float4 positionCS : SV_POSITION;
                 float4 barycentric : TEXCOORD0; //Passes barycentric coords to fragment shader
+                UNITY_VERTEX_INPUT_INSTANCE_ID
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
@@ -56,6 +66,7 @@ Shader "Custom/WireframeShader"
             {
                 Varyings OUT;
                 UNITY_SETUP_INSTANCE_ID(IN);
+                UNITY_TRANSFER_INSTANCE_ID(IN, OUT);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
 
                 //Transform vertex position from obejct space to clip space
@@ -70,6 +81,7 @@ Shader "Custom/WireframeShader"
             //Fragment shader
             half4 frag(Varyings IN) : SV_Target
             {
+                UNITY_SETUP_INSTANCE_ID(IN);
                 UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(IN);
 
                 //Use screen space derivatives to calculate edge distance
@@ -99,4 +111,5 @@ Shader "Custom/WireframeShader"
             ENDHLSL
         }
     }
+    
 }

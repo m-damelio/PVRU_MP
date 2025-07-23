@@ -1,105 +1,168 @@
-Shader "Custom/ScanLines"
+Shader "Custom/VR_ScanLines"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+        _BaseMap ("Base Texture", 2D) = "white" {}
+        _BaseColor ("Base Color", Color) = (1,1,1,1)
         _ScanlineColor ("Scanline Color", Color) = (0,1,1,1)
         _ScanlineFrequency("Scanline Frequency", Range(50,500)) = 200.0
-        [PerRendererData] _ScanlineIntensity("Scanline Intensity", Range(0,1))= 0.3
+        _ScanlineIntensity("Scanline Intensity", Range(0,1))= 0.3
         _ScanlineSpeed("Scanline Speed", Range(-10,10)) = 1.0
         _FlickerSpeed("Flicker Speed", Range(0,20)) = 5.0
         _FlickerIntensity("Flicker Intensity", Range(0,1)) = 0.1
         _EmissionIntensity ("Emission Intensity", Range(0,5)) = 1.0
+        
+        // URP properties
+        [Toggle] _AlphaClip("Alpha Clipping", Float) = 0.0
+        _Cutoff("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
     }
+    
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags 
+        { 
+            "RenderType" = "Opaque" 
+            "RenderPipeline" = "UniversalPipeline"
+            "Queue" = "Geometry"
+        }
         LOD 100
 
         Pass
         {
-            CGPROGRAM
+            Name "ForwardLit"
+            Tags { "LightMode" = "UniversalForward" }
+
+            HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            // VR stereo rendering support
+            
+            // URP keywords
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
+            #pragma multi_compile_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile_fog
-            #pragma multi_compile _ STEREO_INSTANCING_ON STEREO_MULTIVIEW_ON
+            
+            // VR keywords - Unity 6.0 style
+            #pragma multi_compile _ UNITY_STEREO_INSTANCING_ENABLED
+            #pragma multi_compile _ UNITY_STEREO_MULTIVIEW_ENABLED
             #pragma multi_compile _ UNITY_SINGLE_PASS_STEREO
 
-            #include "UnityCG.cginc"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
-            struct appdata
+            struct Attributes
             {
-                float4 vertex : POSITION;
+                float4 positionOS : POSITION;
                 float2 uv : TEXCOORD0;
+                float3 normalOS : NORMAL;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
-            struct v2f
+            struct Varyings
             {
+                float4 positionCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
-                UNITY_FOG_COORDS(1)
-                float4 vertex : SV_POSITION;
+                float3 positionWS : TEXCOORD1;
                 float4 screenPos : TEXCOORD2;
+                float fogCoord : TEXCOORD3;
+                
+                UNITY_VERTEX_INPUT_INSTANCE_ID
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-            float4 _ScanlineColor;
-            float _ScanlineFrequency;
-            float _ScanlineIntensity;
-            float _ScanlineSpeed;
-            float _FlickerSpeed;
-            float _FlickerIntensity;
-            float _EmissionIntensity;
+            // Texture and sampler declarations (URP style)
+            TEXTURE2D(_BaseMap);
+            SAMPLER(sampler_BaseMap);
 
-            v2f vert (appdata v)
+            // Property declarations in CBUFFER for SRP Batcher compatibility
+            CBUFFER_START(UnityPerMaterial)
+                float4 _BaseMap_ST;
+                half4 _BaseColor;
+                half4 _ScanlineColor;
+                float _ScanlineFrequency;
+                half _ScanlineIntensity;
+                float _ScanlineSpeed;
+                float _FlickerSpeed;
+                half _FlickerIntensity;
+                half _EmissionIntensity;
+                half _AlphaClip;
+                half _Cutoff;
+            CBUFFER_END
+
+            Varyings vert(Attributes input)
             {
-                v2f o;
+                Varyings output = (Varyings)0;
                 
-                UNITY_SETUP_INSTANCE_ID(v);
-                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+                // VR setup
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_TRANSFER_INSTANCE_ID(input, output);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
+
+                // Transform positions
+                VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
+                output.positionCS = vertexInput.positionCS;
+                output.positionWS = vertexInput.positionWS;
                 
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                o.screenPos = ComputeScreenPos(o.vertex);
-                UNITY_TRANSFER_FOG(o,o.vertex);
-                return o;
+                // UV transformation
+                output.uv = TRANSFORM_TEX(input.uv, _BaseMap);
+                
+                // Screen position for VR-aware sampling
+                output.screenPos = ComputeScreenPos(output.positionCS);
+                
+                // Fog
+                output.fogCoord = ComputeFogFactor(output.positionCS.z);
+
+                return output;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            half4 frag(Varyings input) : SV_Target
             {
-                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
+                // VR setup
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
                 
-                // base texture
-                fixed4 col = tex2D(_MainTex, i.uv);
+                // Sample base texture
+                half4 baseColor = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, input.uv);
+                baseColor *= _BaseColor;
 
-                // Use UV coordinates instead of screen position for VR compatibility
-                // This ensures scanlines appear consistently in both eyes
-                float2 scanlineUV = i.uv;
-
-                // moving scanlines - use UV.y instead of screen coordinates
-                float scanline = sin((scanlineUV.y + _Time.y * _ScanlineSpeed) * _ScanlineFrequency);
-                scanline = scanline * 0.5 + 0.5; // Convert from -1,1 to 0,1
+                // Screen-space UV calculation for post-processing style effect
+                // This makes scanlines move consistently across the screen regardless of object rotation
+                float2 screenUV = input.screenPos.xy / input.screenPos.w;
+                
+                // Use screen space Y coordinate for consistent horizontal scanlines
+                // This creates the post-processing effect you want
+                float scanlinePos = (screenUV.y + _Time.y * _ScanlineSpeed) * _ScanlineFrequency;
+                float scanline = sin(scanlinePos);
+                scanline = scanline * 0.5 + 0.5; // Convert from [-1,1] to [0,1]
 
                 // Flicker effect
                 float flicker = sin(_Time.y * _FlickerSpeed) * _FlickerIntensity + 1.0;
 
-                // Apply scanlines
+                // Apply scanline darkening
                 float scanlineEffect = lerp(1.0, scanline, _ScanlineIntensity);
-                col.rgb *= scanlineEffect * flicker;
+                baseColor.rgb *= scanlineEffect * flicker;
 
-                // Add emission glow to scanlines
+                // Add emission glow to bright scanlines
                 float scanlineGlow = smoothstep(0.7, 1.0, scanline) * _ScanlineIntensity;
-                col.rgb += _ScanlineColor.rgb * scanlineGlow * _EmissionIntensity;
+                half3 emission = _ScanlineColor.rgb * scanlineGlow * _EmissionIntensity;
+                baseColor.rgb += emission;
 
-                // apply fog
-                UNITY_APPLY_FOG(i.fogCoord, col);
+                // Alpha clipping if enabled
+                #if defined(_ALPHATEST_ON)
+                    clip(baseColor.a - _Cutoff);
+                #endif
 
-                return col;
+                // Apply fog
+                baseColor.rgb = MixFog(baseColor.rgb, input.fogCoord);
+
+                return baseColor;
             }
-            ENDCG
+            ENDHLSL
         }
+        
+
     }
+    
+    FallBack "Hidden/Universal Render Pipeline/FallbackError"
 }

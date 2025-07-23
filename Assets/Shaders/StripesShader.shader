@@ -15,42 +15,53 @@ Shader "Unlit/StripesShader"
 
         Pass
         {
-            CGPROGRAM
+            HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ UNITY_STEREO_INSTANCING_ENABLED
+            #pragma multi_compile _ UNITY_STEREO_MULTIVIEW_ENABLED
+            #pragma multi_compile _ UNITY_SINGLE_PASS_STEREO
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             int _Tiling; 
             float _WidthShift;
             float _BottomCut;
             float _TopCut;
-            fixed4 _Color1;
-            fixed4 _Color2;
+            float4 _Color1;
+            float4 _Color2;
 
-            struct appdata
+            struct Attributes
             {
-                float4 vertex : POSITION;
+                float4 positionOS : POSITION;
                 float2 uv : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
-            struct v2f
+            struct Varyings
             {
                 float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
+                float4 positionHCS : SV_POSITION;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
 
-            v2f vert (appdata v)
+            Varyings vert (Attributes v)
             {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                Varyings o;
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
+                o.positionHCS = TransformObjectToHClip(v.positionOS.xyz);
                 o.uv = v.uv;
                 return o;
             }
 
-            fixed4 frag (v2f i) : SV_Target
+            half4 frag (Varyings i) : SV_Target
             {
+                UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(i);
                 //Define regions 
                 float startY = _BottomCut;
                 float endY = 1.0 - _TopCut;
@@ -59,15 +70,16 @@ Shader "Unlit/StripesShader"
                 //Cutoff bottom and top to be white
                 if (uvy < startY || uvy > endY)
                 {
-                    return fixed4(1,1,1,1);
+                    return half4(1,1,1,1);
                 }
                 //remap uvy to actual stripe region
                 float t = (uvy - startY) / regionHeight;
                 float pos = t * _Tiling;
-                fixed value = floor(frac(pos) + _WidthShift);
+                half value = floor(frac(pos) + _WidthShift);
                 return lerp(_Color1, _Color2, value);
             }
-            ENDCG
+            ENDHLSL
         }
     }
+    Fallback "Universal Render Pipeline/Unlit"
 }

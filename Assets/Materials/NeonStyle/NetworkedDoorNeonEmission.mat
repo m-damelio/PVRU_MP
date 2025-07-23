@@ -96,7 +96,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
-    - _EmissionIntensity: 3
+    - _EmissionIntensity: 1
     - _EnvironmentReflections: 1
     - _FresnelIntensity: 1
     - _FresnelPower: 2

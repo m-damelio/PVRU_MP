@@ -47,6 +47,10 @@ Shader "Custom/Holographic"
             #pragma vertex vert
             #pragma fragment frag
             #pragma multi_compile_fog
+            #pragma multi_compile_instancing
+            #pragma multi_compile _ UNITY_STEREO_INSTANCING_ENABLED
+            #pragma multi_compile _ UNITY_STEREO_MULTIVIEW_ENABLED
+            #pragma multi_compile _ UNITY_SINGLE_PASS_STEREO
             
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             
@@ -55,6 +59,7 @@ Shader "Custom/Holographic"
                 float4 positionOS : POSITION;
                 float3 normalOS : NORMAL;
                 float2 uv : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
             
             struct Varyings
@@ -65,6 +70,7 @@ Shader "Custom/Holographic"
                 float3 normalWS : TEXCOORD2;
                 float rimFactor : TEXCOORD3;
                 float fogCoord : TEXCOORD4;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
             
             TEXTURE2D(_MainTex);
@@ -94,6 +100,8 @@ Shader "Custom/Holographic"
             Varyings vert(Attributes input)
             {
                 Varyings output;
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
                 
                 VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
                 VertexNormalInputs normalInput = GetVertexNormalInputs(input.normalOS);
