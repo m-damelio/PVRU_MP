@@ -95,8 +95,6 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
             Debug.Log("DoorOpener: Eject key card");
             Vector3 ejectPosition = transform.position+ transform.forward *0.5f;
             Quaternion ejectRotation = transform.rotation;
-
-            card.RPC_Drop(ejectPosition, ejectRotation);
         }
         HasKeyCardInserted = false;
         InsertedKeyCardId = default;

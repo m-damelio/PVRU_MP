@@ -105,7 +105,7 @@ namespace Fusion.XR.Host.Grabbing
         Dictionary<(PlayerRef player, RigPart side), NetworkGrabber> cachedGrabbers = new Dictionary<(PlayerRef player, RigPart side), NetworkGrabber>();
 
 
-        private void Awake()
+        protected virtual void Awake()
         {
             networkRigidbody = GetComponent<NetworkRigidbody3D>();
             grabbable = GetComponent<PhysicsGrabbable>();

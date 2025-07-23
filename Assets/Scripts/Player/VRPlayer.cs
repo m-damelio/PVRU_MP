@@ -48,7 +48,7 @@ public class VRPlayer : NetworkBehaviour
     [Header("For Testing Purposes")]
     private DoorNetworkedController doorToOpen;
     //private bool hasSearchedForDoor = false;
-    private NetworkedKeyCard heldKeyCard;
+    [SerializeField] private NetworkedKeyCard heldKeyCard;
     
     public enum PlayerType
     {
@@ -179,12 +179,39 @@ public class VRPlayer : NetworkBehaviour
         
 
         UpdatePlayerState();
+        UpdateHeldKeyCardReference();
         
         // Quest 3 hand tracking status can be tracked here
         // for gameplay logic (separate from the visual hand representation)
         UpdateHandTrackingStatus();
     }
-    
+
+    private void UpdateHeldKeyCardReference()
+    {
+        var rightGrabber = networkRig.rightGrabber;
+        if (rightGrabber != null)
+        {
+            var grabInfo = rightGrabber.GrabInfo;
+            if (grabInfo.grabbedObjectId != NetworkBehaviourId.None && Runner.TryFindBehaviour(grabInfo.grabbedObjectId, out NetworkedKeyCard cardInRightHand))
+            {
+                heldKeyCard = cardInRightHand;
+                return;
+            }
+        }
+
+        var leftGrabber = networkRig.leftGrabber;
+        if (leftGrabber != null)
+        {
+            var grabInfo = leftGrabber.GrabInfo;
+            if (grabInfo.grabbedObjectId != NetworkBehaviourId.None && Runner.TryFindBehaviour(grabInfo.grabbedObjectId, out NetworkedKeyCard cardInLeftHand))
+            {
+                heldKeyCard = cardInLeftHand;
+                return;
+            }
+        }
+        
+        heldKeyCard = null;
+    }
     void UpdateHandTrackingStatus()
     {
         // Visual hand representation is handled by NetworkRig/NetworkHand
@@ -281,36 +308,21 @@ public class VRPlayer : NetworkBehaviour
 
     private void HandleInteraction()
     {
+        //Handles interacting with a dooropener when keycard is held
         Debug.Log("VRPlayer: HandleInteraction called");
 
-        if(heldKeyCard != null)
+        if (heldKeyCard == null)
         {
-            if(heldKeyCard.Holder != Object.InputAuthority)
-            {
-                Debug.Log("VRPlayer: Keycard no longer held by this player, clearing reference");
-                heldKeyCard = null;
-                return;
-            }
-
-            var doorOpener = FindNearbyDoorOpener();
-            if(doorOpener != null)
-            {
-                Debug.Log($"VRPlayer: Inserting key card into door opener: {doorOpener.name}");
-                heldKeyCard.InsertInto(doorOpener);
-                return;
-            }
+            Debug.Log("VRPlayer: Not holding a keycard to interact with");
+            return;
         }
 
-        //if not holding key card pick one up
-        if(heldKeyCard == null)
+        var doorOpener = FindNearbyDoorOpener();
+        if(doorOpener != null)
         {
-            var keyCard = FindNearbyKeyCard();
-            if(keyCard != null)
-            {
-                Debug.Log($"VRPlayer: Picking up key card: {keyCard.name}");
-                PickupKeyCard(keyCard);
-                return;
-            }
+            Debug.Log($"VRPlayer: Inserting key card into door opener: {doorOpener.name}");
+            heldKeyCard.InsertInto(doorOpener);
+            return;
         }
     }
     
@@ -323,30 +335,6 @@ public class VRPlayer : NetworkBehaviour
     {
         //TODO 
         return NetworkedSneakValue;
-    }
-
-    private NetworkedKeyCard FindNearbyKeyCard()
-    {
-        Vector3 playerPosition = transform.position;
-        Collider[] colliders = Physics.OverlapSphere(playerPosition, pickupRange, keyCardLayer);
-
-        NetworkedKeyCard closestKeyCard = null;
-        float closestDistance = float.MaxValue;
-
-        foreach(var collider in colliders)
-        {
-            var keyCard = collider.GetComponent<NetworkedKeyCard>();
-            if(keyCard != null && keyCard.Holder == PlayerRef.None)
-            {
-                float distance = Vector3.Distance(playerPosition,collider.transform.position);
-                if(distance < closestDistance)
-                {
-                    closestDistance = distance;
-                    closestKeyCard = keyCard;
-                }
-            }
-        }
-        return closestKeyCard;
     }
 
     private DoorOpener FindNearbyDoorOpener()
@@ -370,16 +358,6 @@ public class VRPlayer : NetworkBehaviour
             }
         } 
         return closestDoorOpener;
-    }
-
-    private void PickupKeyCard(NetworkedKeyCard keyCard)
-    {
-        if(keyCard != null && Object.HasInputAuthority)
-        {
-            keyCard.RPC_PickUp(Object.InputAuthority);
-            heldKeyCard = keyCard;
-            Debug.Log($"VRPlayer: Picked up key card with ID: {keyCard.KeyID}");
-        }
     }
     
     public override void Render()

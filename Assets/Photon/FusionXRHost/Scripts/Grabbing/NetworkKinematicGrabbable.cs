@@ -24,7 +24,7 @@ namespace Fusion.XR.Host.Grabbing
 
         KinematicGrabbable grabbable;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             grabbable = GetComponent<KinematicGrabbable>();
         }

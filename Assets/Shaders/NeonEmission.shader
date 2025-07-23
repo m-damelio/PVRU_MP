@@ -45,6 +45,8 @@ Shader "Custom/NeonEmission"
                 float3 worldPos : TEXCOORD2;
                 float fogCoord : TEXCOORD3;
                 float4 positionCS : SV_POSITION;
+                UNITY_VERTEX_OUTPUT_STEREO
+
             };
 
             sampler2D _MainTex;
@@ -107,5 +109,4 @@ Shader "Custom/NeonEmission"
             ENDHLSL
         }
     }
-    Fallback "Universal Render Pipeline/Unlit"
 }

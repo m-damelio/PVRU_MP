@@ -159,6 +159,4 @@ Shader "Custom/Holographic"
             ENDHLSL
         }
     }
-    
-    Fallback "Universal Render Pipeline/Unlit"
 }

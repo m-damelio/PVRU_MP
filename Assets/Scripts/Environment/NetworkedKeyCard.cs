@@ -1,7 +1,9 @@
 using UnityEngine;
 using Fusion;
+using Fusion.XR.Host.Grabbing;
 using System.Collections.Generic;
 
+[RequireComponent(typeof(NetworkGrabbable))]
 public class NetworkedKeyCard : NetworkBehaviour
 {
     [Header("Keycard parameters")]
@@ -13,24 +15,26 @@ public class NetworkedKeyCard : NetworkBehaviour
     public Collider keyCardCollider;
 
     [Header("Networked properties")]
-    [Networked] public int KeyIDHash {get;set;}
-    [Networked] public PlayerRef Holder {get;set;}
+    [Networked] public int KeyIDHash { get; set; }
+    [Networked] public PlayerRef Holder { get; set; }
 
-    private static Dictionary<int, string> hashToStringMap = new Dictionary<int,string>();
+    protected NetworkGrabbable _grabbable;
+
+    private static Dictionary<int, string> hashToStringMap = new Dictionary<int, string>();
     private string _currentKeyID;
 
     public string KeyID
     {
         get
-        {   
+        {
             //Get hash from map
-            if(KeyIDHash != 0 && hashToStringMap.TryGetValue(KeyIDHash, out string storedValue))
+            if (KeyIDHash != 0 && hashToStringMap.TryGetValue(KeyIDHash, out string storedValue))
             {
                 return storedValue;
             }
 
             //Fallback if hash from map fails
-            if(!string.IsNullOrEmpty(_currentKeyID))
+            if (!string.IsNullOrEmpty(_currentKeyID))
             {
                 return _currentKeyID;
             }
@@ -44,12 +48,18 @@ public class NetworkedKeyCard : NetworkBehaviour
             int hash = value.GetHashCode();
             KeyIDHash = hash;
 
-            if(!hashToStringMap.ContainsKey(hash)) hashToStringMap[hash] = value;
+            if (!hashToStringMap.ContainsKey(hash)) hashToStringMap[hash] = value;
         }
     }
+
+    protected virtual void Awake()
+    {
+        _grabbable = GetComponent<NetworkGrabbable>();
+    }
+
     public override void Spawned()
     {
-        if(!string.IsNullOrEmpty(_keyID))
+        if (!string.IsNullOrEmpty(_keyID))
         {
             KeyID = _keyID;
         }
@@ -58,14 +68,32 @@ public class NetworkedKeyCard : NetworkBehaviour
             Debug.LogWarning("This keycards keyID was not set before spawning, assigning default" + defaultKeyID);
             KeyID = defaultKeyID;
         }
-        
+
+        _grabbable.onDidGrab.AddListener(OnGrab);
+        _grabbable.onDidUngrab.AddListener(OnRelease);
+
+    }
+
+    protected virtual void OnGrab(NetworkGrabber grabber)
+    {
+        if (grabber != null)
+        {
+            Holder = grabber.Object.InputAuthority;
+            Debug.Log($"NetworkedKeyCard: picked up by player: {Holder}");
+        }
+    }
+
+    protected virtual void OnRelease()
+    {
+        Debug.Log($"NetworkedKeyCard: Dropped by player {Holder}");
+        Holder = PlayerRef.None;
     }
 
     public override void Render()
     {
-        if(KeyIDHash != 0 && !hashToStringMap.ContainsKey(KeyIDHash))
+        if (KeyIDHash != 0 && !hashToStringMap.ContainsKey(KeyIDHash))
         {
-            if(!string.IsNullOrEmpty(_keyID))
+            if (!string.IsNullOrEmpty(_keyID))
             {
                 hashToStringMap[KeyIDHash] = _keyID;
             }
@@ -77,57 +105,12 @@ public class NetworkedKeyCard : NetworkBehaviour
     {
         bool isHeld = Holder != PlayerRef.None;
 
-        if(visualModel != null) visualModel.SetActive(!isHeld);
-        if(keyCardCollider != null) keyCardCollider.enabled = !isHeld;
-    }
-    //Client asks to pick it ip 
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public virtual void RPC_PickUp(PlayerRef requester, RpcInfo info = default)
-    {
-        //Allow pick up if not held already
-        if(Holder != PlayerRef.None)
-        {
-            Debug.LogWarning($"NetworkedKeyCard: Cannot pick up - already held by {Holder}");
-            return;
-        }
-        Holder = requester;
-        Debug.Log($"NetworkedKeyCard: Picked up by player {requester}");
-        RPC_NotifyPickedUp(requester);
-    }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_NotifyPickedUp(PlayerRef holder)
-    {
-        Debug.Log($"NetworkedKeyCard: Notifyinf all clients - picked up by {holder}");
-    }
-    
-    //Client asks to drop it
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)] 
-    public virtual void RPC_Drop(Vector3 worldPos, Quaternion worldRot, RpcInfo info = default)
-    {
-        //Only holder can drop key
-        if(Holder != info.Source)
-        {
-            return;
-        }
-        Holder = PlayerRef.None;
-        transform.position = worldPos;
-        transform.rotation = worldRot;
-
-        RPC_NotifyDopped(worldPos, worldRot);
-    }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_NotifyDopped(Vector3 worldPos, Quaternion worldRot)
-    {
-        Debug.Log($"NetworkedKeyCard: Notifying all clients - dropped at {worldPos}");
-        transform.position = worldPos;
-        transform.rotation = worldRot;
+        if (keyCardCollider != null) keyCardCollider.enabled = !isHeld;
     }
 
     public void InsertInto(IKeyCardReceiver receiver)
     {
-        if(receiver is NetworkBehaviour networkReceiver)
+        if (receiver is NetworkBehaviour networkReceiver)
         {
             //Called by e.g. player when inserted into something
             RPC_InsertOnServer(Holder, networkReceiver.Object.Id);
@@ -136,7 +119,7 @@ public class NetworkedKeyCard : NetworkBehaviour
         {
             Debug.LogError("KeyCard receiver must be a NetworkBehaviour to work with networked insertion");
         }
-        
+
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -144,14 +127,14 @@ public class NetworkedKeyCard : NetworkBehaviour
     {
         Debug.Log($"NetworkedKeyCard: RPC_InsertOnServer called by {info.Source}, user: {user}, holder: {Holder}");
         //Only holder of card can insert
-        if(Holder != user)
+        if (Holder != user)
         {
             Debug.LogWarning($"NetworkedKeyCard: Player {info.Source} tried to insert key card but is not holder. Current holder: {Holder}.");
             return;
         }
         var netObj = Runner.FindObject(receiverId);
         var rec = netObj?.GetComponent<IKeyCardReceiver>();
-        if(rec == null) return;
+        if (rec == null) return;
         Debug.Log($"NetworkedKeyCard: Calling OnKeyCardInserted with key Id: {KeyID}");
         rec.OnKeyCardInserted(this);
         //Destroy or drop after we use it?
@@ -159,7 +142,7 @@ public class NetworkedKeyCard : NetworkBehaviour
 
     public void SetKeyID(string newKeyID)
     {
-        if(Object.HasStateAuthority)
+        if (Object.HasStateAuthority)
         {
             KeyID = newKeyID;
         }
@@ -179,7 +162,7 @@ public class NetworkedKeyCard : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_SyncKeyIDMapping(int hash, string keyIDValue, RpcInfo info = default)
     {
-        if(!hashToStringMap.ContainsKey(hash))
+        if (!hashToStringMap.ContainsKey(hash))
         {
             hashToStringMap[hash] = keyIDValue;
         }
@@ -187,7 +170,7 @@ public class NetworkedKeyCard : NetworkBehaviour
 
     public void EnsureKeyIDSynced()
     {
-        if(Object.HasStateAuthority && KeyIDHash != 0)
+        if (Object.HasStateAuthority && KeyIDHash != 0)
         {
             RPC_SyncKeyIDMapping(KeyIDHash, KeyID);
         }

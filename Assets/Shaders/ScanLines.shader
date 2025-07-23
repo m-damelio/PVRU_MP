@@ -43,7 +43,7 @@ Shader "Custom/VR_ScanLines"
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile_fog
             
-            // VR keywords - Unity 6.0 style
+            // VR keywords 
             #pragma multi_compile _ UNITY_STEREO_INSTANCING_ENABLED
             #pragma multi_compile _ UNITY_STEREO_MULTIVIEW_ENABLED
             #pragma multi_compile _ UNITY_SINGLE_PASS_STEREO
@@ -61,7 +61,7 @@ Shader "Custom/VR_ScanLines"
 
             struct Varyings
             {
-                float4 positionCS : SV_POSITION;
+                float4 positionHCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 float3 positionWS : TEXCOORD1;
                 float4 screenPos : TEXCOORD2;
@@ -101,17 +101,17 @@ Shader "Custom/VR_ScanLines"
 
                 // Transform positions
                 VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
-                output.positionCS = vertexInput.positionCS;
+                output.positionHCS = vertexInput.positionCS;
                 output.positionWS = vertexInput.positionWS;
                 
                 // UV transformation
                 output.uv = TRANSFORM_TEX(input.uv, _BaseMap);
                 
                 // Screen position for VR-aware sampling
-                output.screenPos = ComputeScreenPos(output.positionCS);
+                output.screenPos = ComputeScreenPos(output.positionHCS);
                 
                 // Fog
-                output.fogCoord = ComputeFogFactor(output.positionCS.z);
+                output.fogCoord = ComputeFogFactor(output.positionHCS.z);
 
                 return output;
             }
@@ -163,6 +163,4 @@ Shader "Custom/VR_ScanLines"
         
 
     }
-    
-    FallBack "Hidden/Universal Render Pipeline/FallbackError"
 }

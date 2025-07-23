@@ -81,5 +81,4 @@ Shader "Unlit/StripesShader"
             ENDHLSL
         }
     }
-    Fallback "Universal Render Pipeline/Unlit"
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using Fusion;
+using Fusion.XR.Host.Grabbing;
 using System.Collections.Generic;
 
 public class StealableKeyCard : NetworkedKeyCard
@@ -24,38 +25,41 @@ public class StealableKeyCard : NetworkedKeyCard
     private Vector3 originalLocalPosition;
     private Quaternion originalLocalRotation;
 
+    protected override void Awake()
+    {
+        base.Awake();
+    }
+
     public override void Spawned()
     {
         // Call parent spawned first
         base.Spawned();
 
         // Initialize guard attachment
-        if(Object.HasStateAuthority)
+        if (Object.HasStateAuthority)
         {
             IsAttachedToGuard = isAttachedToGuard;
         }
+    }
 
-        // Store original position relative to guard
-        if(guardAttachPoint != null)
-        {
-            originalLocalPosition = transform.localPosition;
-            originalLocalRotation = transform.localRotation;
-        }
+    private bool ShouldBeGrabbable(NetworkGrabber grabber)
+    {
+        return !IsAttachedToGuard;
     }
 
     public override void FixedUpdateNetwork()
     {
-        if(!Object.HasStateAuthority) return;
+        if (!Object.HasStateAuthority) return;
 
         // Handle stealing progress
-        if(StealingPlayer != PlayerRef.None && IsAttachedToGuard)
+        if (StealingPlayer != PlayerRef.None && IsAttachedToGuard)
         {
             // Check if stealing player is still in range and meets requirements
-            if(CanPlayerSteal(StealingPlayer))
+            if (CanPlayerSteal(StealingPlayer))
             {
                 StealProgress += Runner.DeltaTime / stealDuration;
-                
-                if(StealProgress >= 1f)
+
+                if (StealProgress >= 1f)
                 {
                     // Stealing complete!
                     CompleteSteal();
@@ -80,39 +84,20 @@ public class StealableKeyCard : NetworkedKeyCard
 
     private void UpdateStealingVisualState()
     {
-        bool isHeld = Holder != PlayerRef.None;
-        bool isAttached = IsAttachedToGuard;
-
-        // Position the keycard
-        if(isHeld)
+        if (IsAttachedToGuard && guardAttachPoint != null)
         {
-            // Hide when held (VR player will handle visual representation)
-            // Parent class already handles this
-        }
-        else if(isAttached && guardAttachPoint != null)
-        {
-            // Keep attached to guard
-            transform.position = guardAttachPoint.position;
-            transform.rotation = guardAttachPoint.rotation;
-        }
-        
-        // Visual feedback for stealing progress
-        if(StealProgress > 0f && StealProgress < 1f)
-        {
-            // Could add visual effects here (glowing, etc.)
+            if (Holder == PlayerRef.None)
+            {
+                transform.position = guardAttachPoint.position;
+                transform.rotation = guardAttachPoint.rotation;
+            }
         }
     }
 
     private void UpdateVisualState()
     {
         bool isHeld = Holder != PlayerRef.None;
-        bool isAttached = IsAttachedToGuard;
 
-        if(visualModel != null) 
-        {
-            visualModel.SetActive(!isHeld);
-        }
-        
         if(keyCardCollider != null) 
         {
             // Enable collider for stealing even when attached, but disable when held
@@ -223,32 +208,6 @@ public class StealableKeyCard : NetworkedKeyCard
         Debug.Log($"StealableKeyCard: Keycard stolen - notifying all clients");
     }
 
-    // Overrides the parent's pickup method to handle guard attachment
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public override void RPC_PickUp(PlayerRef requester, RpcInfo info = default)
-    {
-        if(IsAttachedToGuard)
-        {
-            Debug.LogWarning("StealableKeyCard: Cannot pick up - attached to guard. Use stealing instead.");
-            return;
-        }
-
-        // Call parent pickup method
-        base.RPC_PickUp(requester, info);
-    }
-
-    // Override drop to ensure it detaches from guard
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)] 
-    public override void RPC_Drop(Vector3 worldPos, Quaternion worldRot, RpcInfo info = default)
-    {
-        if(Holder != info.Source) return;
-        
-        // Ensure it's detached when dropped
-        IsAttachedToGuard = false;
-        
-        // Call parent drop method
-        base.RPC_Drop(worldPos, worldRot, info);
-    }
 
     // New methods specific to stealing functionality
     public bool IsStealable()
