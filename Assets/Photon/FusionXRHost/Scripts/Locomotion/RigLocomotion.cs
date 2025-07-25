@@ -39,6 +39,7 @@ namespace Fusion.XR.Host.Locomotion
         HardwareRig rig;
 
         public LayerMask locomotionLayerMask = 0;
+        public LayerMask disallowTeleportLayerMask = 0;
 
         // If locomotion constraints are needed, a ILocomotionValidationHandler can restrict them
         ILocomotionValidationHandler locomotionValidationHandler;
@@ -110,7 +111,9 @@ namespace Fusion.XR.Host.Locomotion
         {
             // We check if the hit collider is in the locomoation layer mask
             bool colliderInLocomotionLayerMask = locomotionLayerMask == (locomotionLayerMask | (1 << surfaceCollider.gameObject.layer));
-            return colliderInLocomotionLayerMask;
+
+            bool notInDisallowLayer = disallowTeleportLayerMask != (disallowTeleportLayerMask | (1 << surfaceCollider.gameObject.layer));
+            return colliderInLocomotionLayerMask && notInDisallowLayer;
         }
 
         protected virtual void OnBeamRelease(Collider lastHitCollider, Vector3 position)

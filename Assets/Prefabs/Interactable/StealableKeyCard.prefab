@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3955693002374820912}
   - component: {fileID: 3758808867728749000}
   - component: {fileID: 2370670155228605464}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 6543016245660236962}
   - component: {fileID: 9148471437683411307}
   - component: {fileID: 5907659909934921954}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: StealableKeyCard
   m_TagString: Untagged
   m_Icon: {fileID: 0}

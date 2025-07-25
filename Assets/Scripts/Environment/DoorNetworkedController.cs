@@ -17,6 +17,8 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
     [Header("Initial state")]
     [SerializeField] private bool startOpen = false;
 
+    private ChangeDetector _changeDetector;
+
     void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -27,7 +29,8 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
     //Doors didnt appear open when spawned with startOPen = true there added spawned and other methods
     public override void Spawned()
     {
-        if(Object.HasStateAuthority)
+        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
+        if (Object.HasStateAuthority)
         {
             IsOpen = startOpen;
             HasInitialized = false;
@@ -47,6 +50,17 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
                 RPC_SetInitialOpenState();
             }
             HasInitialized = true;
+        }
+    }
+
+    public override void Render()
+    {
+        foreach (var changedProperty in _changeDetector.DetectChanges(this))
+        {
+            if (changedProperty == nameof(IsOpen))
+            {
+                OnDoorsStateChanged();
+            }
         }
     }
 
@@ -124,29 +138,30 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
         if(IsOpen != shouldOpen)
         {
             IsOpen = shouldOpen;
-
-            //Notify clients to play animation
-            if(shouldOpen)
-            {
-                RPC_PlayOpenAnimation();
-            }
-            else
-            {
-                RPC_PlayCloseAnimation();
-            }
         }   
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_PlayOpenAnimation()
+    private void OnDoorsStateChanged()
+    {
+        Debug.Log($"Door: State changed to {(IsOpen ? "Open" : "Closed")} via change detector");
+        if (IsOpen)
+        {
+            PlayOpenAnimation();
+        }
+        else
+        {
+            PlayCloseAnimation();
+        }
+    }
+
+    private void PlayOpenAnimation()
     {
         Debug.Log("Door: Playing open animation");
         _animatorSync.NetworkTrigger("OpenDoor");
         StartCoroutine(UpdateColliderAfterAnimation());
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_PlayCloseAnimation()
+    private void PlayCloseAnimation()
     {
         Debug.Log("Door: Playing close animation");
         _animatorSync.NetworkTrigger("CloseDoor");

@@ -178,12 +178,12 @@ namespace Fusion.XR.Host.Rig
             {
                 if (sneakTestAction.action.WasPressedThisFrame())
                 {
-                    Debug.Log("SNEAK TEST BUTTON PRESSED!");
+                    //Debug.Log("SNEAK TEST BUTTON PRESSED!");
                 }
                 
                 if (!sneakTestAction.action.enabled)
                 {
-                    Debug.LogWarning("Sneak test action is not enabled!");
+                    //Debug.LogWarning("Sneak test action is not enabled!");
                 }
             }
             else
@@ -192,8 +192,8 @@ namespace Fusion.XR.Host.Rig
             }
 
             // Original button tracking
-            _interactionButton = _interactionButton | (interactionAction?.action.WasPressedThisFrame() ?? false);
-            _sneakTestButton = _sneakTestButton | (sneakTestAction?.action.WasPressedThisFrame() ?? false);
+            //_interactionButton = _interactionButton | (interactionAction?.action.WasPressedThisFrame() ?? false);
+            //_sneakTestButton = _sneakTestButton | (sneakTestAction?.action.WasPressedThisFrame() ?? false);
 
             if(enableKeyboardInput)
             {

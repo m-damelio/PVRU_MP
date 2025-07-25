@@ -23,14 +23,42 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
     [Networked] public bool HasKeyCardInserted {get;set;}
     [Networked] public NetworkId InsertedKeyCardId {get;set;}
 
-    
+    //Cooldown for "inserting" keycards
+    private float activationCooldown = 2f;
+    private bool isOnCoolDown = false;
 
     void Awake()
     {
         if(doorController == null)
         {
-            Debug.LogError("No door to open assigned to" + this.gameObject.name);
+            Debug.LogError("DoorOpener: No door to open assigned to" + this.gameObject.name);
         }     
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("DoorOpener: OnTriggerEnter called with gameobject " + other.gameObject.name);
+        if (!Object.HasStateAuthority || isOnCoolDown || HasKeyCardInserted) return;
+
+        NetworkedKeyCard keyCard = other.GetComponent<NetworkedKeyCard>();
+
+        Debug.Log($"{other.gameObject.name} has NetworkedKeyCard: {keyCard != null}");
+        
+        if (keyCard != null && keyCard.Holder != PlayerRef.None)
+        {
+            Debug.Log($"DoorOpener: Keycard '{keyCard.KeyID}' detected in trigger, held by player {keyCard.Holder}.");
+
+            keyCard.InsertInto(this);
+
+            StartCoroutine(ActivationCooldown());
+        }
+    }
+
+    private IEnumerator ActivationCooldown()
+    {
+        isOnCoolDown = true;
+        yield return new WaitForSeconds(activationCooldown);
+        isOnCoolDown = false;
     }
 
     public virtual void OnKeyCardInserted(NetworkedKeyCard card)

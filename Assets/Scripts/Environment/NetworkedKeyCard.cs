@@ -105,7 +105,7 @@ public class NetworkedKeyCard : NetworkBehaviour
     {
         bool isHeld = Holder != PlayerRef.None;
 
-        if (keyCardCollider != null) keyCardCollider.enabled = !isHeld;
+        //if (keyCardCollider != null) keyCardCollider.enabled = !isHeld;
     }
 
     public void InsertInto(IKeyCardReceiver receiver)

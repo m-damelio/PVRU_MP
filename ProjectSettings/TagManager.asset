@@ -34,13 +34,13 @@ TagManager:
   - Reflection
   - Water
   - UI
-  - Locomotion
-  - InvisibleForLocalPlayer
-  - NeonLayer
   - Overlay UI
-  - KeyCardLayer
+  - InvisibleForLocalPlayer
+  - NotObstacle&DisallowTeleport
+  - Locomotion
   - Obstacle
-  - NotObstacle
+  - NeonLayer
+  - KeyCardLayer
   - NPC
   - Player
   - HackerOnly

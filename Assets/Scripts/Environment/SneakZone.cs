@@ -17,23 +17,30 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
     private ScanlineController _scanlineController;
     private Collider _sneakZoneCollider;
     private GameObject _visualGameobject;
+    private GameObject _disallowTeleportColliderHolder;
 
+    private ChangeDetector _changeDetector;
 
     void Start()
     {
         _scanlineController = GetComponent<ScanlineController>();
         _sneakZoneCollider = GetComponent<Collider>();
         _visualGameobject = transform.GetChild(0).gameObject;
+        _disallowTeleportColliderHolder = transform.GetChild(1).gameObject;
+    }
+
+    public override void Spawned()
+    {
+        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
     }
 
     public void SetInitialState()
     {
-        if(Object.HasStateAuthority)
+        if (Object.HasStateAuthority)
         {
             IsSneakZoneActive = startActive;
-            RPC_UpdateSneakZoneVisuals();
         }
-        
+
     }
 
     public void ResetToInitialState()
@@ -41,10 +48,16 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
         if(Object.HasStateAuthority)
         {
             IsSneakZoneActive = startActive;
-            RPC_UpdateSneakZoneVisuals();
         }
     }
 
+    public override void Render()
+    {
+        foreach (var changedProperty in _changeDetector.DetectChanges(this))
+        {
+            if (changedProperty == nameof(IsSneakZoneActive)) UpdateSneakZoneVisuals();
+        }
+    }
     void OnTriggerEnter(Collider other)
     {
         if(Object == null) return;
@@ -83,7 +96,6 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
         if(Object.HasStateAuthority)
         {
             IsSneakZoneActive = shouldEnable;
-            RPC_UpdateSneakZoneVisuals();
         }
         else
         {
@@ -97,12 +109,10 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
         if(IsSneakZoneActive != shouldEnable)
         {
             IsSneakZoneActive = shouldEnable;
-            RPC_UpdateSneakZoneVisuals();
         }
     }
     
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_UpdateSneakZoneVisuals()
+    private void UpdateSneakZoneVisuals()
     {
         if(_sneakZoneCollider != null) _sneakZoneCollider.enabled = IsSneakZoneActive;
 
@@ -110,6 +120,7 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
 
         //Don't allow teleport when sneak zone is active
         if(_visualGameobject != null) _visualGameobject.layer = IsSneakZoneActive ? disallowTeleport : allowTeleport;
+        if (_disallowTeleportColliderHolder != null) _disallowTeleportColliderHolder.SetActive(IsSneakZoneActive);
 
         Debug.Log($"SneakZone: Updated to active={IsSneakZoneActive}");
     }
