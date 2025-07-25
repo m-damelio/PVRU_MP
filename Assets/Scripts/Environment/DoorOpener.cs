@@ -37,7 +37,6 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
 
     public void OnTriggerEnter(Collider other)
     {
-        Debug.Log("DoorOpener: OnTriggerEnter called with gameobject " + other.gameObject.name);
         if (!Object.HasStateAuthority || isOnCoolDown || HasKeyCardInserted) return;
 
         NetworkedKeyCard keyCard = other.GetComponent<NetworkedKeyCard>();
