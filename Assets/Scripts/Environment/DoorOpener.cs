@@ -27,6 +27,8 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
     private float activationCooldown = 2f;
     private bool isOnCoolDown = false;
 
+    private Vector3 ejectHeight = new Vector3(0f,0.88f,0f);
+
     void Awake()
     {
         if(doorController == null)
@@ -120,7 +122,7 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
         if(card != null && card.Object != null)
         {
             Debug.Log("DoorOpener: Eject key card");
-            Vector3 ejectPosition = transform.position+ transform.forward *0.5f;
+            Vector3 ejectPosition = transform.position - transform.forward *0.5f + ejectHeight;
             Quaternion ejectRotation = transform.rotation;
         }
         HasKeyCardInserted = false;
@@ -215,8 +217,8 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
     {
         //Draws eject position in the editor
         Gizmos.color = Color.yellow;
-        Vector3 ejectPos = transform.position + transform.forward * 0.5f;
+        Vector3 ejectPos = transform.position - transform.forward * 0.5f + ejectHeight;
         Gizmos.DrawWireSphere(ejectPos, 0.1f);
-        Gizmos.DrawLine(transform.position, ejectPos);
+        Gizmos.DrawLine(transform.position + ejectHeight, ejectPos);
     }
 }
