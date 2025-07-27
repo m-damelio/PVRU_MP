@@ -1,6 +1,11 @@
 using UnityEngine;
 using System.Collections;
 using Fusion;
+using Fusion.Sockets;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 
 public class RotateMirror : NetworkBehaviour
 {
@@ -15,35 +20,21 @@ public class RotateMirror : NetworkBehaviour
     [Networked] public float NetworkedYRotation { get; set; }
     [Networked] public float NetworkedZRotation { get; set; }
 
+    //struct für Input Struktur für die Rotation
+    public struct MirrorInput : INetworkInput
+    {
+        public float yDelta;
+        public float zDelta;
+    }
 
     // For Laser-Updates
     private Quaternion lastRot;
 
-    public override void Spawned()
-    {
-        if (HasStateAuthority)
-        {
-            NetworkedRotation = controlRotation.rotation;
-            NetworkedYRotation = controlRotation.rotation.y;
-            NetworkedZRotation = controlRotation.rotation.z;
-        }
-
-        lastRot = controlRotation.rotation;
-    }
-
-    void Update()
-    {
-        if (!HasStateAuthority) return;
-
-        HandleInput();
-    }
-
     public override void FixedUpdateNetwork()
     {
-        /*if (!HasStateAuthority) return;
-
+       
         // Input-Handling
-        HandleInput();*/
+        //HandleInput();
 
         // Prüfen auf Änderungen und Laser-Update triggern
         if (controlRotation.rotation != lastRot)
@@ -69,7 +60,7 @@ public class RotateMirror : NetworkBehaviour
         
     }
 
-    private void HandleInput()
+    /*private void HandleInput()
     {
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
@@ -87,17 +78,15 @@ public class RotateMirror : NetworkBehaviour
         {
             Rpc_RotateZ(rotate);
         }
-    }
+    }*/
 
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void Rpc_RotateY(float angle)
+    public void RotateY(float angle)
     {
         NetworkedYRotation += angle;
         UpdateRotation();
     }
 
-    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-    public void Rpc_RotateZ(float angle)
+    public void RotateZ(float angle)
     {
         NetworkedZRotation += angle;
         UpdateRotation();
@@ -108,6 +97,11 @@ public class RotateMirror : NetworkBehaviour
         controlRotation.rotation = Quaternion.Euler(0, NetworkedYRotation, NetworkedZRotation);
         NetworkedRotation = controlRotation.rotation;
         TriggerLaserUpdate();
+    }
+
+    public void SetHighlight(bool state)
+    {
+        GetComponentInChildren<Renderer>().material.color = state ? Color.cyan : Color.white;
     }
 
 

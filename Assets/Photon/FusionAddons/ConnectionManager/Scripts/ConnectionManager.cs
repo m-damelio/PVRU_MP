@@ -248,7 +248,6 @@ namespace Fusion.Addons.ConnectionManagerAddon
         #endregion
 
         #region Unused INetworkRunnerCallbacks 
-
         public void OnInput(NetworkRunner runner, NetworkInput input) { }
         public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
         public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }

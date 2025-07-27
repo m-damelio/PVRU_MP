@@ -88,6 +88,7 @@ namespace Fusion.XR.Host.Rig
         private bool _sneakTestButton = false;
 
         public async Task<NetworkRunner> FindRunner()
+
         {
             while (searchingForRunner) await Task.Delay(10);
             searchingForRunner = true;
@@ -296,6 +297,28 @@ namespace Fusion.XR.Host.Rig
             GatherCustomInput(ref rigInput);
 
             input.Set(rigInput);
+
+            //set mirror Input
+            RotateMirror.MirrorInput mirrorInput = new RotateMirror.MirrorInput();
+           
+            // Standardmäßig 0, falls keine Taste gedrückt wird
+            mirrorInput.yDelta = 0f;
+            mirrorInput.zDelta = 0f;
+
+            if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                mirrorInput.yDelta = -2f;
+                Debug.Log(mirrorInput.yDelta);
+            }
+            else if (Input.GetKey(KeyCode.RightArrow))
+                mirrorInput.yDelta = 2f;
+
+            if (Input.GetKey(KeyCode.UpArrow))
+                mirrorInput.zDelta = -2f;
+            else if (Input.GetKey(KeyCode.DownArrow))
+                mirrorInput.zDelta = 2f;
+
+            input.Set(mirrorInput);
         }
 
         private void GatherCustomInput(ref RigInput rigInput)

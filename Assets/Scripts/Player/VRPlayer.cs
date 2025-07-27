@@ -30,12 +30,17 @@ public class VRPlayer : NetworkBehaviour
     [Header("Key Card Interaction")]
     [SerializeField] private float pickupRange = 2f;
     [SerializeField] private LayerMask keyCardLayer = -1; //All layers by default
-    
+
+    [Header("Mirror Rotation")]
+    [SerializeField] private RotateMirror activeMirror;
+    [SerializeField] private List<RotateMirror> mirrors;
+    private bool isSelected;
+
     [Header("Networked properties")]
     [Networked] public PlayerType NetworkedPlayerType { get; set; }
     [Networked] public PlayerState NetworkedPlayerState { get; set; }
     [Networked] public float NetworkedSneakValue { get; set; }
-    
+
     // Quest 3 specific
     [Header("Quest 3 Hand Tracking")]
     [SerializeField] private XRHandSubsystem handSubsystem;
@@ -66,11 +71,83 @@ public class VRPlayer : NetworkBehaviour
         {
             Debug.LogError("VRPlayer requires a NetworkRig component!");
         }
-        
+
+        //Get reference of all mirrors in the scene
+        mirrors = new List<RotateMirror>(FindObjectsOfType<RotateMirror>());
+        isSelected = false;
+
         // Set player type based on hardware detection
         DetectPlayerType();
+
     }
-    
+
+    private void Update()
+    {
+        //Lokal Input, welcher Mirror ausgewählt wurde zum drehen -- das drehen wird genetworked
+        //Farblich hervorheben welchen wir drehen
+        if (!Object.HasInputAuthority) return;
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            if (isSelected && activeMirror == mirrors[0]) {
+                DeselectActiveMirror();
+                isSelected = false;
+            }
+            else
+            {
+                if (mirrors.Count > 0 && !isSelected)
+                {
+                    activeMirror = mirrors[0];
+                    Debug.Log($"Spiegel 1 ausgewählt: {activeMirror.gameObject.name}");
+                    SetActiveMirror(activeMirror);
+                    //var mirrorNetObj = activeMirror.GetComponent<NetworkObject>();
+                    isSelected = true;
+                }
+            }
+            
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            if (isSelected && activeMirror == mirrors[1])
+            {
+                DeselectActiveMirror();
+                isSelected = false;
+            }
+            else
+            {
+                if (mirrors.Count > 1 && !isSelected)
+                {
+                    activeMirror = mirrors[1];
+                    Debug.Log($"Spiegel 2 ausgewählt: {activeMirror.gameObject.name}");
+                    SetActiveMirror(activeMirror);
+                    isSelected = true;
+                }
+            }
+        }
+
+    }
+
+    void SetActiveMirror(RotateMirror mirror)
+    {
+        if (activeMirror != null)
+            activeMirror.SetHighlight(false);
+
+        activeMirror = mirror;
+
+        if (activeMirror != null)
+            activeMirror.SetHighlight(true);
+    }
+
+    void DeselectActiveMirror()
+    {
+        if (activeMirror != null)
+            activeMirror.SetHighlight(false);
+
+        activeMirror = null;
+    }
+
+
     void DetectPlayerType()
     {
         bool hasPressurePlate = DetectPressurePlate();
@@ -113,12 +190,16 @@ public class VRPlayer : NetworkBehaviour
         
         return doorToOpen;
     }
-    
+
     public override void FixedUpdateNetwork()
     {
         //update if we have input authority
-        if (!Object.HasInputAuthority) return;
-        
+        if (!Object.HasInputAuthority)
+        {
+            Debug.Log("Keine Input Authority - kein Input");
+            return;
+        }
+
         if(heldKeyCard != null && heldKeyCard.Holder != Object.InputAuthority)
         {
             Debug.Log("VRPlayer: KEycard was dropped/ejected, clearing reference");
@@ -141,7 +222,13 @@ public class VRPlayer : NetworkBehaviour
             }
 
         }
-        
+
+       
+        //Handle mirror rotation input
+        if (GetInput<RotateMirror.MirrorInput>(out var mirrorInput) && activeMirror != null)
+        {
+            HandleMirrorInput(mirrorInput);
+        }
 
         UpdatePlayerState();
         
@@ -242,6 +329,17 @@ public class VRPlayer : NetworkBehaviour
         {
             playerState = PlayerState.Walking;
         }
+    }
+
+    void HandleMirrorInput(RotateMirror.MirrorInput mirrorInput)
+    {
+        
+        if (mirrorInput.yDelta != 0f)
+           activeMirror.RotateY(mirrorInput.yDelta);
+
+        if (mirrorInput.zDelta != 0f)
+            activeMirror.RotateZ(mirrorInput.zDelta);
+        
     }
 
     private void HandleInteraction()
@@ -398,6 +496,7 @@ public class VRPlayer : NetworkBehaviour
     void OnTriggerEnter(Collider other)
     {
         //Debug.Log($"Trigger entered: {other.name} on layer {other.gameObject.layer}");
+
     }
 
     void OnCollisionEnter(Collision collision)
@@ -409,4 +508,5 @@ public class VRPlayer : NetworkBehaviour
     public Vector3 GetHeadPosition() => networkRig.headset.transform.position;
     public Vector3 GetLeftHandPosition() => networkRig.leftHand.transform.position;
     public Vector3 GetRightHandPosition() => networkRig.rightHand.transform.position;
+
 }
