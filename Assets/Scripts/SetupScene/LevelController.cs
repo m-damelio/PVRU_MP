@@ -27,12 +27,7 @@ public class LevelController : NetworkBehaviour
             }
         }
     }
-
-    void Start()
-    {
-        finalSolvableStep = finalStepGameobject.GetComponent<ISolvable>();
-    }
-
+    
     public override void Spawned()
     {
         //Store initial states when level is first loaded
@@ -81,15 +76,34 @@ public class LevelController : NetworkBehaviour
 
     private void InitializeFinalStep()
     {
-        if (finalSolvableStep != null) finalSolvableStep.OnSolved += OnFinalStepSolved;
+        if (finalStepGameobject != null)
+        {
+            finalSolvableStep = finalStepGameobject.GetComponent<ISolvable>();
+        }
+        
+        if (finalSolvableStep != null) 
+        {
+            Debug.Log($"LevelController: Subscribing to OnSolved for {finalSolvableStep.GetType().Name}");
+            finalSolvableStep.OnSolved += OnFinalStepSolved;
+        }
+        else
+        {
+            Debug.LogError($"LevelController: Could not find ISolvable component on {finalStepGameobject?.name}");
+        }
     }
+
 
     private void OnFinalStepSolved(ISolvable solvablePuzzle)
     {
+        Debug.Log($"LevelController: OnFinalStepSolved called from {solvablePuzzle.GetType().Name}");
         Debug.Log("LevelController: Final step solved action was called from " + solvablePuzzle);
         if (levelManager != null)
         {
             levelManager.RPC_CompleteLevel();
+        }
+        else
+        {
+            Debug.Log("LevelController: LevelManager was null");
         }
     }
 

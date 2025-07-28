@@ -31,7 +31,7 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver, ISolvable
     //Cooldown for "inserting" keycards
     private float activationCooldown = 2f;
     private bool isOnCoolDown = false;
-    private bool wasPreviouslySolved = false;
+    protected bool wasPreviouslySolved = false;
 
     private Vector3 ejectHeight = new Vector3(0f, 0.88f, 0f);
 
@@ -85,13 +85,13 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver, ISolvable
             RPC_PlaySound(insertSound.name);
         }
 
-        if(card.KeyID == requireKeyID)
+        if (card.KeyID == requireKeyID)
         {
             Debug.Log($"DoorOpener: Key ID matches, opening door ...");
             HasKeyCardInserted = true;
             InsertedKeyCardId = card.Object.Id;
 
-            if(doorController!=null)
+            if (doorController != null)
             {
                 doorController.RequestOpen();
             }
@@ -102,7 +102,7 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver, ISolvable
 
             RPC_ShowFeedback(true);
 
-            if(consumeKeyOnUse)
+            if (consumeKeyOnUse)
             {
                 StartCoroutine(DestroyKeyCardAfterDelay(card, keyCardEjectDelay));
             }
@@ -110,6 +110,7 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver, ISolvable
             {
                 StartCoroutine(EjectKeyCardAfterDelay(card, keyCardEjectDelay));
             }
+            IsSolved = true;
         }
         else
         {
@@ -167,6 +168,7 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver, ISolvable
 
         if (currentlySolved && !wasPreviouslySolved)
         {
+            Debug.Log($"OnSolved will be called. OnSolved is null: {OnSolved == null}");
             wasPreviouslySolved = true;
             OnSolved?.Invoke(this);
             if (isFinalStep) RPC_NotifyPuzzleSolved();
@@ -174,6 +176,7 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver, ISolvable
         else if (!currentlySolved && wasPreviouslySolved)
         {
             //wasPreviouslySolved = false;
+            Debug.Log("Here");
         }
 
     }

@@ -40,7 +40,7 @@ public class DoorSwitcher : DoorOpener
             RPC_PlaySound(insertSound.name);
         }
 
-        if(card.KeyID == requireKeyID)
+        if (card.KeyID == requireKeyID)
         {
             Debug.Log($"DoorOpener: Key ID matches, opening door ...");
             HasKeyCardInserted = true;
@@ -50,7 +50,7 @@ public class DoorSwitcher : DoorOpener
 
             RPC_ShowFeedback(true);
 
-            if(consumeKeyOnUse)
+            if (consumeKeyOnUse)
             {
                 StartCoroutine(DestroyKeyCardAfterDelay(card, keyCardEjectDelay));
             }
@@ -58,6 +58,7 @@ public class DoorSwitcher : DoorOpener
             {
                 StartCoroutine(EjectKeyCardAfterDelay(card, keyCardEjectDelay));
             }
+            if (isFinalStep) IsSolved = true;
         }
         else
         {
