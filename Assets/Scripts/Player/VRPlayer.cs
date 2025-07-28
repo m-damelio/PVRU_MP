@@ -1,11 +1,12 @@
-using System.Collections.Generic;
 using Fusion;
 using Fusion.XR.Host.Rig;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.XR;
 using UnityEngine.XR.Hands;
-using UnityEditor;
-using UnityEngine.InputSystem;
+using static RotateMirror;
 
 public class VRPlayer : NetworkBehaviour
 {
@@ -21,6 +22,11 @@ public class VRPlayer : NetworkBehaviour
     [SerializeField] private LayerMask hackerOnlyLayers;
     [SerializeField] private LayerMask sneakerOnlyLayers;
     private LayerMask originalCullingMask;
+
+    [Header("Mirror Rotation")]
+    [SerializeField] private RotateMirror activeMirror;
+    [SerializeField] private List<RotateMirror> mirrors;
+    private bool isSelected;
 
     [Header("Movement")]
     public CharacterController characterController;
@@ -80,7 +86,83 @@ public class VRPlayer : NetworkBehaviour
         UpdateCameraLayers();
 
     }
-    
+
+    void Start()
+    {
+        //Get reference of all mirrors in the scene
+        mirrors = new List<RotateMirror>(FindObjectsOfType<RotateMirror>());
+        isSelected = false;
+
+    }
+
+
+    private void Update()
+    {
+        //Lokal Input, welcher Mirror ausgewählt wurde zum drehen -- das drehen wird genetworked
+        //Farblich hervorheben welchen wir drehen
+        if (!Object.HasInputAuthority) return;
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            if (isSelected && activeMirror == mirrors[0])
+            {
+                DeselectActiveMirror();
+                isSelected = false;
+            }
+            else
+            {
+                if (mirrors.Count > 0 && !isSelected)
+                {
+                    activeMirror = mirrors[0];
+                    Debug.Log($"Spiegel 1 ausgewählt: {activeMirror.gameObject.name}");
+                    SetActiveMirror(activeMirror);
+                    //var mirrorNetObj = activeMirror.GetComponent<NetworkObject>();
+                    isSelected = true;
+                }
+            }
+
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            if (isSelected && activeMirror == mirrors[1])
+            {
+                DeselectActiveMirror();
+                isSelected = false;
+            }
+            else
+            {
+                if (mirrors.Count > 1 && !isSelected)
+                {
+                    activeMirror = mirrors[1];
+                    Debug.Log($"Spiegel 2 ausgewählt: {activeMirror.gameObject.name}");
+                    SetActiveMirror(activeMirror);
+                    isSelected = true;
+                }
+            }
+        }
+
+    }
+
+    void SetActiveMirror(RotateMirror mirror)
+    {
+        if (activeMirror != null)
+            activeMirror.SetHighlight(false);
+
+        activeMirror = mirror;
+
+        if (activeMirror != null)
+            activeMirror.SetHighlight(true);
+    }
+
+    void DeselectActiveMirror()
+    {
+        if (activeMirror != null)
+            activeMirror.SetHighlight(false);
+
+        activeMirror = null;
+    }
+
     void DetectPlayerType()
     {
         bool hasPressurePlate = DetectPressurePlate();
@@ -141,8 +223,9 @@ public class VRPlayer : NetworkBehaviour
         {
 
             HandleMovement(rigInput);
+            HandleMirrorInput(rigInput);
 
-            if(rigInput.customButtons.IsSet(RigInput.INTERACTIONBUTTON))
+            if (rigInput.customButtons.IsSet(RigInput.INTERACTIONBUTTON))
             {
                 HandleInteraction();
             }
@@ -304,6 +387,17 @@ public class VRPlayer : NetworkBehaviour
         {
             playerState = PlayerState.Walking;
         }
+    }
+
+    void HandleMirrorInput(RigInput rigInput)
+    {
+
+        if (rigInput.yDelta != 0f)
+            activeMirror.RotateY(rigInput.yDelta);
+
+        if (rigInput.zDelta != 0f)
+            activeMirror.RotateZ(rigInput.zDelta);
+
     }
 
     private void HandleInteraction()

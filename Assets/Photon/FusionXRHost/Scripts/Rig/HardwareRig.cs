@@ -3,9 +3,10 @@ using Fusion.XR.Host.Grabbing;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Threading.Tasks;
+using static RotateMirror;
 
 
 namespace Fusion.XR.Host.Rig
@@ -47,7 +48,10 @@ namespace Fusion.XR.Host.Rig
         public KeyCode keyPressed2;
         public KeyCode keyPressed3;
         public KeyCode keyPressed4;
-        
+
+        //mirror rotation
+        public float yDelta;
+        public float zDelta;
     }
 
     /**
@@ -330,6 +334,7 @@ namespace Fusion.XR.Host.Rig
 
             input.Set(rigInput);
 
+            /*
             //set mirror Input
             RotateMirror.MirrorInput mirrorInput = new RotateMirror.MirrorInput();
            
@@ -350,7 +355,7 @@ namespace Fusion.XR.Host.Rig
             else if (Input.GetKey(KeyCode.DownArrow))
                 mirrorInput.zDelta = 2f;
 
-            input.Set(mirrorInput);
+            input.Set(mirrorInput);*/
         }
 
         private void GatherCustomInput(ref RigInput rigInput)
@@ -376,10 +381,28 @@ namespace Fusion.XR.Host.Rig
                     {
                         rigInput.customButtons.Set(RigInput.SNEAKTESTBUTTON, true);
                     }
+                    
                 }
                 else if (rigInput.keyPressed1 == KeyCode.Alpha2)
                 {
                     rigInput.customButtons.Set(RigInput.INTERACTIONBUTTON, true);
+                }
+                else if (rigInput.keyPressed1 == KeyCode.LeftArrow)
+                {
+                   rigInput.yDelta = -2f;
+                }
+                else if (rigInput.keyPressed1 == KeyCode.RightArrow)
+                {
+                    rigInput.yDelta = 2f;
+                }
+                else if (rigInput.keyPressed1 == KeyCode.UpArrow)
+                {
+                    rigInput.zDelta = -2f;
+                }
+                else if (rigInput.keyPressed1 == KeyCode.DownArrow)
+                {
+                    rigInput.zDelta = 2f;
+
                 }
             }
 
