@@ -101,7 +101,8 @@ public class RotateMirror : NetworkBehaviour
 
     public void SetHighlight(bool state)
     {
-        GetComponentInChildren<Renderer>().material.color = state ? Color.cyan : Color.white;
+        var color = new Color(255, 0, 255, 255);
+        GetComponentInChildren<Renderer>().material.color = state ? color : Color.white;
     }
 
 
