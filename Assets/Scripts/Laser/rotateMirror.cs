@@ -1,0 +1,108 @@
+using UnityEngine;
+using System.Collections;
+using Fusion;
+using Fusion.Sockets;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+
+public class RotateMirror : NetworkBehaviour
+{
+    [Header("Mirror Settings")]
+    public Transform controlRotation; 
+    private float rotate = 5.0f;
+
+    [Header("Laser Reference")]
+    public LaserBean laser;
+
+    [Networked] public Quaternion NetworkedRotation {get;set;}
+    [Networked] public float NetworkedYRotation { get; set; }
+    [Networked] public float NetworkedZRotation { get; set; }
+
+    //struct für Input Struktur für die Rotation
+    public struct MirrorInput : INetworkInput
+    {
+        public float yDelta;
+        public float zDelta;
+    }
+
+    // For Laser-Updates
+    private Quaternion lastRot;
+
+    public override void FixedUpdateNetwork()
+    {
+       
+        // Input-Handling
+        //HandleInput();
+
+        // Prüfen auf Änderungen und Laser-Update triggern
+        if (controlRotation.rotation != lastRot)
+        {
+            Debug.Log("Rotation change");
+            TriggerLaserUpdate();
+            lastRot = controlRotation.rotation;
+        }
+        else
+        {
+            //Clients folgen der NetworkedRotation
+            controlRotation.rotation = NetworkedRotation;
+        }
+    }
+
+    private void TriggerLaserUpdate()
+    {
+        if (laser != null)
+        {
+            Debug.Log("Trigger update mirror");
+            laser.RpcForceUpdate();
+        }
+        
+    }
+
+    /*private void HandleInput()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            Rpc_RotateY(-rotate);
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            Rpc_RotateY(rotate);
+        }
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            Rpc_RotateZ(-rotate);
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            Rpc_RotateZ(rotate);
+        }
+    }*/
+
+    public void RotateY(float angle)
+    {
+        NetworkedYRotation += angle;
+        UpdateRotation();
+    }
+
+    public void RotateZ(float angle)
+    {
+        NetworkedZRotation += angle;
+        UpdateRotation();
+    }
+
+    private void UpdateRotation()
+    {
+        controlRotation.rotation = Quaternion.Euler(0, NetworkedYRotation, NetworkedZRotation);
+        NetworkedRotation = controlRotation.rotation;
+        TriggerLaserUpdate();
+    }
+
+    public void SetHighlight(bool state)
+    {
+        GetComponentInChildren<Renderer>().material.color = state ? Color.cyan : Color.white;
+    }
+
+
+}

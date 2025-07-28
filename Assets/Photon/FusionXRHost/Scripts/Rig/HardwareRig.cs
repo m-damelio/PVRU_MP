@@ -329,40 +329,34 @@ namespace Fusion.XR.Host.Rig
             GatherCustomInput(ref rigInput);
 
             input.Set(rigInput);
+
+            //set mirror Input
+            RotateMirror.MirrorInput mirrorInput = new RotateMirror.MirrorInput();
+           
+            // Standardmäßig 0, falls keine Taste gedrückt wird
+            mirrorInput.yDelta = 0f;
+            mirrorInput.zDelta = 0f;
+
+            if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                mirrorInput.yDelta = -2f;
+                Debug.Log(mirrorInput.yDelta);
+            }
+            else if (Input.GetKey(KeyCode.RightArrow))
+                mirrorInput.yDelta = 2f;
+
+            if (Input.GetKey(KeyCode.UpArrow))
+                mirrorInput.zDelta = -2f;
+            else if (Input.GetKey(KeyCode.DownArrow))
+                mirrorInput.zDelta = 2f;
+
+            input.Set(mirrorInput);
         }
 
         private void GatherCustomInput(ref RigInput rigInput)
         {
             var currentVRPlayer = GetVRPlayer();
 
-            if(enableKeyboardInput)
-            {
-                rigInput.keyPressed1 = keyPressBuffer.Count > 0 ? keyPressBuffer[0] : KeyCode.None;
-                rigInput.keyPressed2 = keyPressBuffer.Count > 1 ? keyPressBuffer[1] : KeyCode.None;
-                rigInput.keyPressed3 = keyPressBuffer.Count > 2 ? keyPressBuffer[2] : KeyCode.None;
-                rigInput.keyPressed4 = keyPressBuffer.Count > 3 ? keyPressBuffer[3] : KeyCode.None;
-
-                keyPressBuffer.Clear();
-
-                //See what keys are sent here
-                //if(rigInput.keyPressed1 != KeyCode.None) Debug.Log($"Sending keyboard input over network: {rigInput.keyPressed1}, {rigInput.keyPressed2}, {rigInput.keyPressed3}, {rigInput.keyPressed4}");
-
-                //For testing i will use this instead of unitys actions since we will use the keyboard presses anyway.
-                if(rigInput.keyPressed1 == KeyCode.Alpha1)
-                {
-                    if(currentVRPlayer != null && currentVRPlayer.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedSneaking)
-                    {
-                        rigInput.customButtons.Set(RigInput.SNEAKTESTBUTTON, true);
-                    }
-                }
-                else if(rigInput.keyPressed1 == KeyCode.Alpha2)
-                {
-                   rigInput.customButtons.Set(RigInput.INTERACTIONBUTTON, true); 
-                }
-            }
-
-            /*
-            //I used this for testing my "interactions" but since we will be getting keyboard inputs from the hardware i switched to a keycode comparison see above.
             if(_interactionButton)
             {
                 Debug.Log($"Setting interaction button in network input: {_interactionButton}");
