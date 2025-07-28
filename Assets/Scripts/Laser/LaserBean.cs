@@ -298,7 +298,7 @@ public class LaserBean : NetworkBehaviour
                 openD = hit.collider.gameObject.GetComponent<openDoor>();
 
                 //Versuche die Tür aufzumachen
-                door.GetComponent<DoorNetworkedController>().RPC_RequestOpenDoor();
+                door.GetComponent<DoorNetworkedController>().RequestOpen();
             }
         }
         else
