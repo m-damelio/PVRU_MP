@@ -567,6 +567,8 @@ MonoBehaviour:
   sneakerOnlyLayers:
     serializedVersion: 2
     m_Bits: 65536
+  activeMirror: {fileID: 0}
+  mirrors: []
   characterController: {fileID: 1475275693075936696}
   pickupRange: 2
   keyCardLayer:
@@ -619,7 +621,7 @@ MonoBehaviour:
   pauseKey1: 112
   pauseKey2: 27
   pauseKey3: 109
-  menuDistance: 5
+  menuDistance: 2.5
   menuHeight: 0
   menuScale: {x: 0.01, y: 0.01, z: 0.01}
   uiLayerMask:
