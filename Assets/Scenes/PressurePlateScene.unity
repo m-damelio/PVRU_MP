@@ -1792,6 +1792,8 @@ MonoBehaviour:
   resettableObjects:
   - {fileID: 2128369704}
   autoFindResettableObjects: 1
+  finalStepGameobject: {fileID: 0}
+  levelManager: {fileID: 0}
 --- !u!114 &1026260221 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1137363321097644227, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
@@ -2199,6 +2201,8 @@ MonoBehaviour:
   - {fileID: 384349316}
   - {fileID: 1148502492}
   autoFindResettableObjects: 1
+  finalStepGameobject: {fileID: 0}
+  levelManager: {fileID: 0}
 --- !u!4 &1214049291 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8896139193203136952, guid: 6fb10979c0d014d79a9be24b56e6a103, type: 3}
@@ -3164,6 +3168,8 @@ MonoBehaviour:
   - {fileID: 650411664}
   - {fileID: 1585352401}
   autoFindResettableObjects: 1
+  finalStepGameobject: {fileID: 5216620279681076034}
+  levelManager: {fileID: 318629535}
 --- !u!1001 &1691883483
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4065,6 +4071,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5729083268483649883, guid: 4d2d8ac07d4e7430b91f918ef817a892, type: 3}
+      propertyPath: levelManager
+      value: 
+      objectReference: {fileID: 318629535}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4703,7 +4713,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1320758247647322286, guid: 34edf1e0053774d2e9bafc8b6bd08c16, type: 3}
   m_PrefabInstance: {fileID: 5216620279681076033}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 5216620279681076034}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
@@ -5385,6 +5395,10 @@ PrefabInstance:
       value: MultipleDoorKeyCardReceiver
       objectReference: {fileID: 0}
     - target: {fileID: 7130230037202951248, guid: 34edf1e0053774d2e9bafc8b6bd08c16, type: 3}
+      propertyPath: isFinalStep
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7130230037202951248, guid: 34edf1e0053774d2e9bafc8b6bd08c16, type: 3}
       propertyPath: requireKeyID
       value: Blue
       objectReference: {fileID: 0}
@@ -5401,6 +5415,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 34edf1e0053774d2e9bafc8b6bd08c16, type: 3}
+--- !u!1 &5216620279681076034 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4193731735615534256, guid: 34edf1e0053774d2e9bafc8b6bd08c16, type: 3}
+  m_PrefabInstance: {fileID: 5216620279681076033}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5383884177136084354
 PrefabInstance:
   m_ObjectHideFlags: 0

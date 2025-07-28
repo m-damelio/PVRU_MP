@@ -11,10 +11,33 @@ public class LevelController : NetworkBehaviour
 
     private List<ILevelResettable> resettableComponents = new List<ILevelResettable>();
 
+    [Header("Level Solved Manager")]
+    [SerializeField] private GameObject finalStepGameobject;
+    private ISolvable finalSolvableStep;
+    [SerializeField] private LevelManager levelManager;
+
+    void OnValidate()
+    {
+        if (finalStepGameobject != null)
+        {
+            ISolvable checkImplementsInterface = finalStepGameobject.GetComponent<ISolvable>();
+            if (checkImplementsInterface == null)
+            {
+                Debug.LogError($"LevelController: Object {finalStepGameobject.name} doesn't implement ISolvable");
+            }
+        }
+    }
+
+    void Start()
+    {
+        finalSolvableStep = finalStepGameobject.GetComponent<ISolvable>();
+    }
+
     public override void Spawned()
     {
         //Store initial states when level is first loaded
         InitializeResettableObjects();
+        InitializeFinalStep();
         SetInitialStates();
     }
 
@@ -23,12 +46,12 @@ public class LevelController : NetworkBehaviour
         resettableComponents.Clear();
 
         //Auto find all resettable objects in level if enabled
-        if(autoFindResettableObjects)
+        if (autoFindResettableObjects)
         {
             var foundResettables = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
-            foreach(var obj in foundResettables)
+            foreach (var obj in foundResettables)
             {
-                if(obj is ILevelResettable && obj.transform.IsChildOf(transform))
+                if (obj is ILevelResettable && obj.transform.IsChildOf(transform))
                 {
                     resettableComponents.Add(obj as ILevelResettable);
                 }
@@ -36,10 +59,10 @@ public class LevelController : NetworkBehaviour
         }
 
         //Adds manually assigned objects
-        foreach(var obj in resettableObjects)
+        foreach (var obj in resettableObjects)
         {
             var resettable = obj.GetComponent<ILevelResettable>();
-            if(resettable != null && !resettableComponents.Contains(resettable))
+            if (resettable != null && !resettableComponents.Contains(resettable))
             {
                 resettableComponents.Add(resettable);
             }
@@ -56,6 +79,20 @@ public class LevelController : NetworkBehaviour
         }
     }
 
+    private void InitializeFinalStep()
+    {
+        if (finalSolvableStep != null) finalSolvableStep.OnSolved += OnFinalStepSolved;
+    }
+
+    private void OnFinalStepSolved(ISolvable solvablePuzzle)
+    {
+        Debug.Log("LevelController: Final step solved action was called from " + solvablePuzzle);
+        if (levelManager != null)
+        {
+            levelManager.RPC_CompleteLevel();
+        }
+    }
+
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_ResetLevel()
     {
@@ -69,16 +106,26 @@ public class LevelController : NetworkBehaviour
 
     public virtual void RestartLevel()
     {
-        if(Object.HasStateAuthority) RPC_ResetLevel();
+        if (Object.HasStateAuthority) RPC_ResetLevel();
     }
 
     public virtual void OnLevelActivated()
     {
-        if(Object.HasStateAuthority) RPC_ResetLevel();
+        if (Object.HasStateAuthority) RPC_ResetLevel();
     }
 
     public virtual void OnLevelDeactivated()
     {
         //TODO: Cleanup ongoing processes if any 
+    }
+
+    public override void Despawned(NetworkRunner runner, bool hasState)
+    {
+        UnsubscribeFromSolvableEvents();
+    }
+
+    private void UnsubscribeFromSolvableEvents()
+    {
+        if(finalSolvableStep != null) finalSolvableStep.OnSolved -= OnFinalStepSolved;
     }
 }

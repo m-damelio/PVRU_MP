@@ -2,13 +2,17 @@ using UnityEngine;
 using Fusion;
 using System.Collections;
 
-public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
+public class DoorOpener : NetworkBehaviour, IKeyCardReceiver, ISolvable
 {
     [Header("Door Opener Settings")]
     [SerializeField] protected string requireKeyID = "1234";
     [SerializeField] private DoorNetworkedController doorController;
     [SerializeField] protected bool consumeKeyOnUse = false;
     [SerializeField] protected float keyCardEjectDelay = 2f;
+
+    [Header("Puzzle Settings")]
+    [SerializeField] protected bool isFinalStep;
+    public System.Action<ISolvable> OnSolved { get; set; }
 
     [Header("Audio & Visual Feedback")]
     [SerializeField] private Light statusLight;
@@ -22,12 +26,14 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
     [Header("Networked properties")]
     [Networked] public bool HasKeyCardInserted {get;set;}
     [Networked] public NetworkId InsertedKeyCardId {get;set;}
+    [Networked] public bool IsSolved { get; set; }
 
     //Cooldown for "inserting" keycards
     private float activationCooldown = 2f;
     private bool isOnCoolDown = false;
+    private bool wasPreviouslySolved = false;
 
-    private Vector3 ejectHeight = new Vector3(0f,0.88f,0f);
+    private Vector3 ejectHeight = new Vector3(0f, 0.88f, 0f);
 
     void Awake()
     {
@@ -140,6 +146,45 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver
         HasKeyCardInserted = false;
         InsertedKeyCardId = default;
     }
+
+    public bool IsPuzzleSolved()
+    {
+        return IsSolved;
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (Object.HasStateAuthority)
+        {
+            CheckSolution();
+        }
+    }
+
+    public void CheckSolution()
+    {
+        if (!Object.HasStateAuthority) return;
+        bool currentlySolved = IsSolved;
+
+        if (currentlySolved && !wasPreviouslySolved)
+        {
+            wasPreviouslySolved = true;
+            OnSolved?.Invoke(this);
+            if (isFinalStep) RPC_NotifyPuzzleSolved();
+        }
+        else if (!currentlySolved && wasPreviouslySolved)
+        {
+            //wasPreviouslySolved = false;
+        }
+
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_NotifyPuzzleSolved()
+    {
+        //TODO visual/audio feedback
+    }
+
+
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     protected void RPC_ShowFeedback(bool success)

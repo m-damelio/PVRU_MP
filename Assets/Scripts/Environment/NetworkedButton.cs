@@ -19,6 +19,9 @@ public class NetworkedButton : NetworkBehaviour
     [SerializeField][Layer] private int sneakerOnlyLayer;
     [SerializeField][Layer] private int hackerOnlyLayer;
 
+    [Header("Solvable Interface Settings")]
+    [SerializeField] private bool isFinalStep;
+
     [Header("Networked Properties")]
     [Networked] public bool IsPressed {get; set;}
 
