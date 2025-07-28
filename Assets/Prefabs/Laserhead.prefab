@@ -10,9 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1327784166983410076}
   - component: {fileID: 3342712436564226628}
-  - component: {fileID: 4978855793285328137}
+  - component: {fileID: 1943810839427131363}
   - component: {fileID: 6361707362505976304}
-  - component: {fileID: 3211475422534170654}
   m_Layer: 0
   m_Name: LaserBeam
   m_TagString: Untagged
@@ -52,10 +51,10 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 4978855793285328137}
+  - {fileID: 1943810839427131363}
   - {fileID: 6361707362505976304}
   ForceRemoteRenderTimeframe: 0
---- !u!114 &4978855793285328137
+--- !u!114 &1943810839427131363
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -64,10 +63,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6879676042153690125}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13509301ed48dc54d8d39a674d31d57c, type: 3}
+  m_Script: {fileID: 11500000, guid: b164a7ae3d450be49902e49b46153bc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   laserMaterial: {fileID: 2100000, guid: 7b26c266f81673441a0ef40e809a8610, type: 2}
+  laserNeedsChange: 0
   _NetworkedStartPosition: {x: 0, y: 0, z: 0}
   _NetworkedDirection: {x: 0, y: 0, z: 0}
   _NetworkedIsHittingLoadTarget: 0
@@ -79,6 +79,7 @@ MonoBehaviour:
   charge: {fileID: 0}
   openD: {fileID: 0}
   laserIndices: []
+  door: {fileID: 0}
 --- !u!114 &6361707362505976304
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,20 +97,6 @@ MonoBehaviour:
   SyncParent: 1
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
---- !u!114 &3211475422534170654
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6879676042153690125}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1541381998, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Guid:
-    RawGuidValue: 229bacf05145a45b7b4160d5c6a18a71
 --- !u!1 &8387348097317040773
 GameObject:
   m_ObjectHideFlags: 0
@@ -122,8 +109,7 @@ GameObject:
   - component: {fileID: 6689118448567873932}
   - component: {fileID: 5057759703485175568}
   - component: {fileID: 5550377185598248089}
-  - component: {fileID: 7303114990699321231}
-  - component: {fileID: 882560541906309601}
+  - component: {fileID: 3561813013825241786}
   - component: {fileID: 2552048235822879572}
   m_Layer: 0
   m_Name: Laserhead
@@ -222,7 +208,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7303114990699321231
+--- !u!114 &3561813013825241786
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -231,29 +217,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8387348097317040773}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4c88cbbe7ec73a4b8c3a0e5ab041df5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotationSpeed: 0.5
-  maxVerticalAngle: 60
-  minVerticalAngle: -60
-  _NetworkedYaw: 0
-  _NetworkedPitch: 0
-  _NetworkedRoll: 0
---- !u!114 &882560541906309601
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8387348097317040773}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db1df60e4ea5fd444a9ab8f560ff2f06, type: 3}
+  m_Script: {fileID: 11500000, guid: f7a29fe0a9d9d884e872d03b9f44b8da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 7b26c266f81673441a0ef40e809a8610, type: 2}
-  laserObj: {fileID: 0}
+  laserObj: {fileID: 6879676042153690125}
   _NetworkedPosition: {x: 0, y: 0, z: 0}
   _NetworkedDirection: {x: 0, y: 0, z: 0}
   lastPosition: {x: 0, y: 0, z: 0}
@@ -276,6 +244,5 @@ MonoBehaviour:
   NestedObjects:
   - {fileID: 3342712436564226628}
   NetworkedBehaviours:
-  - {fileID: 7303114990699321231}
-  - {fileID: 882560541906309601}
+  - {fileID: 3561813013825241786}
   ForceRemoteRenderTimeframe: 0
