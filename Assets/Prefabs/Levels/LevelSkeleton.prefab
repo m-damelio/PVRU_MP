@@ -838,8 +838,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5105956033163513437}
-  - component: {fileID: 3781586108691571059}
-  - component: {fileID: 2423365212578720797}
   m_Layer: 0
   m_Name: LevelSkeleton
   m_TagString: Untagged
@@ -865,39 +863,6 @@ Transform:
   - {fileID: 6962965417961676764}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3781586108691571059
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4576804107047823618}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1f43aed5953c64378bcc50e9c6b03673, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  resettableObjects: []
-  autoFindResettableObjects: 1
---- !u!114 &2423365212578720797
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4576804107047823618}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 2921365614
-  ObjectInterest: 0
-  Flags: 786433
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 3781586108691571059}
-  ForceRemoteRenderTimeframe: 0
 --- !u!1 &4920197233394227423
 GameObject:
   m_ObjectHideFlags: 0
