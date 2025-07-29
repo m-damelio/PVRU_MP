@@ -319,7 +319,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameMode: 6
   roomName: SampleRoom
-  connectOnStart: 0
+  connectOnStart: 1
   playerCount: 0
   connectionCriterias: 1
   additionalSessionProperties: []
@@ -1700,7 +1700,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &731073557
 Transform:
   m_ObjectHideFlags: 0
@@ -4291,7 +4291,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1795984497
 Transform:
   m_ObjectHideFlags: 0
@@ -6173,7 +6173,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3805778658148775691, guid: a418e80eb4fd52547ba071f5cf284921, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4529661283448498929, guid: a418e80eb4fd52547ba071f5cf284921, type: 3}
       propertyPath: m_AnchorMax.y
