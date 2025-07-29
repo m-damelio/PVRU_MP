@@ -67,7 +67,7 @@ public class StartMenu : MonoBehaviour
 
             Transform camTransform = playerCamera.transform;
             canvasComponent.transform.SetParent(camTransform);
-            canvasComponent.transform.localPosition = new Vector3(0f, 0f, 2f);
+            canvasComponent.transform.localPosition = new Vector3(0f, 0f, 1.5f);
             canvasComponent.transform.localRotation = Quaternion.identity;
             canvasComponent.transform.localScale = Vector3.one * 0.002f; 
         }
