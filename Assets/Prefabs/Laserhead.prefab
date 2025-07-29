@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1327784166983410076}
   - component: {fileID: 3342712436564226628}
-  - component: {fileID: 1943810839427131363}
   - component: {fileID: 6361707362505976304}
+  - component: {fileID: 4063392210039744515}
   m_Layer: 0
   m_Name: LaserBeam
   m_TagString: Untagged
@@ -51,35 +51,9 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
-  - {fileID: 1943810839427131363}
   - {fileID: 6361707362505976304}
+  - {fileID: 4063392210039744515}
   ForceRemoteRenderTimeframe: 0
---- !u!114 &1943810839427131363
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6879676042153690125}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b164a7ae3d450be49902e49b46153bc8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  laserMaterial: {fileID: 2100000, guid: 7b26c266f81673441a0ef40e809a8610, type: 2}
-  laserNeedsChange: 0
-  _NetworkedStartPosition: {x: 0, y: 0, z: 0}
-  _NetworkedDirection: {x: 0, y: 0, z: 0}
-  _NetworkedIsHittingLoadTarget: 0
-  _NetworkedIsHittingTarget: 0
-  _NetworkedLoadTargetId:
-    Raw: 0
-  _NetworkedTargetId:
-    Raw: 0
-  charge: {fileID: 0}
-  openD: {fileID: 0}
-  laserIndices: []
-  door: {fileID: 0}
 --- !u!114 &6361707362505976304
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,6 +71,32 @@ MonoBehaviour:
   SyncParent: 1
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
+--- !u!114 &4063392210039744515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6879676042153690125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13509301ed48dc54d8d39a674d31d57c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  laserMaterial: {fileID: 2100000, guid: 7b26c266f81673441a0ef40e809a8610, type: 2}
+  laserNeedsChange: 0
+  _NetworkedStartPosition: {x: 0, y: 0, z: 0}
+  _NetworkedDirection: {x: 0, y: 0, z: 0}
+  _NetworkedIsHittingLoadTarget: 0
+  _NetworkedIsHittingTarget: 0
+  _NetworkedLoadTargetId:
+    Raw: 0
+  _NetworkedTargetId:
+    Raw: 0
+  charge: {fileID: 0}
+  openD: {fileID: 0}
+  laserIndices: []
+  door: {fileID: 0}
 --- !u!1 &8387348097317040773
 GameObject:
   m_ObjectHideFlags: 0
@@ -109,8 +109,8 @@ GameObject:
   - component: {fileID: 6689118448567873932}
   - component: {fileID: 5057759703485175568}
   - component: {fileID: 5550377185598248089}
-  - component: {fileID: 3561813013825241786}
   - component: {fileID: 2552048235822879572}
+  - component: {fileID: 8692872196283805502}
   m_Layer: 0
   m_Name: Laserhead
   m_TagString: Untagged
@@ -208,24 +208,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3561813013825241786
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8387348097317040773}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7a29fe0a9d9d884e872d03b9f44b8da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 7b26c266f81673441a0ef40e809a8610, type: 2}
-  laserObj: {fileID: 6879676042153690125}
-  _NetworkedPosition: {x: 0, y: 0, z: 0}
-  _NetworkedDirection: {x: 0, y: 0, z: 0}
-  lastPosition: {x: 0, y: 0, z: 0}
-  lastDirection: {x: 0, y: 0, z: 0}
 --- !u!114 &2552048235822879572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -244,5 +226,23 @@ MonoBehaviour:
   NestedObjects:
   - {fileID: 3342712436564226628}
   NetworkedBehaviours:
-  - {fileID: 3561813013825241786}
+  - {fileID: 8692872196283805502}
   ForceRemoteRenderTimeframe: 0
+--- !u!114 &8692872196283805502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8387348097317040773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db1df60e4ea5fd444a9ab8f560ff2f06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 7b26c266f81673441a0ef40e809a8610, type: 2}
+  laserObj: {fileID: 6879676042153690125}
+  _NetworkedPosition: {x: 0, y: 0, z: 0}
+  _NetworkedDirection: {x: 0, y: 0, z: 0}
+  lastPosition: {x: 0, y: 0, z: 0}
+  lastDirection: {x: 0, y: 0, z: 0}
