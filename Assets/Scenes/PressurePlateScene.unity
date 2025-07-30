@@ -318,13 +318,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameMode: 6
-  roomName: HandsTest
+  roomName: Hands
   connectOnStart: 1
   playerCount: 0
   connectionCriterias: 1
   additionalSessionProperties: []
   runner: {fileID: 0}
-  userPrefab: {fileID: 2549000073306557744, guid: efba3452549048447a15b9c0da6c713b, type: 3}
+  userPrefab: {fileID: 2549000073306557744, guid: bc638e68f45c74e57af62d5f3a545830, type: 3}
   onWillConnect:
     m_PersistentCalls:
       m_Calls: []
@@ -631,6 +631,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6386039702021734800, guid: f14f47f9d583c47bd973cf9aa6280661, type: 3}
   m_PrefabInstance: {fileID: 81698585}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &138020600 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4912476177055847408, guid: 4d2d8ac07d4e7430b91f918ef817a892, type: 3}
+  m_PrefabInstance: {fileID: 2050254189}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &200622424
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -880,7 +885,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96b06dde8e5884b189b0843ae8fe06cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelPrefabs: []
+  levelPrefabs:
+  - {fileID: 138020600}
+  - {fileID: 1686756165}
   elevatorInteriorEast: {fileID: 507473282}
   elevatorInteriorWest: {fileID: 889497013}
   elevatorDoorCloseDelay: 3
@@ -4273,6 +4280,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 1598028872}
     m_Modifications:
     - target: {fileID: 4208948369037581448, guid: 72aacf5ad018ef84f8c2f1796da09345, type: 3}
+      propertyPath: playerCamera
+      value: 
+      objectReference: {fileID: 1929250596}
+    - target: {fileID: 4208948369037581448, guid: 72aacf5ad018ef84f8c2f1796da09345, type: 3}
       propertyPath: enableFingerTracking
       value: 0
       objectReference: {fileID: 0}
@@ -4319,6 +4330,14 @@ PrefabInstance:
     - target: {fileID: 4208948369037581450, guid: 72aacf5ad018ef84f8c2f1796da09345, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4208948369037581461, guid: 72aacf5ad018ef84f8c2f1796da09345, type: 3}
+      propertyPath: locomotionLayerMask.m_Bits
+      value: 512
+      objectReference: {fileID: 0}
+    - target: {fileID: 4208948369037581461, guid: 72aacf5ad018ef84f8c2f1796da09345, type: 3}
+      propertyPath: disallowTeleportLayerMask.m_Bits
+      value: 256
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5957,7 +5976,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1795984497
 Transform:
   m_ObjectHideFlags: 0
@@ -6522,6 +6541,11 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: 1836224503068426935, guid: b9f82e99f772b443392f32d472af3e87, type: 3}
   m_PrefabInstance: {fileID: 1691883483}
+  m_PrefabAsset: {fileID: 0}
+--- !u!20 &1929250596 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 4208948368294204022, guid: 72aacf5ad018ef84f8c2f1796da09345, type: 3}
+  m_PrefabInstance: {fileID: 1222645521}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1959557177 stripped
 MonoBehaviour:
@@ -7089,7 +7113,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4912476177055847408, guid: 4d2d8ac07d4e7430b91f918ef817a892, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5203744658971665342, guid: 4d2d8ac07d4e7430b91f918ef817a892, type: 3}
       propertyPath: m_IsActive

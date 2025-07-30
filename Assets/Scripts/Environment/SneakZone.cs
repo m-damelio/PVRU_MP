@@ -76,6 +76,7 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
             return;
         }
         
+        player.CurrentlyInsideSneakzone = (this);
 
         if (player.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedSneaking)
         {

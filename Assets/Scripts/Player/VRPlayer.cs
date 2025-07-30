@@ -115,7 +115,6 @@ public class VRPlayer : NetworkBehaviour
     private DoorNetworkedController doorToOpen;
     //private bool hasSearchedForDoor = false;
     [SerializeField] private NetworkedKeyCard heldKeyCard;
-
     public enum PlayerType
     {
         EnhancedSneaking, //Player with pressure plate
@@ -146,10 +145,6 @@ public class VRPlayer : NetworkBehaviour
         UpdateCameraLayers();
 
     }
-
-
-
-
     // Helper class to return result from coroutine
     private class RequestResult
     {
@@ -159,28 +154,15 @@ public class VRPlayer : NetworkBehaviour
         public float requestTime = 0f;
     }
 
-
-
-
-
-
-
-
-
-
-
     void Start()
     {
         //Get reference of all mirrors in the scene
         mirrors = new List<RotateMirror>(FindObjectsOfType<RotateMirror>());
         isSelected = false;
 
-
         // Start the coroutine to check sneak state
         StartCoroutine(CheckDeviceLoop());
     }
-
-
 
     //get sneak state
     IEnumerator CheckDeviceLoop()
@@ -285,8 +267,6 @@ public class VRPlayer : NetworkBehaviour
         }
     }
 
-
-
     private void Update()
     {
         //Lokal Input, welcher Mirror ausgew�hlt wurde zum drehen -- das drehen wird genetworked
@@ -333,11 +313,8 @@ public class VRPlayer : NetworkBehaviour
             }
         }
 
-
-
         // Start the coroutine to check the device sneak state
         StartCoroutine(GetDeviceSneakStateWithRetry());
-
     }
 
 

@@ -9,7 +9,7 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     [SerializeField] private List<GameObject> levelPrefabs = new List<GameObject>();
     [SerializeField] private Transform elevatorInteriorEast;
     [SerializeField] private Transform elevatorInteriorWest;
-    [SerializeField] private float elevatorDoorCloseDelay = 3f;
+    [SerializeField] private float elevatorDoorCloseDelay = 2f;
     [SerializeField] private float levelTransitionDelay = 2f;
 
     [Header("Level Progress")]
@@ -34,9 +34,9 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     private DoorNetworkedController westElevator;
     private AudioSource elevatorAudioSource;
     private Transform _currentElevatorTransform;
-    private DoorNetworkedController _currentElevator;
+    [SerializeField] private DoorNetworkedController _currentElevator;
     private Dictionary<PlayerRef, bool> playersInElevator = new Dictionary<PlayerRef, bool>();
-    private List<PlayerRef> connectedPlayers = new List<PlayerRef>();
+    [SerializeField] private List<PlayerRef> connectedPlayers = new List<PlayerRef>();
 
     public override void Spawned()
     {
@@ -52,13 +52,6 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         {
             ActivateLevel(0);
         }
-
-        foreach(var player in Runner.ActivePlayers)
-        {
-            connectedPlayers.Add(player);
-            playersInElevator[player] = false;
-        }
-
     }
 
     public void PlayerJoined(PlayerRef player)
@@ -67,6 +60,7 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         {
             connectedPlayers.Add(player);
             playersInElevator[player] = false;
+            Debug.Log($"Added player: {player}");
         }
     }
 
@@ -82,7 +76,7 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     public override void FixedUpdateNetwork()
     {
         if(!Object.HasStateAuthority) return;
-
+        
         //Check if players are in elevator
         CheckPlayersInElevator();
 
@@ -107,9 +101,10 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             var playerObj = Runner.GetPlayerObject(player);
             if(playerObj != null)
             {
+                
                 float distance = Vector3.Distance(playerObj.transform.position, _currentElevatorTransform.position);
                 bool isInElevator = distance <= elevatorCheckRadius;
-
+                Debug.Log($"Player distance to elevator: {distance}, therefor in elevator:{isInElevator}");
                 playersInElevator[player] = isInElevator;
 
                 if(!isInElevator)
