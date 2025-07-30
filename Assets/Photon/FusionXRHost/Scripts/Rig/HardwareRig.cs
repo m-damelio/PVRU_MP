@@ -113,6 +113,8 @@ namespace Fusion.XR.Host.Rig
         [SerializeField] private Transform leftHandSkeletalRoot;
         [SerializeField] private Transform rightHandSkeletalRoot;
         [SerializeField] private LayerMask fingerInteractionLayers = -1;
+        [SerializeField] private float gestureCoolDown = 1f;
+        private bool _gestureOnCoolDown = false;
 
         //local fnger tracking objects (not networked)
         private XRHand leftXRHand;
@@ -126,8 +128,6 @@ namespace Fusion.XR.Host.Rig
 
         private bool leftHandTracked = false;
         private bool rightHandTracked = false;
-        private Animator leftHandAnimator;
-        private Animator rightHandAnimator;
 
         private Dictionary<XRHandJointID, Transform> leftJointCache;
         private Dictionary<XRHandJointID, Transform> rightJointCache;
@@ -178,8 +178,6 @@ namespace Fusion.XR.Host.Rig
             if (interactionAction != null) interactionAction.action.Enable();
             if (sneakTestAction != null) sneakTestAction.action.Enable();
 
-            if (leftHandModel != null) leftHandAnimator = leftHandModel.GetComponentInChildren<Animator>();
-            if (rightHandModel != null) rightHandAnimator = rightHandModel.GetComponentInChildren<Animator>();
             if (enableFingerTracking)
             {
                 InitializeHandTracking();
@@ -197,11 +195,6 @@ namespace Fusion.XR.Host.Rig
 
         private void Update()
         {
-            if (enableFingerTracking)
-            {
-                UpdateFingerTrackingVisibility();
-            }
-
             if(enableKeyboardInput)
             {
                 UpdateKeyboardInput();
@@ -325,12 +318,12 @@ namespace Fusion.XR.Host.Rig
                 rigInput.headsetRotation = headsetInterpolationPose.rotation;
             } else
             {
-                rigInput.leftHandPosition = transform.InverseTransformPoint(leftHand.transform.position);
-                rigInput.leftHandRotation = Quaternion.Inverse(transform.rotation) * leftHand.transform.rotation;
-                rigInput.rightHandPosition = transform.InverseTransformPoint(rightHand.transform.position);
-                rigInput.rightHandRotation = Quaternion.Inverse(transform.rotation) * rightHand.transform.rotation;
-                rigInput.headsetPosition = transform.InverseTransformPoint(headset.transform.position);
-                rigInput.headsetRotation = Quaternion.Inverse(transform.rotation) * headset.transform.rotation;
+                rigInput.leftHandPosition = leftHand.transform.position;
+                rigInput.leftHandRotation = leftHand.transform.rotation;
+                rigInput.rightHandPosition = rightHand.transform.position;
+                rigInput.rightHandRotation = rightHand.transform.rotation;
+                rigInput.headsetPosition = headset.transform.position;
+                rigInput.headsetRotation = headset.transform.rotation;
             }
 
             rigInput.leftHandCommand = leftHand.handCommand;
@@ -616,7 +609,7 @@ namespace Fusion.XR.Host.Rig
             }
 
             // Update interactor positions
-                var interactor = isLeft ? leftFingerInteractor : rightFingerInteractor;
+            var interactor = isLeft ? leftFingerInteractor : rightFingerInteractor;
             var pokeInteractor = isLeft ? leftPokeInteractor : rightPokeInteractor;
 
             if (interactor != null && hand.GetJoint(XRHandJointID.IndexTip).TryGetPose(out Pose indexPose))
@@ -634,6 +627,7 @@ namespace Fusion.XR.Host.Rig
 
         bool DetectPinchGesture(XRHand hand)
         {
+            if (_gestureOnCoolDown) return false;
             // Simple pinch detection based on distance between thumb and index finger
             if (hand.GetJoint(XRHandJointID.ThumbTip).TryGetPose(out Pose thumbPose) &&
                 hand.GetJoint(XRHandJointID.IndexTip).TryGetPose(out Pose indexPose))
@@ -648,13 +642,14 @@ namespace Fusion.XR.Host.Rig
         {
             string handName = isLeft ? "Left" : "Right";
             Debug.Log($"{handName} hand pinch detected!");
+            StartCoroutine(WaitForCooldownDone(gestureCoolDown));
             
             // Trigger interaction events here
-            // You can add custom interaction logic based on pinch gestures
         }
 
         bool DetectCuttingGesture(XRHand hand)
         {
+            if (_gestureOnCoolDown) return false;
             if (hand.GetJoint(XRHandJointID.IndexTip).TryGetPose(out Pose indexPose) &&
                 hand.GetJoint(XRHandJointID.MiddleTip).TryGetPose(out Pose middlePose) &&
                 hand.GetJoint(XRHandJointID.RingIntermediate).TryGetPose(out Pose ringPose) &&
@@ -682,25 +677,14 @@ namespace Fusion.XR.Host.Rig
         {
             string handName = isLeft ? "Left" : "Right";
             Debug.Log($"{handName} hand cut detected!");
+            StartCoroutine(WaitForCooldownDone(gestureCoolDown));
         }
 
-        void UpdateFingerTrackingVisibility()
+        IEnumerator WaitForCooldownDone(float coolDownTime)
         {
-            //Determine when to show finger tracking and when controller-animated hands
-            bool showLeftFingers = ShouldShowFingerTracking(true);
-            bool showRightFingers = ShouldShowFingerTracking(false);
-
-            if (leftHandAnimator != null && leftHandAnimator.enabled != !showLeftFingers)
-            {
-                leftHandAnimator.enabled = !showLeftFingers;
-            }
-
-            if (rightHandAnimator != null && rightHandAnimator.enabled != !showRightFingers)
-            {
-                rightHandAnimator.enabled = !showRightFingers;
-            }
-
-            UpdateOSFHandVisibility(!showLeftFingers, !showRightFingers);
+            _gestureOnCoolDown = true;
+            yield return new WaitForSeconds(coolDownTime);
+            _gestureOnCoolDown = false;
         }
 
         bool ShouldShowFingerTracking(bool isLeft)
@@ -721,27 +705,6 @@ namespace Fusion.XR.Host.Rig
                    handCommand.gripCommand > 0.1f || 
                    handCommand.thumbTouchedCommand > 0.5f ||
                    handCommand.indexTouchedCommand > 0.5f;
-        }
-
-        void UpdateOSFHandVisibility(bool showLeftOSF, bool showRightOSF)
-        {
-            // Get references to the OSF hand representations
-            var networkRig = GetComponent<VRPlayer>()?.GetComponent<NetworkRig>();
-            if (networkRig == null) return;
-
-            var leftOSF = networkRig.leftHand.GetComponent<OSFHandRepresentation>();
-            var rightOSF = networkRig.rightHand.GetComponent<OSFHandRepresentation>();
-
-            // Fade OSF hands when finger tracking is active
-            if (leftOSF != null)
-            {
-                leftOSF.DisplayMesh(showLeftOSF);
-            }
-
-            if (rightOSF != null)
-            {
-                rightOSF.DisplayMesh(showRightOSF);
-            }
         }
 
         // Public methods to check hand tracking state

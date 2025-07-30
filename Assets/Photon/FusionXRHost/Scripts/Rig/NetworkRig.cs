@@ -70,12 +70,12 @@ namespace Fusion.XR.Host.Rig
                     transform.rotation = input.playAreaRotation;
                 }
 
-                leftHand.transform.localPosition = input.leftHandPosition;
-                leftHand.transform.localRotation = input.leftHandRotation;
-                rightHand.transform.localPosition = input.rightHandPosition;
-                rightHand.transform.localRotation = input.rightHandRotation;
-                headset.transform.localPosition = input.headsetPosition;
-                headset.transform.localRotation = input.headsetRotation;
+                leftHand.transform.position = input.leftHandPosition;
+                leftHand.transform.rotation = input.leftHandRotation;
+                rightHand.transform.position = input.rightHandPosition;
+                rightHand.transform.rotation = input.rightHandRotation;
+                headset.transform.position = input.headsetPosition;
+                headset.transform.rotation = input.headsetRotation;
 
                 leftHand.HandCommand = input.leftHandCommand;
                 rightHand.HandCommand = input.rightHandCommand;
@@ -84,7 +84,6 @@ namespace Fusion.XR.Host.Rig
             }
         }
 
-        /*
         public override void Render()
         {
             base.Render();
@@ -118,6 +117,5 @@ namespace Fusion.XR.Host.Rig
                 }
             }
         }
-        */
     }
 }
