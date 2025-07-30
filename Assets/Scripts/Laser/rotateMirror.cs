@@ -12,6 +12,7 @@ public class RotateMirror : NetworkBehaviour
     [Header("Mirror Settings")]
     public Transform controlRotation; 
     private float rotate = 5.0f;
+    private bool isSelected;
 
     [Header("Laser Reference")]
     public LaserBean laser;
@@ -60,25 +61,17 @@ public class RotateMirror : NetworkBehaviour
         
     }
 
-    /*private void HandleInput()
+    private void OnTriggerEnter(Collider other)
     {
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if(other.tag != "laser" && !isSelected)
         {
-            Rpc_RotateY(-rotate);
+            SetHighlight(true);
         }
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        else if (other.tag != "laser" && isSelected)
         {
-            Rpc_RotateY(rotate);
+            SetHighlight(false);
         }
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            Rpc_RotateZ(-rotate);
-        }
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            Rpc_RotateZ(rotate);
-        }
-    }*/
+    }
 
     public void RotateY(float angle)
     {

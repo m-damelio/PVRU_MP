@@ -2,6 +2,7 @@ using Fusion;
 using Fusion.XR.Host.Rig;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -338,6 +339,7 @@ public class VRPlayer : NetworkBehaviour
         StartCoroutine(GetDeviceSneakStateWithRetry());
 
     }
+
 
     void SetActiveMirror(RotateMirror mirror)
     {
