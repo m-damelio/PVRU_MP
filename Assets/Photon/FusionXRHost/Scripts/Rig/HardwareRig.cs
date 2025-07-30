@@ -1,11 +1,15 @@
 using Fusion.Sockets;
 using Fusion.XR.Host.Grabbing;
+using Fusion.XR.Host.SimpleHands;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Hands;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Management;
 using static RotateMirror;
 
 
@@ -44,7 +48,7 @@ namespace Fusion.XR.Host.Rig
         public const byte INTERACTIONBUTTON = 1 << 0;
         public const byte SNEAKTESTBUTTON = 1 << 1;
 
-        public KeyCode keyPressed1; 
+        public KeyCode keyPressed1;
         public KeyCode keyPressed2;
         public KeyCode keyPressed3;
         public KeyCode keyPressed4;
@@ -101,6 +105,33 @@ namespace Fusion.XR.Host.Rig
 
         private List<KeyCode> keyPressBuffer = new List<KeyCode>();
 
+        [Header("Local Finger Tracking")]
+        [SerializeField] private bool enableFingerTracking;
+        [SerializeField] private XRHandSubsystem handSubsystem;
+        [SerializeField] private GameObject leftHandModel;
+        [SerializeField] private GameObject rightHandModel;
+        [SerializeField] private Transform leftHandSkeletalRoot;
+        [SerializeField] private Transform rightHandSkeletalRoot;
+        [SerializeField] private LayerMask fingerInteractionLayers = -1;
+
+        //local fnger tracking objects (not networked)
+        private XRHand leftXRHand;
+        private XRHand rightXRHand;
+
+        //Interaction compomnents for fongerbased interaction
+        private UnityEngine.XR.Interaction.Toolkit.Interactors.XRDirectInteractor leftFingerInteractor;
+        private UnityEngine.XR.Interaction.Toolkit.Interactors.XRDirectInteractor rightFingerInteractor;
+        private UnityEngine.XR.Interaction.Toolkit.Interactors.XRPokeInteractor leftPokeInteractor;
+        private UnityEngine.XR.Interaction.Toolkit.Interactors.XRPokeInteractor rightPokeInteractor;
+
+        private bool leftHandTracked = false;
+        private bool rightHandTracked = false;
+        private Animator leftHandAnimator;
+        private Animator rightHandAnimator;
+
+        private Dictionary<XRHandJointID, Transform> leftJointCache;
+        private Dictionary<XRHandJointID, Transform> rightJointCache;
+
         public async Task<NetworkRunner> FindRunner()
         {
             while (searchingForRunner) await Task.Delay(10);
@@ -144,8 +175,15 @@ namespace Fusion.XR.Host.Rig
                 useInputInterpolation = false;
             }
 
-            if(interactionAction != null) interactionAction.action.Enable();
-            if(sneakTestAction != null) sneakTestAction.action.Enable();
+            if (interactionAction != null) interactionAction.action.Enable();
+            if (sneakTestAction != null) sneakTestAction.action.Enable();
+
+            if (leftHandModel != null) leftHandAnimator = leftHandModel.GetComponentInChildren<Animator>();
+            if (rightHandModel != null) rightHandAnimator = rightHandModel.GetComponentInChildren<Animator>();
+            if (enableFingerTracking)
+            {
+                InitializeHandTracking();
+            }
         }
 
         protected virtual async void Start()
@@ -159,45 +197,10 @@ namespace Fusion.XR.Host.Rig
 
         private void Update()
         {
-            // Debug logging to see if actions are being detected
-            if (interactionAction != null)
+            if (enableFingerTracking)
             {
-                if (interactionAction.action.WasPressedThisFrame())
-                {
-                    Debug.Log("INTERACTION BUTTON PRESSED!");
-                }
-                
-                // Also check if the action is enabled
-                if (!interactionAction.action.enabled)
-                {
-                    Debug.LogWarning("Interaction action is not enabled!");
-                }
+                UpdateFingerTrackingVisibility();
             }
-            else
-            {
-                Debug.LogWarning("Interaction action reference is null!");
-            }
-
-            if (sneakTestAction != null)
-            {
-                if (sneakTestAction.action.WasPressedThisFrame())
-                {
-                    //Debug.Log("SNEAK TEST BUTTON PRESSED!");
-                }
-                
-                if (!sneakTestAction.action.enabled)
-                {
-                    //Debug.LogWarning("Sneak test action is not enabled!");
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Sneak test action reference is null!");
-            }
-
-            // Original button tracking
-            //_interactionButton = _interactionButton | (interactionAction?.action.WasPressedThisFrame() ?? false);
-            //_sneakTestButton = _sneakTestButton | (sneakTestAction?.action.WasPressedThisFrame() ?? false);
 
             if(enableKeyboardInput)
             {
@@ -228,8 +231,14 @@ namespace Fusion.XR.Host.Rig
             if (searchingForRunner) Debug.LogError("Cancel searching for runner in HardwareRig");
             searchingForRunner = false;
             if (runner) runner.RemoveCallbacks(this);
-            if(interactionAction != null) interactionAction.action.Disable();
-            if(sneakTestAction != null) sneakTestAction.action.Disable();
+            if (interactionAction != null) interactionAction.action.Disable();
+            if (sneakTestAction != null) sneakTestAction.action.Disable();
+            if (handSubsystem != null)
+            {
+                handSubsystem.trackingAcquired -= OnHandTrackingAcquired;
+                handSubsystem.trackingLost -= OnHandTrackingLost;
+                handSubsystem.updatedHands -= OnHandsUpdated;
+            }
         }
 
         private VRPlayer GetVRPlayer()
@@ -316,12 +325,12 @@ namespace Fusion.XR.Host.Rig
                 rigInput.headsetRotation = headsetInterpolationPose.rotation;
             } else
             {
-                rigInput.leftHandPosition = leftHand.transform.position;
-                rigInput.leftHandRotation = leftHand.transform.rotation;
-                rigInput.rightHandPosition = rightHand.transform.position;
-                rigInput.rightHandRotation = rightHand.transform.rotation;
-                rigInput.headsetPosition = headset.transform.position;
-                rigInput.headsetRotation = headset.transform.rotation;
+                rigInput.leftHandPosition = transform.InverseTransformPoint(leftHand.transform.position);
+                rigInput.leftHandRotation = Quaternion.Inverse(transform.rotation) * leftHand.transform.rotation;
+                rigInput.rightHandPosition = transform.InverseTransformPoint(rightHand.transform.position);
+                rigInput.rightHandRotation = Quaternion.Inverse(transform.rotation) * rightHand.transform.rotation;
+                rigInput.headsetPosition = transform.InverseTransformPoint(headset.transform.position);
+                rigInput.headsetRotation = Quaternion.Inverse(transform.rotation) * headset.transform.rotation;
             }
 
             rigInput.leftHandCommand = leftHand.handCommand;
@@ -333,29 +342,6 @@ namespace Fusion.XR.Host.Rig
             GatherCustomInput(ref rigInput);
 
             input.Set(rigInput);
-
-            /*
-            //set mirror Input
-            RotateMirror.MirrorInput mirrorInput = new RotateMirror.MirrorInput();
-           
-            // Standardmäßig 0, falls keine Taste gedrückt wird
-            mirrorInput.yDelta = 0f;
-            mirrorInput.zDelta = 0f;
-
-            if (Input.GetKey(KeyCode.LeftArrow))
-            {
-                mirrorInput.yDelta = -2f;
-                Debug.Log(mirrorInput.yDelta);
-            }
-            else if (Input.GetKey(KeyCode.RightArrow))
-                mirrorInput.yDelta = 2f;
-
-            if (Input.GetKey(KeyCode.UpArrow))
-                mirrorInput.zDelta = -2f;
-            else if (Input.GetKey(KeyCode.DownArrow))
-                mirrorInput.zDelta = 2f;
-
-            input.Set(mirrorInput);*/
         }
 
         private void GatherCustomInput(ref RigInput rigInput)
@@ -372,7 +358,8 @@ namespace Fusion.XR.Host.Rig
                 keyPressBuffer.Clear();
 
                 //See what keys are sent here
-                //if(rigInput.keyPressed1 != KeyCode.None) Debug.Log($"Sending keyboard input over network: {rigInput.keyPressed1}, {rigInput.keyPressed2}, {rigInput.keyPressed3}, {rigInput.keyPressed4}");
+                if(rigInput.keyPressed1 != KeyCode.None) Debug.Log($"Sending keyboard input over network: {rigInput.keyPressed1}, {rigInput.keyPressed2}, {rigInput.keyPressed3}, {rigInput.keyPressed4}");
+
 
                 //For testing i will use this instead of unitys actions since we will use the keyboard presses anyway.
                 if (rigInput.keyPressed1 == KeyCode.Alpha1)
@@ -381,7 +368,7 @@ namespace Fusion.XR.Host.Rig
                     {
                         rigInput.customButtons.Set(RigInput.SNEAKTESTBUTTON, true);
                     }
-                    
+
                 }
                 else if (rigInput.keyPressed1 == KeyCode.Alpha2)
                 {
@@ -389,7 +376,7 @@ namespace Fusion.XR.Host.Rig
                 }
                 else if (rigInput.keyPressed1 == KeyCode.LeftArrow)
                 {
-                   rigInput.yDelta = -2f;
+                    rigInput.yDelta = -2f;
                 }
                 else if (rigInput.keyPressed1 == KeyCode.RightArrow)
                 {
@@ -405,27 +392,6 @@ namespace Fusion.XR.Host.Rig
 
                 }
             }
-
-            /*
-            //I used this for testing my "interactions" but since we will be getting keyboard inputs from the hardware i switched to a keycode comparison see above.
-            if(_interactionButton)
-            {
-                Debug.Log($"Setting interaction button in network input: {_interactionButton}");
-                rigInput.customButtons.Set(RigInput.INTERACTIONBUTTON, true);
-            }
-            _interactionButton = false;
-
-            if(currentVRPlayer != null && currentVRPlayer.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedSneaking)
-            {
-                if(_sneakTestButton)
-                {
-                    Debug.Log($"Setting sneak button in network input: {_sneakTestButton}");
-                    rigInput.customButtons.Set(RigInput.SNEAKTESTBUTTON, _sneakTestButton);
-                }
-            }
-            _sneakTestButton = false;
-            */
-
         }
 
         public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
@@ -447,8 +413,358 @@ namespace Fusion.XR.Host.Rig
         }
         #endregion
 
+        #region Local Finger Tracking 
+        void InitializeHandTracking()
+        {
+            if (handSubsystem == null)
+            {
+                var xrManager = XRGeneralSettings.Instance?.Manager;
+                if (xrManager?.activeLoader != null)
+                {
+                    handSubsystem = xrManager.activeLoader.GetLoadedSubsystem<XRHandSubsystem>();
+                }
+            }
+
+            if (handSubsystem != null)
+            {
+                handSubsystem.trackingAcquired += OnHandTrackingAcquired;
+                handSubsystem.trackingLost += OnHandTrackingLost;
+                handSubsystem.updatedHands += OnHandsUpdated;
+                Debug.Log("HardwareRig: Hand tracking subsystem initialized");
+            }
+            else
+            {
+                Debug.LogWarning("HardwareRig: Hand tracking subsystem not available");
+                enableFingerTracking = false;
+            }
+        }
+
+        string GetJointNameFromID(XRHandJointID jointID, bool isLeft)
+        {
+            string prefix = isLeft ? "L_" : "R_";
+            string suffix = "";
+            switch (jointID)
+            {
+                // Thumb
+                case XRHandJointID.ThumbMetacarpal: suffix = "ThumbMetacarpal"; break;
+                case XRHandJointID.ThumbProximal: suffix = "ThumbProximal"; break;
+                case XRHandJointID.ThumbDistal: suffix = "ThumbDistal"; break;
+                case XRHandJointID.ThumbTip: suffix = "ThumbTip"; break;
+
+                // Index
+                case XRHandJointID.IndexProximal: suffix = "IndexProximal"; break;
+                case XRHandJointID.IndexIntermediate: suffix = "IndexIntermediate"; break;
+                case XRHandJointID.IndexDistal: suffix = "IndexDistal"; break;
+                case XRHandJointID.IndexTip: suffix = "IndexTip"; break;
+
+                // Middle
+                case XRHandJointID.MiddleMetacarpal: suffix = "MiddleMetacarpal"; break;
+                case XRHandJointID.MiddleProximal: suffix = "MiddleProximal"; break;
+                case XRHandJointID.MiddleIntermediate: suffix = "MiddleIntermediate"; break;
+                case XRHandJointID.MiddleDistal: suffix = "MiddleDistal"; break;
+                case XRHandJointID.MiddleTip: suffix = "MiddleTip"; break;
+
+                // Ring
+                case XRHandJointID.RingMetacarpal: suffix = "RingMetacarpal"; break;
+                case XRHandJointID.RingIntermediate: suffix = "RingIntermediate"; break;
+                case XRHandJointID.RingProximal: suffix = "RingProximal"; break;
+                case XRHandJointID.RingDistal: suffix = "RingDistal"; break;
+                case XRHandJointID.RingTip: suffix = "RingTip"; break;
+
+                // Pinky
+                case XRHandJointID.LittleMetacarpal: suffix = "LittleMetacarpal"; break;
+                case XRHandJointID.LittleProximal: suffix = "LittleProximal"; break;
+                case XRHandJointID.LittleIntermediate: suffix = "LittleIntermediate"; break;
+                case XRHandJointID.LittleDistal: suffix = "LittleDistal"; break;
+                case XRHandJointID.LittleTip: suffix = "LittleTip"; break;
+
+                case XRHandJointID.Wrist: suffix = "Wrist"; break;
+                case XRHandJointID.Palm: suffix = "Palm"; break;
+                default: return null;
+            }
+
+            return prefix + suffix;
+        }
+
+        void BuildJointCache(GameObject handModel, bool isLeft)
+        {
+            var cache = new Dictionary<XRHandJointID, Transform>();
+            Transform skeletonRoot = leftHandSkeletalRoot;
+            if (isLeft == false) skeletonRoot = rightHandSkeletalRoot;
+
+            if (skeletonRoot == null)
+            {
+                Debug.LogError("Could not find skeleton root transform in hand model");
+                return;
+            }
+
+            Transform[] allJoints = skeletonRoot.GetComponentsInChildren<Transform>();
+
+            for (int i = 0; i < XRHandJointID.EndMarker.ToIndex(); i++)
+            {
+                XRHandJointID jointID = (XRHandJointID)i;
+                string jointName = GetJointNameFromID(jointID, isLeft);
+                if (jointName == null) continue;
+
+                foreach (Transform jointTransform in allJoints)
+                {
+                    if (jointTransform.name == jointName)
+                    {
+                        cache[jointID] = jointTransform;
+                        break;
+                    }
+                }
+            }
+
+            if (isLeft) leftJointCache = cache;
+            else rightJointCache = cache;
+        }
+
+        void OnHandTrackingAcquired(XRHand hand)
+        {
+            Debug.Log("Hand tracking acquired, building joint cache");
+            bool isLeft = false;
+            if (hand.handedness == Handedness.Left) isLeft = true;
+            if (leftHandModel != null) BuildJointCache(leftHandModel, isLeft);
+            if (rightHandModel != null) BuildJointCache(rightHandModel, isLeft);
+        }
+
+        void OnHandTrackingLost(XRHand hand)
+        {
+            if (hand.handedness == Handedness.Left) leftHandTracked = false;
+            else rightHandTracked = false;
+            Debug.Log("Hand tracking lost for: " + (hand.handedness == Handedness.Left ? "Left Hand" : "Right Hand"));
+        }
+
+        void OnHandsUpdated(XRHandSubsystem subsystem, XRHandSubsystem.UpdateSuccessFlags updateSuccessFlags, XRHandSubsystem.UpdateType updateType)
+        {
+            if (!enableFingerTracking) return;
+
+            // Update hand tracking state
+            leftHandTracked = (updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.LeftHandRootPose) != 0;
+            rightHandTracked = (updateSuccessFlags & XRHandSubsystem.UpdateSuccessFlags.RightHandRootPose) != 0;
+
+
+            //Disable old input source when tracking is active
+            if (leftHandInputDevice != null)
+            {
+                leftHandInputDevice.shouldSynchDevicePosition = !leftHandTracked;
+            }
+            if (rightHandInputDevice != null)
+            {
+                rightHandInputDevice.shouldSynchDevicePosition = !rightHandTracked;
+            }
+            // Get hand data
+            if (leftHandTracked && leftHandModel != null)
+            {
+                leftXRHand = subsystem.leftHand;
+                UpdateHandJoints(leftXRHand, leftHandModel);
+                UpdateHandInteractions(leftXRHand, true);
+            }
+
+            if (rightHandTracked && rightHandModel != null)
+            {
+                rightXRHand = subsystem.rightHand;
+                UpdateHandJoints(rightXRHand, rightHandModel);
+            }
+        }
+
+        void UpdateHandJoints(XRHand hand, GameObject handObject)
+        {
+            var cache = hand.handedness == Handedness.Left ? leftJointCache : rightJointCache;
+            if (cache == null || !hand.isTracked) return;
+
+            HardwareHand hardwareHand = (hand.handedness == Handedness.Left) ? leftHand : rightHand;
+
+            // Update root pose of the entire hand model
+            if (hand.GetJoint(XRHandJointID.Wrist).TryGetPose(out Pose rootPose))
+            {
+                handObject.transform.SetPositionAndRotation(rootPose.position, rootPose.rotation);
+                hardwareHand.transform.SetPositionAndRotation(rootPose.position, rootPose.rotation);
+            }
+
+            // Update individual joints
+            foreach(var pair in cache)
+            {
+                XRHandJointID jointID = pair.Key;
+                Transform jointTransform = pair.Value;
+
+                if (hand.GetJoint(jointID).TryGetPose(out Pose jointPose))
+                {
+                    jointTransform.SetPositionAndRotation(jointPose.position, jointPose.rotation);
+    
+                    //Vector3 worldPos = jointPose.position;
+                    //Quaternion worldRot = jointPose.rotation;
+
+                    //jointTransform.localPosition = handObject.transform.InverseTransformPoint(worldPos);
+                    //jointTransform.localRotation = Quaternion.Inverse(handObject.transform.rotation) * worldRot;
+                }
+            }
+        }
+
+        void UpdateHandInteractions(XRHand hand, bool isLeft)
+        {
+            // Detect pinch gesture for interactions
+            if (DetectPinchGesture(hand))
+            {
+                OnPinchDetected(isLeft);
+            }
+
+            if (DetectCuttingGesture(hand))
+            {
+                OnCutDetected(isLeft);
+            }
+
+            // Update interactor positions
+                var interactor = isLeft ? leftFingerInteractor : rightFingerInteractor;
+            var pokeInteractor = isLeft ? leftPokeInteractor : rightPokeInteractor;
+
+            if (interactor != null && hand.GetJoint(XRHandJointID.IndexTip).TryGetPose(out Pose indexPose))
+            {
+                interactor.transform.position = indexPose.position;
+                interactor.transform.rotation = indexPose.rotation;
+                
+                if (pokeInteractor != null)
+                {
+                    pokeInteractor.transform.position = indexPose.position;
+                    pokeInteractor.transform.rotation = indexPose.rotation;
+                }
+            }
+        }
+
+        bool DetectPinchGesture(XRHand hand)
+        {
+            // Simple pinch detection based on distance between thumb and index finger
+            if (hand.GetJoint(XRHandJointID.ThumbTip).TryGetPose(out Pose thumbPose) &&
+                hand.GetJoint(XRHandJointID.IndexTip).TryGetPose(out Pose indexPose))
+            {
+                float distance = Vector3.Distance(thumbPose.position, indexPose.position);
+                return distance < 0.03f; // 3cm threshold
+            }
+            return false;
+        }
+
+        void OnPinchDetected(bool isLeft)
+        {
+            string handName = isLeft ? "Left" : "Right";
+            Debug.Log($"{handName} hand pinch detected!");
+            
+            // Trigger interaction events here
+            // You can add custom interaction logic based on pinch gestures
+        }
+
+        bool DetectCuttingGesture(XRHand hand)
+        {
+            if (hand.GetJoint(XRHandJointID.IndexTip).TryGetPose(out Pose indexPose) &&
+                hand.GetJoint(XRHandJointID.MiddleTip).TryGetPose(out Pose middlePose) &&
+                hand.GetJoint(XRHandJointID.RingIntermediate).TryGetPose(out Pose ringPose) &&
+                hand.GetJoint(XRHandJointID.ThumbTip).TryGetPose(out Pose thumbPose) &&
+                hand.GetJoint(XRHandJointID.Palm).TryGetPose(out Pose palmPose))
+            {
+                //See if Middle and index are not near palm
+                float distancePalmIndex = Vector3.Distance(palmPose.position, indexPose.position);
+                if (distancePalmIndex < 0.03f) return false;
+
+                float distancePalmMiddle = Vector3.Distance(palmPose.position, middlePose.position);
+                if (distancePalmMiddle < 0.03f) return false;
+
+                float distanceThumbRing = Vector3.Distance(thumbPose.position, ringPose.position);
+                if (distanceThumbRing < 0.03f)
+                {
+                    float distanceMiddleIndex = Vector3.Distance(middlePose.position, indexPose.position);
+                    return distanceMiddleIndex < 0.03f;
+                }
+            }
+            return false;
+        }
+
+        void OnCutDetected(bool isLeft)
+        {
+            string handName = isLeft ? "Left" : "Right";
+            Debug.Log($"{handName} hand cut detected!");
+        }
+
+        void UpdateFingerTrackingVisibility()
+        {
+            //Determine when to show finger tracking and when controller-animated hands
+            bool showLeftFingers = ShouldShowFingerTracking(true);
+            bool showRightFingers = ShouldShowFingerTracking(false);
+
+            if (leftHandAnimator != null && leftHandAnimator.enabled != !showLeftFingers)
+            {
+                leftHandAnimator.enabled = !showLeftFingers;
+            }
+
+            if (rightHandAnimator != null && rightHandAnimator.enabled != !showRightFingers)
+            {
+                rightHandAnimator.enabled = !showRightFingers;
+            }
+
+            UpdateOSFHandVisibility(!showLeftFingers, !showRightFingers);
+        }
+
+        bool ShouldShowFingerTracking(bool isLeft)
+        {
+            bool handTracked = isLeft ? leftHandTracked : rightHandTracked;
+            bool controllerActive = IsControllerActive(isLeft);
+
+            //Show finger tracking when hands are tracked, controlers are not actively being used, PLayer is in an interaction heavy context
+            return handTracked  && enableFingerTracking;
+        }
+
+        bool IsControllerActive(bool isLeft)
+        {
+            var handCommand = isLeft ? leftHand.handCommand : rightHand.handCommand;
+            
+            // Consider controller "active" if significant input is detected
+            return handCommand.triggerCommand > 0.1f || 
+                   handCommand.gripCommand > 0.1f || 
+                   handCommand.thumbTouchedCommand > 0.5f ||
+                   handCommand.indexTouchedCommand > 0.5f;
+        }
+
+        void UpdateOSFHandVisibility(bool showLeftOSF, bool showRightOSF)
+        {
+            // Get references to the OSF hand representations
+            var networkRig = GetComponent<VRPlayer>()?.GetComponent<NetworkRig>();
+            if (networkRig == null) return;
+
+            var leftOSF = networkRig.leftHand.GetComponent<OSFHandRepresentation>();
+            var rightOSF = networkRig.rightHand.GetComponent<OSFHandRepresentation>();
+
+            // Fade OSF hands when finger tracking is active
+            if (leftOSF != null)
+            {
+                leftOSF.DisplayMesh(showLeftOSF);
+            }
+
+            if (rightOSF != null)
+            {
+                rightOSF.DisplayMesh(showRightOSF);
+            }
+        }
+
+        // Public methods to check hand tracking state
+        public bool IsLeftHandTracked() => leftHandTracked;
+        public bool IsRightHandTracked() => rightHandTracked;
+        public bool IsFingerTrackingEnabled() => enableFingerTracking && handSubsystem != null && handSubsystem.running;
+
+        // Get finger positions for gameplay logic
+        public Vector3 GetFingerTipPosition(bool isLeft, XRHandJointID jointID = XRHandJointID.IndexTip)
+        {
+            var hand = isLeft ? leftXRHand : rightXRHand;
+            if (hand.isTracked && hand.GetJoint(jointID).TryGetPose(out Pose pose))
+            {
+                return pose.position;
+            }
+            return Vector3.zero;
+        }
+
+
+        #endregion
+
         #region INetworkRunnerCallbacks (unused)
-        
+
 
         public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
         public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
