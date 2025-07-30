@@ -196,9 +196,14 @@ public class StealableKeyCard : NetworkedKeyCard
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_PlayStealSound()
     {
-        if(stealSound != null && audioSource != null)
+        if (stealSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(stealSound);
+        }
+
+        if (NetworkedSoundManager.Instance != null)
+        {
+            NetworkedSoundManager.Instance.PlayEnvironmentSound("Keycard_Grabbed", transform.position);
         }
     }
 

@@ -3,19 +3,30 @@ using Fusion;
 using Fusion.Sockets;
 using System.Collections;
 
+public enum DoorType
+{
+    Elevator,
+    Prison
+}
+
 public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
 {
     private Animator _animator;
     private AnimatorStateSync _animatorSync;
     [SerializeField] private Collider doorCollider;
 
-    [Networked] public bool IsOpen {get; set;}
-    [Networked] public bool HasInitialized {get; set;}
+    [Networked] public bool IsOpen { get; set; }
+    [Networked] public bool HasInitialized { get; set; }
 
     public AudioSource doorAudioSource;
 
+    [Header("Door Type (for Audio)")]
+    [SerializeField] private DoorType doorType;
+
     [Header("Initial state")]
     [SerializeField] private bool startOpen = false;
+
+
 
     private ChangeDetector _changeDetector;
 
@@ -43,9 +54,9 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
     {
         yield return null;
 
-        if(Object.HasStateAuthority && !HasInitialized)
+        if (Object.HasStateAuthority && !HasInitialized)
         {
-            if(startOpen)
+            if (startOpen)
             {
                 RPC_SetInitialOpenState();
             }
@@ -70,7 +81,7 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
         int openStateHash = Animator.StringToHash("Base Layer.OpenDoor");
         _animator.Play(openStateHash, 0, 1.0f); //Jump to end of animation
 
-        if(doorCollider != null) doorCollider.enabled = false;
+        if (doorCollider != null) doorCollider.enabled = false;
 
         Debug.Log("Door: Set to initial open state");
     }
@@ -78,20 +89,20 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
     //Interface ILevelResettable implementation
     public void SetInitialState()
     {
-        if(Object.HasStateAuthority)
+        if (Object.HasStateAuthority)
         {
             IsOpen = startOpen;
-            if(doorCollider != null) doorCollider.enabled = !startOpen;
+            if (doorCollider != null) doorCollider.enabled = !startOpen;
         }
     }
 
     public void ResetToInitialState()
     {
-        if(Object.HasStateAuthority)
+        if (Object.HasStateAuthority)
         {
             IsOpen = startOpen;
 
-            if(startOpen)
+            if (startOpen)
             {
                 RPC_SetInitialOpenState();
             }
@@ -104,7 +115,7 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
 
     public void RequestOpen()
     {
-        
+
         if (IsOpen)
         {
             Debug.Log("Door: Already open, ignoring request");
@@ -115,7 +126,7 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
 
     public void RequestClose()
     {
-        if(!IsOpen)
+        if (!IsOpen)
         {
             Debug.Log("Door: Already closed, ignoring request");
             return;
@@ -127,7 +138,7 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
     public void RequestToggle()
     {
         Debug.Log("Door: Request to toggle state received");
-        if(!IsOpen) RPC_SetDoorState(true);
+        if (!IsOpen) RPC_SetDoorState(true);
         else RPC_SetDoorState(false);
     }
 
@@ -135,10 +146,10 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
     public void RPC_SetDoorState(bool shouldOpen)
     {
         Debug.Log($"Door: RPC_SetDoorState received: {shouldOpen}");
-        if(IsOpen != shouldOpen)
+        if (IsOpen != shouldOpen)
         {
             IsOpen = shouldOpen;
-        }   
+        }
     }
 
     private void OnDoorsStateChanged()
@@ -158,6 +169,20 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
     {
         Debug.Log("Door: Playing open animation");
         _animatorSync.NetworkTrigger("OpenDoor");
+
+        if (NetworkedSoundManager.Instance != null)
+        {
+            switch (doorType)
+            {
+                case DoorType.Elevator:
+                    NetworkedSoundManager.Instance.PlayEnvironmentSound("Elevator_Door_Opening", transform.position);
+                    break;
+                case DoorType.Prison:
+                    NetworkedSoundManager.Instance.PlayEnvironmentSound("Prison_Door_Opening", transform.position);
+                    break;
+            }
+        }
+
         StartCoroutine(UpdateColliderAfterAnimation());
     }
 
@@ -165,23 +190,38 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
     {
         Debug.Log("Door: Playing close animation");
         _animatorSync.NetworkTrigger("CloseDoor");
+
+        if (NetworkedSoundManager.Instance != null)
+        {
+            switch (doorType)
+            {
+                case DoorType.Elevator:
+                    NetworkedSoundManager.Instance.PlayEnvironmentSound("Elevator_Door_Closing", transform.position);
+                    break;
+                case DoorType.Prison:
+                    NetworkedSoundManager.Instance.PlayEnvironmentSound("Prison_Door_Closing", transform.position);
+                    break;
+            }
+        }
+
+
         StartCoroutine(UpdateColliderAfterAnimation());
     }
 
     private IEnumerator UpdateColliderAfterAnimation()
     {
         Debug.Log("Door: Starting collider removal coroutine");
-        
+
         // Wait one frame to ensure the animation state has updated
         yield return null;
-        
+
         //Grabs current state info and assumes openDoor animation to be in layer 0
         var state = _animator.GetCurrentAnimatorStateInfo(0);
         float duration = state.length / 1f;
 
         yield return new WaitForSeconds(duration);
 
-        if (doorCollider != null) 
+        if (doorCollider != null)
         {
             doorCollider.enabled = !IsOpen;
             Debug.Log("Door: Collider switched");
@@ -190,7 +230,7 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
         {
             Debug.LogWarning("Door: No collider to switch");
         }
-    }    
+    }
 
     [ContextMenu("Test Open Door")]
     public void TestOpenDoor()

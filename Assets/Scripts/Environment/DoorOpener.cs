@@ -85,6 +85,12 @@ public class DoorOpener : NetworkBehaviour, IKeyCardReceiver, ISolvable
             RPC_PlaySound(insertSound.name);
         }
 
+        // Play Sound
+        if (NetworkedSoundManager.Instance != null)
+        {
+            NetworkedSoundManager.Instance.PlayEnvironmentSound("Keycard_Reading", transform.position);
+        }
+
         if (card.KeyID == requireKeyID)
         {
             Debug.Log($"DoorOpener: Key ID matches, opening door ...");

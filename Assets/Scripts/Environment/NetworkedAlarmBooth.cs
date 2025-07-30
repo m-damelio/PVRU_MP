@@ -156,7 +156,7 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
     {
         IsAlarmedActive = true;
 
-        if(guardChecker != null)
+        if (guardChecker != null)
         {
             guardChecker.RPC_TriggerAlarm();
         }
@@ -174,25 +174,19 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_PlaySound(SoundType soundToPlay)
     {
-        if(audioSource != null)
+        if (NetworkedSoundManager.Instance != null)
         {
-            AudioClip clipToPlay = null;
-            switch(soundToPlay)
+            switch (soundToPlay)
             {
-                case SoundType.Alarm:
-                    clipToPlay = alarmSound;
-                    break;
-                case SoundType.Success:
-                    clipToPlay = successSound;
-                    break;
-                case SoundType.Failure:
-                    clipToPlay = failureSound;
-                    break;
-            }
-            if(clipToPlay != null)
-            {
-                audioSource.clip = clipToPlay;
-                audioSource.Play();
+            case SoundType.Alarm:
+                NetworkedSoundManager.Instance.PlayEnvironmentSound("Alarm", transform.position);
+                break;
+            case SoundType.Success:
+                NetworkedSoundManager.Instance.PlayEnvironmentSound("Keycard_Accepted", transform.position);
+                break;
+            case SoundType.Failure:
+                NetworkedSoundManager.Instance.PlayEnvironmentSound("Button_Error", transform.position);
+                break;
             }
         }
     }
