@@ -1,40 +1,87 @@
 using UnityEngine;
+using Fusion;
 
-public class animateButton : MonoBehaviour
+public class animateButton : NetworkBehaviour, ILevelResettable
 {
 
+    [SerializeField] private Transform buttonTop;
     public Vector3 originalPos;
     public float bounceDistance;
     public float bounceDuration;
 
-    public bool isPressed;
+    [Header("Networked Settings")]
+    [Networked] public bool IsPressed { get; set; }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public override void Spawned()
     {
-        originalPos = transform.GetChild(0).transform.position;
-        bounceDistance = 0.02f;
-        bounceDuration = 0.1f;
+        if (Object.HasStateAuthority)
+        {
+            SetInitialState();
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetInitialState()
     {
-       
+        if (Object.HasStateAuthority)
+        {
+            if (buttonTop != null)
+            {
+                originalPos = buttonTop.position;
+            }
+            else
+            {
+                originalPos = transform.GetChild(0).transform.position;
+            }
+            IsPressed = false;
+            
+            bounceDistance = 0.02f;
+            bounceDuration = 0.1f;
+        }
+    }
+
+    public void ResetToInitialState()
+    {
+        if (Object.HasStateAuthority)
+        {
+            IsPressed = false;
+            originalPos = transform.GetChild(0).transform.position;
+        }
     }
 
     public void OnTriggerEnter(Collider other)
     {
-        //DO some if other.gameObject.tag == 'hand' or something when hand is ready
+        if (Object == null) return;
+        if (!Object.HasStateAuthority || IsPressed) return;
+
+        RPC_StartPress();
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_StartPress()
+    {
         StartCoroutine(ButtonFeedbackVisual());
+        if (NetworkedSoundManager.Instance != null)
+        {
+            NetworkedSoundManager.Instance.PlayEnvironmentSound("Button_Clicking", transform.position);
+        }
     }
 
 
     System.Collections.IEnumerator ButtonFeedbackVisual()
     {
         //make the inner cube of the button smaller for "pressing" visually the button down
-        isPressed = true;
-        var buttonCT = transform.GetChild(0).transform;
+        IsPressed = true;
+        Transform buttonCT;
+        if (buttonTop != null)
+        {
+            buttonCT = buttonTop.transform;
+        }
+        else
+        {
+            buttonCT = transform.GetChild(0).transform;
+        }
+            
 
         Vector3 downPos = originalPos- buttonCT.transform.TransformDirection(Vector3.down) * bounceDistance;
 
@@ -58,6 +105,6 @@ public class animateButton : MonoBehaviour
         }
         buttonCT.position = originalPos;
 
-        isPressed = false;
+        IsPressed = false;
     }
 }
