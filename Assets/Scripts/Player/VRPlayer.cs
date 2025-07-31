@@ -306,7 +306,7 @@ public class VRPlayer : NetworkBehaviour
         }
 
         // Start the coroutine to check the device sneak state
-        StartCoroutine(GetDeviceSneakStateWithRetry());
+        if (testHardware) StartCoroutine(GetDeviceSneakStateWithRetry());
     }
 
 
