@@ -18,7 +18,6 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
     private Collider _sneakZoneCollider;
     private GameObject _visualGameobject;
     private GameObject _disallowTeleportColliderHolder;
-
     private ChangeDetector _changeDetector;
 
     void Start()
@@ -75,8 +74,6 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
         {
             return;
         }
-        
-        player.CurrentlyInsideSneakzone = (this);
 
         if (player.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedSneaking)
         {

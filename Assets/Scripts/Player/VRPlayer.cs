@@ -63,13 +63,6 @@ public class VRPlayer : NetworkBehaviour
         500000    // F standalone 
     };
 
-
-
-
-
-
-
-
     [Header("Hardware Detection")]
     [SerializeField] private GameObject hardwareIndicator; // Visual indicator for extra hardware
 
@@ -100,6 +93,7 @@ public class VRPlayer : NetworkBehaviour
     [SerializeField] private float pickupRange = 2f;
     [SerializeField] private LayerMask keyCardLayer = -1; //All layers by default
     [SerializeField] private LayerMask interactionLayer = -1;
+    [SerializeField] private NetworkedKeyCard heldKeyCard;
 
     [Header("Networked properties")]
     [Networked] public PlayerType NetworkedPlayerType { get; set; }
@@ -111,10 +105,7 @@ public class VRPlayer : NetworkBehaviour
     [SerializeField] private XRHandSubsystem handSubsystem;
     //[SerializeField] private bool useHandTracking = true;
 
-    [Header("For Testing Purposes")]
-    private DoorNetworkedController doorToOpen;
-    //private bool hasSearchedForDoor = false;
-    [SerializeField] private NetworkedKeyCard heldKeyCard;
+    
     public enum PlayerType
     {
         EnhancedSneaking, //Player with pressure plate
