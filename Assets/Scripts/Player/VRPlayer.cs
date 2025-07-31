@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Networking;
+using UnityEngine.UIElements;
 using UnityEngine.XR;
 using UnityEngine.XR.Hands;
 using static RotateMirror;
@@ -148,10 +149,7 @@ public class VRPlayer : NetworkBehaviour
 
     void Start()
     {
-        //Get reference of all mirrors in the scene
-        mirrors = new List<RotateMirror>(FindObjectsOfType<RotateMirror>());
-        isSelected = false;
-
+       
         // Start the coroutine to check sneak state
         if(testHardware) StartCoroutine(CheckDeviceLoop());
     }
@@ -261,71 +259,18 @@ public class VRPlayer : NetworkBehaviour
 
     private void Update()
     {
-        //Lokal Input, welcher Mirror ausgew�hlt wurde zum drehen -- das drehen wird genetworked
-        //Farblich hervorheben welchen wir drehen
-        if (!Object.HasInputAuthority) return;
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            if (isSelected && activeMirror == mirrors[0])
-            {
-                DeselectActiveMirror();
-                isSelected = false;
-            }
-            else
-            {
-                if (mirrors.Count > 0 && !isSelected)
-                {
-                    activeMirror = mirrors[0];
-                    Debug.Log($"Spiegel 1 ausgew�hlt: {activeMirror.gameObject.name}");
-                    SetActiveMirror(activeMirror);
-                    //var mirrorNetObj = activeMirror.GetComponent<NetworkObject>();
-                    isSelected = true;
-                }
-            }
-
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            if (isSelected && activeMirror == mirrors[1])
-            {
-                DeselectActiveMirror();
-                isSelected = false;
-            }
-            else
-            {
-                if (mirrors.Count > 1 && !isSelected)
-                {
-                    activeMirror = mirrors[1];
-                    Debug.Log($"Spiegel 2 ausgew�hlt: {activeMirror.gameObject.name}");
-                    SetActiveMirror(activeMirror);
-                    isSelected = true;
-                }
-            }
-        }
-
-        // Start the coroutine to check the device sneak state
+       
         if (testHardware) StartCoroutine(GetDeviceSneakStateWithRetry());
     }
 
 
-    void SetActiveMirror(RotateMirror mirror)
+    public void SetActiveMirror(RotateMirror mirror)
     {
-        if (activeMirror != null)
-            activeMirror.SetHighlight(false);
-
         activeMirror = mirror;
-
-        if (activeMirror != null)
-            activeMirror.SetHighlight(true);
     }
 
-    void DeselectActiveMirror()
+    public void DeselectActiveMirror(RotateMirror mirror)
     {
-        if (activeMirror != null)
-            activeMirror.SetHighlight(false);
-
         activeMirror = null;
     }
 

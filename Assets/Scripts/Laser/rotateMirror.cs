@@ -31,6 +31,12 @@ public class RotateMirror : NetworkBehaviour
     // For Laser-Updates
     private Quaternion lastRot;
 
+    private void Awake()
+    {
+        NetworkedYRotation = gameObject.transform.rotation.y;
+        NetworkedZRotation = gameObject.transform.rotation.z;
+    }
+
     public override void FixedUpdateNetwork()
     {
        

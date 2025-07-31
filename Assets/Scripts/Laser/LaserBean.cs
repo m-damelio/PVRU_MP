@@ -56,11 +56,11 @@ public class LaserBean : NetworkBehaviour
                 laser = gameObject.AddComponent<LineRenderer>();
             }
 
-            laser.startWidth = 0.1f;
-            laser.endWidth = 0.1f;
+            laser.startWidth = 0.05f;
+            laser.endWidth = 0.05f;
             laser.material = laserMaterial;
-            laser.startColor = Color.cyan;
-            laser.endColor = Color.cyan;
+            laser.startColor = Color.yellow;
+            laser.endColor = Color.yellow;
             laser.useWorldSpace = false;
         }
 
@@ -68,14 +68,14 @@ public class LaserBean : NetworkBehaviour
         {
             laserHitInstance = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             laserHitInstance.transform.SetParent(this.transform);
-            laserHitInstance.transform.localScale = Vector3.one * 0.4f;
+            laserHitInstance.transform.localScale = Vector3.one * 0.2f;
 
             // Entferne den Collider, den Unity automatisch hinzufügt
             Destroy(laserHitInstance.GetComponent<Collider>());
 
             // Erzeuge ein Material mit Emission
             hitMaterial = new Material(Shader.Find("Unlit/Color"));
-            hitMaterial.color = Color.cyan;
+            hitMaterial.color = Color.yellow;
             hitMaterial.EnableKeyword("_EMISSION");
             laserHitInstance.GetComponent<MeshRenderer>().material = hitMaterial;
 

@@ -1,4 +1,5 @@
 using Fusion.XR.Host.Rig;
+using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -38,11 +39,13 @@ namespace Fusion.XR.Host.Locomotion
         public Color hitColor = Color.green;
         public Color noHitColor = Color.red;
 
-
         public UnityEvent<Collider, Vector3> onRelease = new UnityEvent<Collider, Vector3>();
 
         // Define if the beamer ray is active this frame
         public bool isRayEnabled = false;
+
+        public RotateMirror lastMirrorHit = null;
+        private bool isHit;
 
         public enum Status
         {
@@ -71,6 +74,8 @@ namespace Fusion.XR.Host.Locomotion
 
             if (origin == null) origin = transform;
             if (hand == null) hand = GetComponentInParent<HardwareHand>();
+
+            isHit = false;
         }
 
         public virtual void Start()
@@ -100,6 +105,7 @@ namespace Fusion.XR.Host.Locomotion
             ray.isRayEnabled = isRayEnabled;
             if (ray.isRayEnabled)
             {
+                var player = FindFirstObjectByType<VRPlayer>();
                 ray.origin = origin.position;
                 if (BeamCast(out RaycastHit hit))
                 {
@@ -108,13 +114,51 @@ namespace Fusion.XR.Host.Locomotion
                     ray.color = hitColor;
                     lastHit = hit.point;
                     status = Status.BeamHit;
+
+                    if (hit.collider.CompareTag("Mirror"))
+                    {
+                        var currentMirror = hit.collider.gameObject.transform.GetComponentInParent<RotateMirror>();
+                        
+
+                        if (lastMirrorHit != null && lastMirrorHit != currentMirror)
+                        {
+                            lastMirrorHit.SetHighlight(false); // Alten Spiegel deaktivieren
+                            player.DeselectActiveMirror(lastMirrorHit);
+
+                        }
+                        currentMirror.SetHighlight(true); // Aktuellen Spiegel aktivieren
+                        lastMirrorHit = currentMirror; // Speichern für später
+                        player.SetActiveMirror(currentMirror);
+                    }
+                    else
+                    {
+                        // Kein Spiegel mehr getroffen
+                        if (lastMirrorHit != null)
+                        {
+                            lastMirrorHit.SetHighlight(false);
+                            player.DeselectActiveMirror(lastMirrorHit);
+                            lastMirrorHit = null;
+                        }
+                    }
+                        
+
+                    
                 }
+                
+
                 else
                 {
                     lastHitCollider = null;
                     ray.target = ray.origin + origin.forward * maxDistance;
                     ray.color = noHitColor;
                     status = Status.BeamNoHit;
+
+                    // Auch nichts getroffen (Raycast trifft nichts)
+                    if (lastMirrorHit != null)
+                    {
+                        lastMirrorHit.SetHighlight(false);
+                        lastMirrorHit = null;
+                    }
                 }
             }
             else
