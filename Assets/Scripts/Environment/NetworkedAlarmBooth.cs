@@ -210,9 +210,10 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
     {
         if(Runner!=null)
         {
-            if(guardChecker != null)
+            if (guardChecker != null)
             {
                 guardChecker.RPC_TriggerAlarm();
+                RPC_PlaySound(SoundType.Alarm);
             }
             
         }

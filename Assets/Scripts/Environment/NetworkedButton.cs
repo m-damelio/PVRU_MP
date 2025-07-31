@@ -76,8 +76,13 @@ public class NetworkedButton : NetworkBehaviour
     //called from interaction script
     public void TriggerPress()
     {
-        if(buttonMaterial == null) return;
+        if (buttonMaterial == null) return;
         RPC_RequestPress();
+        
+        if (NetworkedSoundManager.Instance != null)
+        {
+            NetworkedSoundManager.Instance.PlayEnvironmentSound("Keycard_Grabbed", transform.position);
+        }
     }
 
     [ContextMenu("Test Trigger Press")]

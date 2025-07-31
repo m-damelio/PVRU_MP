@@ -80,6 +80,11 @@ public class NetworkedKeyCard : NetworkBehaviour
         {
             Holder = grabber.Object.InputAuthority;
             Debug.Log($"NetworkedKeyCard: picked up by player: {Holder}");
+
+            if (NetworkedSoundManager.Instance != null)
+            {
+                NetworkedSoundManager.Instance.PlayEnvironmentSound("Keycard_Grabbed", transform.position);
+            }
         }
     }
 
@@ -87,6 +92,12 @@ public class NetworkedKeyCard : NetworkBehaviour
     {
         Debug.Log($"NetworkedKeyCard: Dropped by player {Holder}");
         Holder = PlayerRef.None;
+
+            if (NetworkedSoundManager.Instance != null)
+            {
+                //TODO: Exchange Sound
+                NetworkedSoundManager.Instance.PlayEnvironmentSound("Keycard_Grabbed", transform.position);
+            }
     }
 
     public override void Render()
