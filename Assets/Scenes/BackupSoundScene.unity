@@ -650,6 +650,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 16384
   elevatorCheckRadius: 2
+  _currentElevator: {fileID: 0}
+  connectedPlayers: []
 --- !u!1 &377774697
 GameObject:
   m_ObjectHideFlags: 0
