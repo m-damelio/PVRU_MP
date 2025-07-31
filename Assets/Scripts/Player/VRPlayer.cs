@@ -65,6 +65,7 @@ public class VRPlayer : NetworkBehaviour
 
     [Header("Hardware Detection")]
     [SerializeField] private GameObject hardwareIndicator; // Visual indicator for extra hardware
+    [SerializeField] private bool testHardware = false;
 
     [Header("Sneaking Settings")]
     [SerializeField] private float sneakThreshold = 0.8f;
@@ -152,7 +153,7 @@ public class VRPlayer : NetworkBehaviour
         isSelected = false;
 
         // Start the coroutine to check sneak state
-        StartCoroutine(CheckDeviceLoop());
+        if(testHardware) StartCoroutine(CheckDeviceLoop());
     }
 
     //get sneak state

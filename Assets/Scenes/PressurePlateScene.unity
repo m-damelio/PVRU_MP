@@ -631,11 +631,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6386039702021734800, guid: f14f47f9d583c47bd973cf9aa6280661, type: 3}
   m_PrefabInstance: {fileID: 81698585}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &138020600 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4912476177055847408, guid: 4d2d8ac07d4e7430b91f918ef817a892, type: 3}
-  m_PrefabInstance: {fileID: 2050254189}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &200622424
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -885,9 +880,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96b06dde8e5884b189b0843ae8fe06cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelPrefabs:
-  - {fileID: 138020600}
-  - {fileID: 1686756165}
+  levelPrefabs: []
   elevatorInteriorEast: {fileID: 507473282}
   elevatorInteriorWest: {fileID: 889497013}
   elevatorDoorCloseDelay: 3
@@ -2465,7 +2458,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &731073557
 Transform:
   m_ObjectHideFlags: 0
@@ -2657,7 +2650,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6048007165769472765, guid: a1d7d9bc29044408db94a9bd871a2bbe, type: 3}
       propertyPath: m_Name
-      value: NetworkedButtonSneakerOverlay
+      value: NetworkedButtonSneakerOverlay (1)
       objectReference: {fileID: 0}
     - target: {fileID: 7608662159078337524, guid: a1d7d9bc29044408db94a9bd871a2bbe, type: 3}
       propertyPath: m_LocalScale.x
@@ -3094,10 +3087,6 @@ PrefabInstance:
     - target: {fileID: 7608662159078337524, guid: aeb7ef63f03474d1c893783e8003f5ee, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 180
-      objectReference: {fileID: 0}
-    - target: {fileID: 8653051560757947591, guid: aeb7ef63f03474d1c893783e8003f5ee, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.10000001
       objectReference: {fileID: 0}
     - target: {fileID: 8653051560757947591, guid: aeb7ef63f03474d1c893783e8003f5ee, type: 3}
       propertyPath: m_LocalPosition.x
@@ -6735,10 +6724,6 @@ PrefabInstance:
       propertyPath: SortKey
       value: 1332544836
       objectReference: {fileID: 0}
-    - target: {fileID: 5607747766913998143, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: -1302811919617493122, guid: 130fc4e5329d298408b6085c17da5c03, type: 3}
     - target: {fileID: 5641946561534598223, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
       propertyPath: m_LocalScale.x
       value: 310
@@ -6808,10 +6793,6 @@ PrefabInstance:
       value: 180
       objectReference: {fileID: 0}
     - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.4
       objectReference: {fileID: 0}
@@ -6851,10 +6832,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8921249836109332742, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: -1302811919617493122, guid: 130fc4e5329d298408b6085c17da5c03, type: 3}
     - target: {fileID: 9092673067758059525, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
       propertyPath: mainColor.b
       value: 0
