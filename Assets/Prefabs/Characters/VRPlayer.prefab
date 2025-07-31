@@ -761,7 +761,7 @@ MonoBehaviour:
   pickupRange: 2
   keyCardLayer:
     serializedVersion: 2
-    m_Bits: 1024
+    m_Bits: 4096
   interactionLayer:
     serializedVersion: 2
     m_Bits: 7169

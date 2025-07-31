@@ -346,42 +346,9 @@ public class VRPlayer : NetworkBehaviour
                 HandleSneakingInput(rigInput);
             }
 
-            KeyCode pressedKey1 = rigInput.keyPressed1;
-            KeyCode pressedKey2 = rigInput.keyPressed2;
-            KeyCode pressedKey3 = rigInput.keyPressed3;
-            KeyCode pressedKey4 = rigInput.keyPressed4;
-
-            // Check if any key is pressed
-            if (pressedKey1 != KeyCode.None || pressedKey2 != KeyCode.None || pressedKey3 != KeyCode.None || pressedKey4 != KeyCode.None)
+            if (playerType == PlayerType.EnhancedHacking)
             {
-                // Add values for each pressed key
-                functionCode += GetKeyValue(pressedKey1);
-                functionCode += GetKeyValue(pressedKey2);
-                functionCode += GetKeyValue(pressedKey3);
-                functionCode += GetKeyValue(pressedKey4);
-
-                // Execute function based on the combined function code
-                if (keypressed <= 1) 
-                {
-                    if (functionCodeList.Contains(functionCode))
-                    {
-                        Debug.Log($"VRPlayer: Executing function for keys {pressedKey1}, {pressedKey2}, {pressedKey3}, {pressedKey4} with code {functionCode}");
-                        HandleSendFunctionCode(functionCode);
-                        ExecuteHardwareFunction(functionCode);
-                        keypressed = 0; // Reset key pressed count after execution
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"VRPlayer: Function code {functionCode} not found for keys {pressedKey1}, {pressedKey2}, {pressedKey3}, {pressedKey4}");
-                        keypressed++;
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"VRPlayer: Invalid function code {functionCode} from keys {pressedKey1}, {pressedKey2}, {pressedKey3}, {pressedKey4}");
-                    keypressed = 0; // Reset key pressed count
-                }
-
+                HandleHackingInput(rigInput);
             }
 
 
@@ -489,9 +456,48 @@ public class VRPlayer : NetworkBehaviour
         lastHeadsetPosition = transform.position;
     }
 
+    void HandleHackingInput(RigInput rigInput)
+    {
+        if (!testHardware) return;
+        KeyCode pressedKey1 = rigInput.keyPressed1;
+        KeyCode pressedKey2 = rigInput.keyPressed2;
+        KeyCode pressedKey3 = rigInput.keyPressed3;
+        KeyCode pressedKey4 = rigInput.keyPressed4;
+
+        // Check if any key is pressed
+        if (pressedKey1 != KeyCode.None || pressedKey2 != KeyCode.None || pressedKey3 != KeyCode.None || pressedKey4 != KeyCode.None)
+        {
+            // Add values for each pressed key
+            functionCode += GetKeyValue(pressedKey1);
+            functionCode += GetKeyValue(pressedKey2);
+            functionCode += GetKeyValue(pressedKey3);
+            functionCode += GetKeyValue(pressedKey4);
+
+            // Execute function based on the combined function code
+            if (keypressed <= 1) 
+            {
+                if (functionCodeList.Contains(functionCode))
+                {
+                    Debug.Log($"VRPlayer: Executing function for keys {pressedKey1}, {pressedKey2}, {pressedKey3}, {pressedKey4} with code {functionCode}");
+                    HandleSendFunctionCode(functionCode);
+                    ExecuteHardwareFunction(functionCode);
+                    keypressed = 0; // Reset key pressed count after execution
+                }
+                else
+                {
+                    Debug.LogWarning($"VRPlayer: Function code {functionCode} not found for keys {pressedKey1}, {pressedKey2}, {pressedKey3}, {pressedKey4}");
+                    keypressed++;
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"VRPlayer: Invalid function code {functionCode} from keys {pressedKey1}, {pressedKey2}, {pressedKey3}, {pressedKey4}");
+                keypressed = 0; // Reset key pressed count
+            }
+        }
+    }
 
     // send fuction code to a network object with the code
-
     void HandleSendFunctionCode(int code)
     {
         // This method can be used to send the function code to a networked object

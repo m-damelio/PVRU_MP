@@ -329,7 +329,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.8, y: 0.3, z: 0.8}
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 1.2, z: 0}
 --- !u!114 &1565911058040053942
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -342,11 +342,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9024363498a7d3458b5478667f94af3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buttonController: {fileID: 9092673067758059525}
   buttonTop: {fileID: 7619011609666506189}
+  coolDownTime: 1
   originalPos: {x: 0, y: 0, z: 0}
   bounceDistance: 0
   bounceDuration: 0
-  _IsPressed: 0
+  _OnCoolDown: 0
 --- !u!1 &6806204952144916636
 GameObject:
   m_ObjectHideFlags: 0

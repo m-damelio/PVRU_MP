@@ -34,6 +34,8 @@ namespace Fusion.Addons.ConnectionManagerAddon
         public GameMode gameMode = GameMode.Shared;
         public string roomName = "SampleFusion";
         public bool connectOnStart = true;
+        [Tooltip("The build index of the gameplay scene to load after connecting.")]
+        public int gameSceneBuildIndex = 1;
         [Tooltip("Set it to 0 to use the DefaultPlayers value, from the Global NetworkProjectConfig (simulation section)")]
         public int playerCount = 0;
 
@@ -128,14 +130,28 @@ namespace Fusion.Addons.ConnectionManagerAddon
             return sceneInfo;
         }
 
+        public void DoConnect()
+        {
+            Connect();
+        }
+
         public async Task Connect()
         {
             // Create the scene manager if it does not exist
             if (sceneManager == null) sceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>();
             if (onWillConnect != null) onWillConnect.Invoke();
 
+            if (connectOnStart)
+            {
+                var sceneInfo = new NetworkSceneInfo();
+                if (gameSceneBuildIndex >= 0)
+                {
+                    sceneInfo.AddSceneRef(SceneRef.FromIndex(gameSceneBuildIndex), LoadSceneMode.Single);
+                }
+            }
+            
             // Start or join (depends on gamemode) a session with a specific name
-            var args = new StartGameArgs()
+                var args = new StartGameArgs()
             {
                 GameMode = gameMode,
                 Scene = CurrentSceneInfo(),
@@ -177,8 +193,10 @@ namespace Fusion.Addons.ConnectionManagerAddon
             if (player == runner.LocalPlayer && userPrefab != null)
             {
                 // Spawn the user prefab for the local user
-                NetworkObject networkPlayerObject = runner.Spawn(userPrefab, position: transform.position, rotation: transform.rotation, player, (runner, obj) => {
+                NetworkObject networkPlayerObject = runner.Spawn(userPrefab, position: transform.position, rotation: transform.rotation, player, (runner, obj) =>
+                {
                 });
+                runner.SetPlayerObject(player, networkPlayerObject);
             }
         }
 
@@ -191,6 +209,7 @@ namespace Fusion.Addons.ConnectionManagerAddon
                 // We make sure to give the input authority to the connecting player for their user's object
                 NetworkObject networkPlayerObject = runner.Spawn(userPrefab, position: transform.position, rotation: transform.rotation, inputAuthority: player, (runner, obj) => {
                 });
+                runner.SetPlayerObject(player, networkPlayerObject);
 
                 // Keep track of the player avatars so we can remove it when they disconnect
                 _spawnedUsers.Add(player, networkPlayerObject);
@@ -200,6 +219,9 @@ namespace Fusion.Addons.ConnectionManagerAddon
         // Despawn the user object upon disconnection
         public void OnPlayerLeftHostMode(NetworkRunner runner, PlayerRef player)
         {
+            // Clear the player object reference first
+            runner.SetPlayerObject(player, null);
+
             // Find and remove the players avatar (only the host would have stored the spawned game object)
             if (_spawnedUsers.TryGetValue(player, out NetworkObject networkObject))
             {

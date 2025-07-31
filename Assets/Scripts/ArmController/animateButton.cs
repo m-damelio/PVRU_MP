@@ -3,15 +3,22 @@ using Fusion;
 
 public class animateButton : NetworkBehaviour, ILevelResettable
 {
-
+    [Header("Networked Button settings")]
+    [SerializeField] private NetworkedButton buttonController;
     [SerializeField] private Transform buttonTop;
-    public Vector3 originalPos;
+    [SerializeField] private float coolDownTime = 5f;
+
+
+    [Header("Animation Properties")]
+    private Vector3 originalPos;
     public float bounceDistance;
     public float bounceDuration;
 
-    [Header("Networked Settings")]
-    [Networked] public bool IsPressed { get; set; }
+    [Header("Networked Properties")]
+    [Networked] public TickTimer ActiveTimer { get; set; }
+    [Networked] public bool OnCoolDown { get; set; }
 
+    private Coroutine currentAnimation;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Spawned()
     {
@@ -29,30 +36,64 @@ public class animateButton : NetworkBehaviour, ILevelResettable
             {
                 originalPos = buttonTop.position;
             }
-            else
-            {
-                originalPos = transform.GetChild(0).transform.position;
-            }
-            IsPressed = false;
+
+            OnCoolDown = false;
+            ActiveTimer = TickTimer.None;
+
+            if (bounceDistance == 0) bounceDistance = 0.02f;
+            if (bounceDuration == 0) bounceDuration = 0.1f;
             
-            bounceDistance = 0.02f;
-            bounceDuration = 0.1f;
         }
     }
 
     public void ResetToInitialState()
     {
+        if (currentAnimation != null)
+        {
+            StopCoroutine(currentAnimation);
+            currentAnimation = null;
+        }
+        
         if (Object.HasStateAuthority)
         {
-            IsPressed = false;
-            originalPos = transform.GetChild(0).transform.position;
+            OnCoolDown = false;
+            ActiveTimer = TickTimer.None;
+            buttonTop.position = originalPos;
         }
+        
     }
 
+    public override void FixedUpdateNetwork()
+    {
+        if (!Object.HasStateAuthority) return;
+
+        if (ActiveTimer.IsRunning && ActiveTimer.Expired(Runner))
+        {
+            OnCoolDown = false;
+            if (buttonController != null) buttonController.IsPressed = false;
+            ActiveTimer = TickTimer.None;
+        }
+
+        OnCoolDown = ActiveTimer.IsRunning;
+    }
     public void OnTriggerEnter(Collider other)
     {
-        if (Object == null) return;
-        if (!Object.HasStateAuthority || IsPressed) return;
+        Debug.Log($"Trigger entered by: {other.gameObject.name}");
+        if (Object == null)
+        {
+            Debug.Log("Object is null in OnTriggerEnter");
+            return;
+        }
+        if (!Object.HasStateAuthority)
+        {
+            Debug.Log("No state authority in OnTriggerEnter");
+            return;
+        }
+        if (OnCoolDown)
+        {
+            Debug.Log("Button on cooldown, ignoring trigger");
+            return;
+        }  //If there is not supposed to be a cooldown skip the active timer check
 
         RPC_StartPress();
     }
@@ -60,7 +101,18 @@ public class animateButton : NetworkBehaviour, ILevelResettable
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_StartPress()
     {
-        StartCoroutine(ButtonFeedbackVisual());
+        if (Object.HasStateAuthority)
+        {
+            ActiveTimer = TickTimer.CreateFromSeconds(Runner, coolDownTime);
+        }
+        
+        if (buttonController != null) buttonController.IsPressed = true;
+        if (currentAnimation != null)
+        {
+            StopCoroutine(currentAnimation);
+            buttonTop.position = originalPos;
+        }
+        currentAnimation = StartCoroutine(ButtonFeedbackVisual());
         if (NetworkedSoundManager.Instance != null)
         {
             NetworkedSoundManager.Instance.PlayEnvironmentSound("Button_Clicking", transform.position);
@@ -71,7 +123,6 @@ public class animateButton : NetworkBehaviour, ILevelResettable
     System.Collections.IEnumerator ButtonFeedbackVisual()
     {
         //make the inner cube of the button smaller for "pressing" visually the button down
-        IsPressed = true;
         Transform buttonCT;
         if (buttonTop != null)
         {
@@ -79,9 +130,8 @@ public class animateButton : NetworkBehaviour, ILevelResettable
         }
         else
         {
-            buttonCT = transform.GetChild(0).transform;
+            yield break;
         }
-            
 
         Vector3 downPos = originalPos- buttonCT.transform.TransformDirection(Vector3.down) * bounceDistance;
 
@@ -104,7 +154,5 @@ public class animateButton : NetworkBehaviour, ILevelResettable
             yield return null;
         }
         buttonCT.position = originalPos;
-
-        IsPressed = false;
     }
 }

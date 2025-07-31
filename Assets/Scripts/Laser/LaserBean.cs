@@ -35,7 +35,7 @@ public class LaserBean : NetworkBehaviour
     private int hitCount;
     private int maxHit = 10;
 
-    // Cached values für Performance
+    // Cached values fï¿½r Performance
     private Vector3 lastStartPos;
     private Vector3 lastDirection;
 
@@ -70,7 +70,7 @@ public class LaserBean : NetworkBehaviour
             laserHitInstance.transform.SetParent(this.transform);
             laserHitInstance.transform.localScale = Vector3.one * 0.2f;
 
-            // Entferne den Collider, den Unity automatisch hinzufügt
+            // Entferne den Collider, den Unity automatisch hinzufï¿½gt
             Destroy(laserHitInstance.GetComponent<Collider>());
 
             // Erzeuge ein Material mit Emission
@@ -126,7 +126,7 @@ public class LaserBean : NetworkBehaviour
             SetupLaserVisuals();
         }
 
-        // Prüfe auf Änderungen in den Load Target States
+        // Prï¿½fe auf ï¿½nderungen in den Load Target States
         HandleLoadTargetStateChange();
         HandleTargetStateChange();
 
@@ -198,7 +198,7 @@ public class LaserBean : NetworkBehaviour
         return networkObj?.gameObject;
     }
 
-    //Autoritative Laserberechnung: Führt die physikalische Berechnung des Laserpfads aus (inkl.Spiegelung, Treffer, Netzwerk-Update). Wird nur von der Authority ausgeführt.
+    //Autoritative Laserberechnung: Fï¿½hrt die physikalische Berechnung des Laserpfads aus (inkl.Spiegelung, Treffer, Netzwerk-Update). Wird nur von der Authority ausgefï¿½hrt.
     private void CalculateLaserPath()
     {
         hitCount = 0;
@@ -218,7 +218,7 @@ public class LaserBean : NetworkBehaviour
         NetworkedTargetId = targetId;
     }
 
-    // Lokale Berechnung für Visual Updates (alle Clients) zeichnet den Laser strahl
+    // Lokale Berechnung fï¿½r Visual Updates (alle Clients) zeichnet den Laser strahl
     void UpdateLaserBeam()
     {
         
@@ -297,8 +297,8 @@ public class LaserBean : NetworkBehaviour
 
                 openD = hit.collider.gameObject.GetComponent<openDoor>();
 
-                //Versuche die Tür aufzumachen
-                door.GetComponent<DoorNetworkedController>().RequestOpen();
+                //Versuche die Tï¿½r aufzumachen
+                if(door != null) door.GetComponent<DoorNetworkedController>().RequestOpen();
             }
         }
         else
@@ -335,7 +335,7 @@ public class LaserBean : NetworkBehaviour
         }
     }
 
-    // RPC für externe Updates (z.B. von Spiegeln)
+    // RPC fï¿½r externe Updates (z.B. von Spiegeln)
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RpcForceUpdate()
     {
