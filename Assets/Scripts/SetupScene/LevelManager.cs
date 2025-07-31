@@ -160,6 +160,7 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
         //Play elevator music/animation
         OnElevatorDoorsClsoed?.Invoke();
+
         //Wait until done
         yield return new WaitForSeconds(levelTransitionDelay);
 
