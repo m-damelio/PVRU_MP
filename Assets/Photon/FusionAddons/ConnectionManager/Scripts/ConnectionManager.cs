@@ -52,7 +52,10 @@ namespace Fusion.Addons.ConnectionManagerAddon
         public INetworkSceneManager sceneManager;
 
         [Header("Local user spawner")]
-        public NetworkObject userPrefab;
+        public NetworkObject hackerPrefab;
+        public NetworkObject sneakerPrefab;
+        public Transform hackerSpawnPoint;
+        public Transform sneakerSpawnPoint;
 
         [Header("Event")]
         public UnityEvent onWillConnect = new UnityEvent();
@@ -195,24 +198,57 @@ namespace Fusion.Addons.ConnectionManagerAddon
         #region Player spawn
         public void OnPlayerJoinedSharedMode(NetworkRunner runner, PlayerRef player)
         {
-            if (player == runner.LocalPlayer && userPrefab != null)
+
+            if (player == runner.LocalPlayer)
             {
-                // Spawn the user prefab for the local user
-                NetworkObject networkPlayerObject = runner.Spawn(userPrefab, position: transform.position, rotation: transform.rotation, player, (runner, obj) =>
+                NetworkObject prefabToSpawn;
+                Vector3 spawnPosition;
+                Quaternion spawnRotation;
+
+                if (GetPlayerIndex(player) == 0)
                 {
-                });
-                runner.SetPlayerObject(player, networkPlayerObject);
+                    prefabToSpawn = hackerPrefab;
+                    spawnPosition = hackerSpawnPoint != null ? hackerSpawnPoint.position : transform.position;
+                    spawnRotation = hackerSpawnPoint != null ? hackerSpawnPoint.rotation : transform.rotation;
+                }
+                else
+                {
+                    prefabToSpawn = sneakerPrefab;
+                    spawnPosition = sneakerSpawnPoint != null ? sneakerSpawnPoint.position : transform.position;
+                    spawnRotation = sneakerSpawnPoint != null ? sneakerSpawnPoint.rotation : transform.rotation;
+                }
+
+                if (prefabToSpawn != null)
+                {
+                    // Spawn the user prefab for the local user
+                    NetworkObject networkPlayerObject = runner.Spawn(prefabToSpawn, position: spawnPosition, rotation: spawnRotation, player, (runner, obj) => { });
+                    runner.SetPlayerObject(player, networkPlayerObject);
+                }
+  
+                
             }
         }
+        private int GetPlayerIndex(PlayerRef player)
+        {
+            int index = 0;
+            foreach (var p in runner.ActivePlayers)
+            {
+                if (p == player) return index;
+                index++;
+            }
+            return index;
+        }
+
 
         public void OnPlayerJoinedHostMode(NetworkRunner runner, PlayerRef player)
         {
             // The user's prefab has to be spawned by the host
-            if (runner.IsServer && userPrefab != null)
+            if (runner.IsServer)
             {
                 Debug.Log($"OnPlayerJoined. PlayerId: {player.PlayerId}");
                 // We make sure to give the input authority to the connecting player for their user's object
-                NetworkObject networkPlayerObject = runner.Spawn(userPrefab, position: transform.position, rotation: transform.rotation, inputAuthority: player, (runner, obj) => {
+                NetworkObject networkPlayerObject = runner.Spawn(hackerPrefab, position: transform.position, rotation: transform.rotation, inputAuthority: player, (runner, obj) =>
+                {
                 });
                 runner.SetPlayerObject(player, networkPlayerObject);
 
@@ -220,6 +256,7 @@ namespace Fusion.Addons.ConnectionManagerAddon
                 _spawnedUsers.Add(player, networkPlayerObject);
             }
         }
+
 
         // Despawn the user object upon disconnection
         public void OnPlayerLeftHostMode(NetworkRunner runner, PlayerRef player)
