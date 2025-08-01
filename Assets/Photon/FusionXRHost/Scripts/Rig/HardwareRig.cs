@@ -416,6 +416,7 @@ namespace Fusion.XR.Host.Rig
 
                 if (rigInput.keyPressed1 == KeyCode.LeftArrow)
                 {
+                    Debug.Log("Rig OnInput");
                     rigInput.yDelta = -2f;
                 }
                 else if (rigInput.keyPressed1 == KeyCode.RightArrow)
