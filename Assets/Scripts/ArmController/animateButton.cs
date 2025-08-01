@@ -1,5 +1,6 @@
 using UnityEngine;
 using Fusion;
+using Meta.WitAi;
 
 public class animateButton : NetworkBehaviour, ILevelResettable
 {
@@ -28,20 +29,25 @@ public class animateButton : NetworkBehaviour, ILevelResettable
         }
     }
 
+    private void Awake()
+    {
+        if (buttonTop != null)
+        {
+            originalPos = buttonTop.position;
+
+        }
+
+        if (bounceDistance == 0) bounceDistance = 0.02f;
+        if (bounceDuration == 0) bounceDuration = 0.1f;
+    }
+
     public void SetInitialState()
     {
         if (Object.HasStateAuthority)
         {
-            if (buttonTop != null)
-            {
-                originalPos = buttonTop.position;
-            }
-
+         
             OnCoolDown = false;
             ActiveTimer = TickTimer.None;
-
-            if (bounceDistance == 0) bounceDistance = 0.02f;
-            if (bounceDuration == 0) bounceDuration = 0.1f;
             
         }
     }
