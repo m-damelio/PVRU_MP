@@ -24,6 +24,9 @@ public class VRPlayer : NetworkBehaviour
     [SerializeField] private float retryDelay = 1.0f;
 
 
+    public bool isInSneakZoneStatus = true; // Enable sending zone status to ESP32
+
+
     public bool isSneaking = false;
     public float sneakValue = 1.0f;
     private int consecutiveFailures = 0;
@@ -63,6 +66,13 @@ public class VRPlayer : NetworkBehaviour
         400000,   // D standalone 
         500000    // F standalone 
     };
+
+
+
+
+
+
+
 
     [Header("Hardware Detection")]
     [SerializeField] private GameObject hardwareIndicator; // Visual indicator for extra hardware
@@ -138,6 +148,10 @@ public class VRPlayer : NetworkBehaviour
         UpdateCameraLayers();
 
     }
+
+
+
+
     // Helper class to return result from coroutine
     private class RequestResult
     {
@@ -147,12 +161,28 @@ public class VRPlayer : NetworkBehaviour
         public float requestTime = 0f;
     }
 
+
+
+
+
+
+
+
+
+
+
     void Start()
     {
-       
+        //Get reference of all mirrors in the scene
+        mirrors = new List<RotateMirror>(FindObjectsOfType<RotateMirror>());
+        isSelected = false;
+
+
         // Start the coroutine to check sneak state
         if(testHardware) StartCoroutine(CheckDeviceLoop());
     }
+
+
 
     //get sneak state
     IEnumerator CheckDeviceLoop()
@@ -214,31 +244,31 @@ public class VRPlayer : NetworkBehaviour
                 Debug.LogWarning($"SneakCube: Failed after {maxRetries} attempts. Consecutive failures: {consecutiveFailures}");
         }
     }
-    
+
     IEnumerator GetDeviceSneakState(int attemptNumber, RequestResult result)
     {
         string url = $"http://{deviceIP}/sneakstatus";
-        
+
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.timeout = 3;
             request.SetRequestHeader("Connection", "close");
             request.SetRequestHeader("Cache-Control", "no-cache");
-            
+
             if (enableLogs && attemptNumber == 1)
                 Debug.Log($"SneakCube: Requesting {url} (Attempt {attemptNumber})");
-            
+
             float requestStart = Time.time;
             yield return request.SendWebRequest();
             result.requestTime = Time.time - requestStart;
-            
+
             if (request.result == UnityWebRequest.Result.Success)
             {
                 result.response = request.downloadHandler.text.Trim();
                 bool wasSneaking = isSneaking;
                 result.sneakingState = result.response == "1" || result.response.ToLower() == "true";
                 result.success = true;
-                
+
                 if (enableLogs && (wasSneaking != result.sneakingState || attemptNumber > 1))
                 {
                     Debug.Log($"SneakCube: SUCCESS (Attempt {attemptNumber}) - Response '{result.response}' -> Sneaking: {result.sneakingState} (Time: {result.requestTime:F2}s)");
@@ -255,7 +285,19 @@ public class VRPlayer : NetworkBehaviour
                 }
             }
         }
+
+        using (UnityWebRequest requestZone = UnityWebRequest.Get($"http://{deviceIP}/setregion?s={(isInSneakZoneStatus ? "1" : "0")}"))
+        {
+            yield return requestZone.SendWebRequest();
+
+            if (requestZone.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogWarning($"SneakCube: Failed to set region status: {requestZone.error}");
+            }
+        }
     }
+
+
 
     private void Update()
     {
