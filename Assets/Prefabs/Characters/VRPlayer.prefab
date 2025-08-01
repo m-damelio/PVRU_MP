@@ -738,6 +738,7 @@ MonoBehaviour:
   checkInterval: 1
   maxRetries: 3
   retryDelay: 1
+  isInSneakZoneStatus: 1
   isSneaking: 0
   sneakValue: 1
   enableLogs: 1
@@ -757,6 +758,7 @@ MonoBehaviour:
     m_Bits: 65536
   activeMirror: {fileID: 0}
   mirrors: []
+  activeColorObject: {fileID: 0}
   characterController: {fileID: 1475275693075936696}
   pickupRange: 2
   keyCardLayer:
@@ -769,6 +771,7 @@ MonoBehaviour:
   _NetworkedPlayerType: 0
   _NetworkedPlayerState: 0
   _NetworkedSneakValue: 0
+  networkRig: {fileID: 2549000073306557775}
 --- !u!143 &1475275693075936696
 CharacterController:
   m_ObjectHideFlags: 0
@@ -812,9 +815,19 @@ MonoBehaviour:
   menuDistance: 3
   menuHeight: 0
   menuScale: {x: 0.003, y: 0.003, z: 0.003}
-  vrRig: {fileID: 0}
-  desktopRig: {fileID: 0}
-  useVRRig: 0
+  autoDetectRig: 1
+  manualRig: {fileID: 0}
+--- !u!114 &2549000073306557775 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 82848160101704041, guid: 477f02bca0b59924aa984e240cb28cc4, type: 3}
+  m_PrefabInstance: {fileID: 2484170574470442022}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2549000073306557745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d7937e665b188f44a1255b4c855cede, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &2549000073931524548 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 82848159007237602, guid: 477f02bca0b59924aa984e240cb28cc4, type: 3}

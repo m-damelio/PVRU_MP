@@ -68,12 +68,6 @@ public class VRPlayer : NetworkBehaviour
     };
 
 
-
-
-
-
-
-
     [Header("Hardware Detection")]
     [SerializeField] private GameObject hardwareIndicator; // Visual indicator for extra hardware
     [SerializeField] private bool testHardware = false;
@@ -100,7 +94,6 @@ public class VRPlayer : NetworkBehaviour
     public CharacterController characterController;
     //[SerializeField] private float moveSpeed = 3f; 
     // Reference to the NetworkRig which handles visuals for hands/body, etc.
-    private NetworkRig networkRig;
     private Vector3 lastHeadsetPosition;
     private bool isFirstFrame = true;
 
@@ -114,6 +107,7 @@ public class VRPlayer : NetworkBehaviour
     [Networked] public PlayerType NetworkedPlayerType { get; set; }
     [Networked] public PlayerState NetworkedPlayerState { get; set; }
     [Networked] public float NetworkedSneakValue { get; set; }
+    [SerializeField] private NetworkRig networkRig;
 
     // Quest 3 specific
     [Header("Quest 3 Hand Tracking")]
