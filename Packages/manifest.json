@@ -2,6 +2,7 @@
   "dependencies": {
     "com.hwaet.projectcloner": "https://github.com/hwaet/UnityProjectCloner.git",
     "com.meta.xr.sdk.all": "77.0.0",
+    "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "2.0.7",
     "com.unity.collab-proxy": "2.8.1",
     "com.unity.feature.development": "1.0.2",
