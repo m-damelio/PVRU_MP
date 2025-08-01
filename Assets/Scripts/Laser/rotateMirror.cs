@@ -34,8 +34,8 @@ public class RotateMirror : NetworkBehaviour
 
     public override void Spawned()
     {
-        NetworkedYRotation = gameObject.transform.rotation.y;
-        NetworkedZRotation = gameObject.transform.rotation.z;
+        NetworkedYRotation = gameObject.transform.rotation.eulerAngles.y;
+        NetworkedZRotation = gameObject.transform.rotation.eulerAngles.z;
     }
 
     public override void FixedUpdateNetwork()

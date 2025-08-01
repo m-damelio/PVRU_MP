@@ -581,12 +581,12 @@ public class VRPlayer : NetworkBehaviour
 
         if (rigInput.yDelta != 0f && activeMirror != null)
         {
-            Debug.Log(rigInput.yDelta);
+            Debug.Log("Player hat rotation gefunden " + rigInput.yDelta);
             activeMirror.RotateY(rigInput.yDelta);
         }
 
         if (rigInput.zDelta != 0f && activeMirror != null) {
-            Debug.Log(rigInput.yDelta);
+            Debug.Log("Player hat rotation gefunden " + rigInput.yDelta);
             activeMirror.RotateZ(rigInput.zDelta);
         }
 
