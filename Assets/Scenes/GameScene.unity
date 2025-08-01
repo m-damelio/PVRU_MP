@@ -228,7 +228,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelPrefabs:
   - {fileID: 1700960291931255387}
-  - {fileID: 0}
+  - {fileID: 1815019976}
   - {fileID: 731073556}
   elevatorInteriorPosZ: {fileID: 889497013}
   elevatorInteriorNegZ: {fileID: 507473282}
@@ -1244,6 +1244,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a49aec5ab4996843b8ae4d993722923, type: 3}
+--- !u!1 &1815019976 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5258373845511169694, guid: 5a49aec5ab4996843b8ae4d993722923, type: 3}
+  m_PrefabInstance: {fileID: 1815019975}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1820149517 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5617642228297694445, guid: 25de2356844de4e609324240f66897f3, type: 3}
