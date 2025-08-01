@@ -136,8 +136,19 @@ public class VRPlayer : NetworkBehaviour
     public override void Spawned()
     {
         // Get reference to NetworkRig
+        
+
+        // Set player type based on hardware detection
+        DetectPlayerType();
+        StartCoroutine(AfterSpawn);
+
+    }
+
+    private IEnumerator AfterSpawn()
+    {
+        yield return new WaitForSeconds(1);
         networkRig = GetComponent<NetworkRig>();
-        if (networkRig == null)
+        if (networkRig == null && networkRig.hardwareRig == null)
         {
             Debug.LogError("VRPlayer requires a NetworkRig component!");
         }
@@ -145,11 +156,7 @@ public class VRPlayer : NetworkBehaviour
         {
             originalCullingMask = networkRig.hardwareRig.playerCamera.cullingMask;
         }
-
-        // Set player type based on hardware detection
-        DetectPlayerType();
         UpdateCameraLayers();
-
     }
 
 
