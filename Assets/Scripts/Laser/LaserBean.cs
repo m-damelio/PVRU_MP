@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using Fusion;
 
-public class LaserBean : NetworkBehaviour
+public class LaserBean : NetworkBehaviour, ISolvable
 {
 
     private LineRenderer laser;
@@ -17,12 +17,15 @@ public class LaserBean : NetworkBehaviour
     [Networked] public bool NetworkedIsHittingTarget { get; set; }
     [Networked] public NetworkId NetworkedLoadTargetId { get; set; }
     [Networked] public NetworkId NetworkedTargetId { get; set; }
+    [Networked] public bool IsSolved { get; set; }
 
     public chargeBehavior charge;
     public openDoor openD;
 
     [SerializeField]
     private List<Vector3> laserIndices = new List<Vector3>();
+
+    [SerializeField] private List<RotateMirror> mirrors;
 
     public GameObject door;
     private bool wasHittingLoadTarget = false;
@@ -39,10 +42,20 @@ public class LaserBean : NetworkBehaviour
     private Vector3 lastStartPos;
     private Vector3 lastDirection;
 
+    //For game state = solved
+    public System.Action<ISolvable> OnSolved { get; set; }
+    private bool wasPreviouslySolved = false;
+
     void Start()
     {
         Debug.Log($"LaserBean started on: {gameObject.name}");
         SetupLaserVisuals();
+
+        //Calculate active mirrors for win condition
+        RotateMirror[] allObjects = FindObjectsByType<RotateMirror>(FindObjectsSortMode.None);
+        mirrors = new List<RotateMirror>(allObjects);
+
+        Debug.Log("Mirror Count: " + mirrors.Count);
     }
 
     //Set up vom laser und der kleinen Kugel am Ende, das passiert einmal am Anfang
@@ -84,15 +97,6 @@ public class LaserBean : NetworkBehaviour
         }
     }
 
-    /*public void SetMaterial(Material mat)
-    {
-        laserMaterial = mat;
-        if (laser != null)
-        {
-            laser.material = laserMaterial;
-        }
-    }*/
-
     // Diese Methode wird vom ShootLaser Script aufgerufen
     public void SetupLaser(Vector3 startPos, Vector3 dir)
     {
@@ -116,6 +120,8 @@ public class LaserBean : NetworkBehaviour
                 laserNeedsChange = false;
             }
         }
+        Debug.Log("check solution!");
+        CheckSolution();
     }
 
     public override void Render()
@@ -256,9 +262,9 @@ public class LaserBean : NetworkBehaviour
 
             if (hit.collider.CompareTag("Mirror"))
             {
-              
+
                 if (hitCount >= maxHit)
-                {
+                {   
                     return;
                 }
                 else
@@ -284,21 +290,33 @@ public class LaserBean : NetworkBehaviour
             }
             else if (hit.collider.CompareTag("Target"))
             {
-                Debug.Log("Target hit");
-                isHittingTarget = true;
-                targetHit = hit.collider.gameObject;
-
-                // Versuche NetworkObject zu finden
-                var networkObj = hit.collider.GetComponent<NetworkObject>();
-                if (networkObj != null)
+                if (hitCount == mirrors.Count)
                 {
-                    targetId = networkObj.Id;
+                    Debug.Log("Target hit");
+                    isHittingTarget = true;
+                    IsSolved = true;
+                    targetHit = hit.collider.gameObject;
+
+                    IsPuzzleSolved();
+
+                    // Versuche NetworkObject zu finden
+                    var networkObj = hit.collider.GetComponent<NetworkObject>();
+                    if (networkObj != null)
+                    {
+                        targetId = networkObj.Id;
+                    }
+
+                    openD = hit.collider.gameObject.GetComponent<openDoor>();
+
+                    //Versuche die T�r aufzumachen
+                    if (door != null) door.GetComponent<DoorNetworkedController>().RequestOpen();
                 }
+                else
+                {
+                    Debug.Log("Not enough mirrors");
 
-                openD = hit.collider.gameObject.GetComponent<openDoor>();
-
-                //Versuche die T�r aufzumachen
-                if(door != null) door.GetComponent<DoorNetworkedController>().RequestOpen();
+                }
+                
             }
         }
         else
@@ -340,5 +358,21 @@ public class LaserBean : NetworkBehaviour
     public void RpcForceUpdate()
     {
         ForceUpdate();
+    }
+
+    public void CheckSolution()
+    {
+        if (!Object.HasStateAuthority) return;
+        bool currentlySolved = IsSolved;
+        if (currentlySolved && !wasPreviouslySolved)
+        {
+            wasPreviouslySolved = true;
+            OnSolved?.Invoke(this);
+        }
+    }
+
+    public bool IsPuzzleSolved()
+    {
+        return IsSolved;
     }
 }

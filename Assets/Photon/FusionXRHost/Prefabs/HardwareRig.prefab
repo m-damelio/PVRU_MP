@@ -313,6 +313,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   isRayEnabled: 0
+  lastMirrorHit: {fileID: 0}
+  volumeup: {fileID: 0}
+  volumedown: {fileID: 0}
+  volume_display: {fileID: 0}
+  volume: 0
+  isHitVolume: 0
   status: 0
 --- !u!114 &7680853947353542563
 MonoBehaviour:
@@ -763,6 +769,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   isRayEnabled: 0
+  lastMirrorHit: {fileID: 0}
+  volumeup: {fileID: 0}
+  volumedown: {fileID: 0}
+  volume_display: {fileID: 0}
+  volume: 0
+  isHitVolume: 0
   status: 0
 --- !u!114 &220218895530238414
 MonoBehaviour:
@@ -899,10 +911,15 @@ MonoBehaviour:
   runnerExpectations: 2
   useInputInterpolation: 0
   interpolationDelay: 0.008
-  interactionAction: {fileID: 0}
-  sneakTestAction: {fileID: 0}
   playerCamera: {fileID: 4208948368294204022}
   enableKeyboardInput: 1
+  useUIInteractor: 1
+  leftHandInteractionBeam: {fileID: 4208948367510053356}
+  rightHandInteractionBeam: {fileID: 4208948368886931614}
+  leftHandLocalVisual: {fileID: 6740693315876879243}
+  rightHandLocalVisual: {fileID: 1515713622175857728}
+  leftHandUIBeam: {fileID: 0}
+  rightHandUIBeam: {fileID: 0}
   enableFingerTracking: 0
   leftHandModel: {fileID: 0}
   rightHandModel: {fileID: 0}
@@ -1202,6 +1219,11 @@ MonoBehaviour:
   pointAnimationLayer: Point Layer
   thumbAnimationLayer: Thumb Layer
   maxGripToPinch: 0.05
+--- !u!137 &1515713622175857728 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 137383442524578654, guid: ba1fa4a8c66106b4988c88fe4b8e8502, type: 3}
+  m_PrefabInstance: {fileID: 1504466164350295838}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6656866939736426245
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1344,3 +1366,8 @@ MonoBehaviour:
   pointAnimationLayer: Point Layer
   thumbAnimationLayer: Thumb Layer
   maxGripToPinch: 0.05
+--- !u!137 &6740693315876879243 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 137977633181334670, guid: e6ba3498ffa1e534b91a07264266e6b8, type: 3}
+  m_PrefabInstance: {fileID: 6656866939736426245}
+  m_PrefabAsset: {fileID: 0}

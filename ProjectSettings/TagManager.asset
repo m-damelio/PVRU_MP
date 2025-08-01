@@ -27,6 +27,10 @@ TagManager:
   - QDSUIToggleSwitch
   - StartGame
   - NeonLight
+  - Target
+  - Buttons
+  - VolumeUP
+  - VolumeDOWN
   layers:
   - Default
   - TransparentFX

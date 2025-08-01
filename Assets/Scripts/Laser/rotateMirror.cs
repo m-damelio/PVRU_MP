@@ -5,6 +5,7 @@ using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Oculus.Interaction;
 
 
 public class RotateMirror : NetworkBehaviour
@@ -31,7 +32,7 @@ public class RotateMirror : NetworkBehaviour
     // For Laser-Updates
     private Quaternion lastRot;
 
-    private void Awake()
+    public override void Spawned()
     {
         NetworkedYRotation = gameObject.transform.rotation.y;
         NetworkedZRotation = gameObject.transform.rotation.z;

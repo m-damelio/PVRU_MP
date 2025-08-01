@@ -50,19 +50,19 @@ public class HandleKnobInput : MonoBehaviour
     public void handleButtonInput()
     {
        
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.W))
         {
             StartCoroutine(ButtonFeedbackVisual(button1, 0));
         }
-        else if (Input.GetKeyDown(KeyCode.S))
+        else if (Input.GetKeyDown(KeyCode.A))
         {
             StartCoroutine(ButtonFeedbackVisual(button2, 1));
         }
-        else if (Input.GetKeyDown(KeyCode.D))
+        else if (Input.GetKeyDown(KeyCode.S))
         {
             StartCoroutine(ButtonFeedbackVisual(button3, 2));
         }
-        else if (Input.GetKeyDown(KeyCode.F))
+        else if (Input.GetKeyDown(KeyCode.D))
         {
             StartCoroutine(ButtonFeedbackVisual(button4, 3));
         }

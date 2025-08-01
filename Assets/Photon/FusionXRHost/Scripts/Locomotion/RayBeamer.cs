@@ -1,6 +1,8 @@
 using Fusion.XR.Host.Rig;
+using Meta.XR.ImmersiveDebugger.UserInterface.Generic;
 using NUnit.Framework.Constraints;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -44,8 +46,16 @@ namespace Fusion.XR.Host.Locomotion
         // Define if the beamer ray is active this frame
         public bool isRayEnabled = false;
 
+        [Header("Mirror Actions")]
         public RotateMirror lastMirrorHit = null;
         private bool isHit;
+
+        [Header("UI Actions")]
+        public GameObject volumeup;
+        public GameObject volumedown;
+        public TMP_Text volume_display;
+        public int volume;
+        public bool isHitVolume;
 
         public enum Status
         {
@@ -75,11 +85,13 @@ namespace Fusion.XR.Host.Locomotion
             if (hand == null) hand = GetComponentInParent<HardwareHand>();
 
             isHit = false;
+            isHitVolume = false;
         }
 
         public virtual void Start()
         {
             rayAction.EnableWithDefaultXRBindings(hand.side, new List<string> { "thumbstickClicked", "primaryButton", "secondaryButton" });
+            
         }
 
         public bool BeamCast(out RaycastHit hitInfo, Vector3 origin, Vector3 direction)
@@ -139,9 +151,47 @@ namespace Fusion.XR.Host.Locomotion
                             lastMirrorHit = null;
                         }
                     }
-                        
 
                     
+
+                    if (hit.collider.CompareTag("Buttons"))
+                    {
+                        Debug.Log("Button hit");
+                        
+                    }
+
+                    else if (hit.collider.CompareTag("VolumeUP"))
+                    {
+                        if (!isHitVolume)
+                        {
+                            Debug.Log("Volume up");
+                            volume += 1;
+                            volume_display.text = volume.ToString();
+                            isHitVolume = true;
+                        }
+                        
+                    }
+
+                    else if (hit.collider.CompareTag("VolumeDOWN"))
+                    {
+                        if (!isHitVolume)
+                        {
+                            if (volume >0)
+                            {
+                                Debug.Log("Volume up");
+                                volume -= 1;
+                                volume_display.text = volume.ToString();
+                                isHitVolume = true;
+                            }
+                            
+                        }
+
+
+                    }
+
+                    isHitVolume = false;
+
+
                 }
                 
 
