@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: 9107203881923167791}
   - component: {fileID: 423581244143982607}
   - component: {fileID: 5940882688886231691}
+  - component: {fileID: 8070906821986755222}
   m_Layer: 0
   m_Name: Point Light (6)
   m_TagString: NeonLight
@@ -229,6 +230,18 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &8070906821986755222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 578510654945797945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fd87d8d7c40d0d46ba32a86a020644d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &800328935659223555
 GameObject:
   m_ObjectHideFlags: 0
@@ -456,6 +469,7 @@ GameObject:
   - component: {fileID: 556329996526032127}
   - component: {fileID: 6333683431755864463}
   - component: {fileID: 6462867852009352244}
+  - component: {fileID: 5149542099646242097}
   m_Layer: 0
   m_Name: Point Light (3)
   m_TagString: NeonLight
@@ -566,6 +580,18 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &5149542099646242097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1571124031651365455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fd87d8d7c40d0d46ba32a86a020644d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1601794483205800260
 GameObject:
   m_ObjectHideFlags: 0
@@ -611,6 +637,7 @@ GameObject:
   - component: {fileID: 6569570379628838516}
   - component: {fileID: 2655250582129202628}
   - component: {fileID: 2031400456190714335}
+  - component: {fileID: 3136961233582712291}
   m_Layer: 0
   m_Name: Point Light (1)
   m_TagString: NeonLight
@@ -721,6 +748,18 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &3136961233582712291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753891878913540225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fd87d8d7c40d0d46ba32a86a020644d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1832358649748476287
 GameObject:
   m_ObjectHideFlags: 0
@@ -732,6 +771,7 @@ GameObject:
   - component: {fileID: 7736155378765893365}
   - component: {fileID: 5280513840804877219}
   - component: {fileID: 7611709101289432318}
+  - component: {fileID: 3730263665176009140}
   m_Layer: 0
   m_Name: Point Light (2)
   m_TagString: NeonLight
@@ -842,6 +882,18 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &3730263665176009140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1832358649748476287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fd87d8d7c40d0d46ba32a86a020644d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2062172364991697732
 GameObject:
   m_ObjectHideFlags: 0
@@ -961,6 +1013,7 @@ GameObject:
   - component: {fileID: 8543530573863738858}
   - component: {fileID: 9163973850871458569}
   - component: {fileID: 6049642864288827576}
+  - component: {fileID: 7671810939873197806}
   m_Layer: 0
   m_Name: Point Light (7)
   m_TagString: NeonLight
@@ -1071,6 +1124,18 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &7671810939873197806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2269495078024306449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fd87d8d7c40d0d46ba32a86a020644d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4576804107047823618
 GameObject:
   m_ObjectHideFlags: 0
@@ -1515,6 +1580,7 @@ GameObject:
   - component: {fileID: 7628276492090550317}
   - component: {fileID: 2550017926972917603}
   - component: {fileID: 1848744459944433122}
+  - component: {fileID: 8988558908387123844}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: NeonLight
@@ -1625,6 +1691,18 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &8988558908387123844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8037370681088945633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fd87d8d7c40d0d46ba32a86a020644d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8091241431674451146
 GameObject:
   m_ObjectHideFlags: 0
@@ -1745,6 +1823,7 @@ GameObject:
   - component: {fileID: 5737444944345747429}
   - component: {fileID: 7689398801582369614}
   - component: {fileID: 9003967629416269126}
+  - component: {fileID: 4354330994001501841}
   m_Layer: 0
   m_Name: Point Light (5)
   m_TagString: NeonLight
@@ -1855,6 +1934,18 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &4354330994001501841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8172113821682890840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fd87d8d7c40d0d46ba32a86a020644d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8713728648453478891
 GameObject:
   m_ObjectHideFlags: 0
@@ -1866,6 +1957,7 @@ GameObject:
   - component: {fileID: 8779294263462138026}
   - component: {fileID: 2533206074370076046}
   - component: {fileID: 477749931224191801}
+  - component: {fileID: 179629752101946572}
   m_Layer: 0
   m_Name: Point Light (4)
   m_TagString: NeonLight
@@ -1976,6 +2068,18 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &179629752101946572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8713728648453478891}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fd87d8d7c40d0d46ba32a86a020644d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8733154583238089856
 GameObject:
   m_ObjectHideFlags: 0

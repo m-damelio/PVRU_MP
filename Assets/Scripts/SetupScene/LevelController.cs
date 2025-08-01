@@ -27,7 +27,16 @@ public class LevelController : NetworkBehaviour
             }
         }
     }
-    
+    /*
+    public void OnEnable()
+    {
+        levelManager.OnNewLevelActive += SetInitialStates;
+    }
+    public void OnDisable()
+    {
+        levelManager.OnNewLevelActive -= SetInitialStates;
+    }
+    */
     public override void Spawned()
     {
         //Store initial states when level is first loaded

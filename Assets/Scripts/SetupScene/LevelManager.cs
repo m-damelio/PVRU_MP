@@ -26,6 +26,7 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     public System.Action<int> OnLevelChanged;
     public System.Action OnLevelCompleted;
+    public System.Action OnNewLevelActive;
     public System.Action OnElevatorDoorsOpened;
     public System.Action OnElevatorDoorsClsoed;
     public System.Action OnTransitionStarted;
@@ -199,6 +200,7 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         if (nextLevelIndex < levelPrefabs.Count)
         {
             ActivateLevel(nextLevelIndex);
+            //OnNewLevelActive?.Invoke(this);
         }
 
         IsTransitioning = false;

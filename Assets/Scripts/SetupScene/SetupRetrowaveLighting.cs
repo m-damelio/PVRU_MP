@@ -1,11 +1,12 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using System.Collections.Generic;
 
 public class SetupRetrowaveLighting : MonoBehaviour
 {
     [Header("Ligting Color")]
-    [SerializeField] private Color primaryNeonColor = new Color(1f,0f,1f,1f); //Magenta
+    [SerializeField] private Color primaryNeonColor = new Color(1f, 0f, 1f, 1f); //Magenta
 
     [Header("Fog Settings")]
     [SerializeField] private bool enableFog = true;
@@ -45,7 +46,7 @@ public class SetupRetrowaveLighting : MonoBehaviour
 
     void SetupFog()
     {
-        if(enableFog)
+        if (enableFog)
         {
             RenderSettings.fog = true;
             RenderSettings.fogColor = fogColor;
@@ -61,7 +62,7 @@ public class SetupRetrowaveLighting : MonoBehaviour
         var profile = postProcessVolume.profile;
 
         //Steup bloom
-        if(profile.TryGet<Bloom>(out _bloom))
+        if (profile.TryGet<Bloom>(out _bloom))
         {
             _bloom.intensity.value = 0.8f;
             _bloom.threshold.value = 0.5f;
@@ -71,7 +72,7 @@ public class SetupRetrowaveLighting : MonoBehaviour
         }
 
         //Setup color adjustments
-        if(profile.TryGet<ColorAdjustments>(out _colorAdjustments))
+        if (profile.TryGet<ColorAdjustments>(out _colorAdjustments))
         {
             _colorAdjustments.contrast.value = 20f;
             _colorAdjustments.saturation.value = 30f;
@@ -80,7 +81,7 @@ public class SetupRetrowaveLighting : MonoBehaviour
         }
 
         //Setup Vignette
-        if(profile.TryGet<Vignette>(out _vignette))
+        if (profile.TryGet<Vignette>(out _vignette))
         {
             _vignette.intensity.value = 0.3f;
             _vignette.smoothness.value = 0.5f;
@@ -89,13 +90,13 @@ public class SetupRetrowaveLighting : MonoBehaviour
         }
 
         //Steup chromatic aberration
-        if(profile.TryGet<ChromaticAberration>(out _chromaticAberration))
+        if (profile.TryGet<ChromaticAberration>(out _chromaticAberration))
         {
             _chromaticAberration.intensity.value = 0.3f;
             _chromaticAberration.active = true;
         }
 
-        if(profile.TryGet<FilmGrain>(out _filmGrain))
+        if (profile.TryGet<FilmGrain>(out _filmGrain))
         {
             _filmGrain.intensity.value = 0.2f;
             _filmGrain.response.value = 0.8f;
@@ -105,20 +106,28 @@ public class SetupRetrowaveLighting : MonoBehaviour
 
     void FindNeonLights()
     {
+        NeonLight.OnNeonLightChanged += RefreshNeonLights;
         //Find all lights tagged as neon
-        GameObject[] neonObjects = GameObject.FindGameObjectsWithTag("NeonLight");
-        _neonLights = new Light[neonObjects.Length];
+        RefreshNeonLightsInternal();
 
-        for (int i = 0; i < neonObjects.Length; i++)
+    }
+    void RefreshNeonLightsInternal()
+    {
+        List<Light> neonLightsList = new List<Light>();
+
+        foreach (NeonLight neonLight in NeonLight.AllNeonLights)
         {
-            if(neonObjects[i] == null) continue;
-            Light light = neonObjects[i].GetComponent<Light>();
-            if(light != null)
+            if (neonLight != null && neonLight.GetLight() != null)
             {
-                _neonLights[i] = light;
+                Light light = neonLight.GetLight();
+                neonLightsList.Add(light);
                 SetupNeonLight(light);
             }
         }
+
+        _neonLights = neonLightsList.ToArray();
+
+        Debug.Log($"Found {_neonLights.Length} active neon lights");
     }
 
     void SetupNeonLight(Light light)
@@ -129,20 +138,30 @@ public class SetupRetrowaveLighting : MonoBehaviour
 
     void Update()
     {
-        if(enablePulsing) UpdatePulsingLights();
+        if (enablePulsing) UpdatePulsingLights();
     }
 
     void UpdatePulsingLights()
     {
-        float pulse = Mathf.Sin(Time.time * pulseSpeed) * pulseIntensity +1f;
+        float pulse = Mathf.Sin(Time.time * pulseSpeed) * pulseIntensity + 1f;
 
         foreach (Light light in _neonLights)
         {
-            if(light != null)
+            if (light != null)
             {
                 light.intensity = 2f * pulse;
             }
         }
+    }
+
+    public void RefreshNeonLights()
+    {
+        RefreshNeonLightsInternal();
+    }
+
+    void OnDestroy()
+    {
+        NeonLight.OnNeonLightChanged -= RefreshNeonLights;
     }
 
 }
