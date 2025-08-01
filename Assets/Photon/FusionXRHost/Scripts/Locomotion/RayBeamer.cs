@@ -61,17 +61,16 @@ namespace Fusion.XR.Host.Locomotion
 
         public virtual void Awake()
         {
-            if (lineRenderer == null)
+            if (lineRenderer != null)
             {
-                lineRenderer = gameObject.AddComponent<LineRenderer>();
                 lineRenderer.material = lineMaterial;
                 lineRenderer.numCapVertices = 4;
+                lineRenderer.startWidth = width;
+                lineRenderer.endWidth = width;
+                lineRenderer.useWorldSpace = true;
+                lineRenderer.enabled = false;
             }
-            lineRenderer.startWidth = width;
-            lineRenderer.endWidth = width;
-            lineRenderer.useWorldSpace = true;
-            lineRenderer.enabled = false;
-
+            
             if (origin == null) origin = transform;
             if (hand == null) hand = GetComponentInParent<HardwareHand>();
 
@@ -127,7 +126,7 @@ namespace Fusion.XR.Host.Locomotion
 
                         }
                         currentMirror.SetHighlight(true); // Aktuellen Spiegel aktivieren
-                        lastMirrorHit = currentMirror; // Speichern für später
+                        lastMirrorHit = currentMirror; // Speichern fï¿½r spï¿½ter
                         player.SetActiveMirror(currentMirror);
                     }
                     else

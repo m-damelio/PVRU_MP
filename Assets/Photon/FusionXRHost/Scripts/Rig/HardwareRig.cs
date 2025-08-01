@@ -1,6 +1,7 @@
 using Fusion.Sockets;
 using Fusion.XR.Host.Grabbing;
 using Fusion.XR.Host.SimpleHands;
+using Fusion.XR.Host.Locomotion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +10,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Hands;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactors.Visuals;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using UnityEngine.XR.Management;
 using static RotateMirror;
 
@@ -96,6 +99,15 @@ namespace Fusion.XR.Host.Rig
         [Header("Custom Fields")]
         public Camera playerCamera;
         public bool enableKeyboardInput = true;
+        public bool useUIInteractor = true;
+        [SerializeField] private RayBeamer leftHandInteractionBeam;
+        [SerializeField] private RayBeamer rightHandInteractionBeam;
+        [SerializeField] private Renderer leftHandLocalVisual;
+        [SerializeField] private Renderer rightHandLocalVisual;
+        [SerializeField] private GameObject leftHandUIBeam;
+        [SerializeField] private GameObject rightHandUIBeam;
+        private LineRenderer leftHandInteractionVisual;
+        private LineRenderer rightHandInteractionVisual;
         private VRPlayer vrPlayer; //Will be searched dynamically, change if performance is suffering
         private bool hasSearchedForVRPlayer = false;
         private bool _interactionButton = false;
@@ -119,10 +131,10 @@ namespace Fusion.XR.Host.Rig
         private XRHand rightXRHand;
 
         //Interaction compomnents for fongerbased interaction
-        private UnityEngine.XR.Interaction.Toolkit.Interactors.XRDirectInteractor leftFingerInteractor;
-        private UnityEngine.XR.Interaction.Toolkit.Interactors.XRDirectInteractor rightFingerInteractor;
-        private UnityEngine.XR.Interaction.Toolkit.Interactors.XRPokeInteractor leftPokeInteractor;
-        private UnityEngine.XR.Interaction.Toolkit.Interactors.XRPokeInteractor rightPokeInteractor;
+        private XRDirectInteractor leftFingerInteractor;
+        private XRDirectInteractor rightFingerInteractor;
+        private XRPokeInteractor leftPokeInteractor;
+        private XRPokeInteractor rightPokeInteractor;
 
         private bool leftHandTracked = false;
         private bool rightHandTracked = false;
@@ -178,6 +190,11 @@ namespace Fusion.XR.Host.Rig
             {
                 InitializeHandTracking();
             }
+           
+            if (leftHandInteractionBeam != null) leftHandInteractionVisual = leftHandInteractionBeam.transform.GetComponent<LineRenderer>();
+            if (rightHandInteractionBeam != null) rightHandInteractionVisual = rightHandInteractionBeam.transform.GetComponent<LineRenderer>();
+
+            SwitchUIAndInteractionBeam(useUIInteractor);
         }
 
         protected virtual async void Start()
@@ -229,19 +246,67 @@ namespace Fusion.XR.Host.Rig
             }
         }
 
+        public void DeactivateLocalHandVisuals()
+        {
+            if (leftHandLocalVisual != null) leftHandLocalVisual.enabled = false;
+            if (rightHandLocalVisual != null) rightHandLocalVisual.enabled = false;
+        }
+        public void SwitchUIAndInteractionBeam(bool useUI)
+        {
+            if (useUI)
+            {
+                if (leftHandUIBeam != null) leftHandUIBeam.SetActive(true);
+
+                if (leftHandInteractionBeam != null)
+                {
+                    leftHandInteractionBeam.enabled = false;
+                    leftHandInteractionVisual.enabled = false;
+                }
+
+                if (rightHandUIBeam != null) rightHandUIBeam.SetActive(true);
+
+
+                if (rightHandInteractionBeam != null)
+                {
+                    rightHandInteractionBeam.enabled = false;
+                    rightHandInteractionVisual.enabled = false;
+                }
+
+            }
+            else
+            {
+                if (leftHandUIBeam != null) leftHandUIBeam.SetActive(false);
+
+                if (leftHandInteractionBeam != null)
+                {
+                    leftHandInteractionBeam.enabled = true;
+                    leftHandInteractionVisual.enabled = true;
+                }
+
+                if (rightHandUIBeam != null) rightHandUIBeam.SetActive(false);
+
+                if (rightHandInteractionBeam != null)
+                {
+                    rightHandInteractionBeam.enabled = true;
+                    rightHandInteractionVisual.enabled = true;
+                }
+            }
+            useUIInteractor = useUI;
+        } 
+
         private VRPlayer GetVRPlayer()
         {
-            if(!hasSearchedForVRPlayer && runner != null && runner.LocalPlayer != null)
+            if (!hasSearchedForVRPlayer && runner != null && runner.LocalPlayer != null)
             {
                 hasSearchedForVRPlayer = true;
 
                 var networkObjects = FindObjectsByType<NetworkObject>(FindObjectsSortMode.None);
                 foreach (var netObj in networkObjects)
                 {
-                    if(netObj.HasInputAuthority && netObj.InputAuthority == runner.LocalPlayer)
+                    if (netObj.HasInputAuthority && netObj.InputAuthority == runner.LocalPlayer)
                     {
                         vrPlayer = netObj.GetComponent<VRPlayer>();
-                        if(vrPlayer != null)
+                        if (vrPlayer != null)
                         {
                             Debug.Log($"Found VRPlayer for local player: {runner.LocalPlayer}");
                             break;
@@ -249,7 +314,7 @@ namespace Fusion.XR.Host.Rig
                     }
                 }
 
-                if(vrPlayer == null)
+                if (vrPlayer == null)
                 {
                     Debug.LogWarning($"Could not find VRPlayer for local player: {runner.LocalPlayer}");
                 }

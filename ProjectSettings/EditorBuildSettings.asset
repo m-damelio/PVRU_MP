@@ -9,8 +9,8 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 8f6c0b64c99ef5549a2aaf94520d0a47
   - enabled: 1
-    path: Assets/Scenes/PressurePlateScene.unity
-    guid: 617572c8ef7e8497396a682dcd6027d2
+    path: Assets/Scenes/GameScene.unity
+    guid: 8cc40b1edb7cce1448dd9b52ea13da82
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2d9ee07076de64cb98d3b204c3c8aa68, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 9bd7077edc5b871469aa672a34c4ef3a, type: 2}

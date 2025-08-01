@@ -70,6 +70,309 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "UI",
+            "id": "f26feeb4-728e-431e-aa0b-06ab2421aaf7",
+            "actions": [
+                {
+                    "name": "Click",
+                    "type": "PassThrough",
+                    "id": "472f41b2-4b7d-47f1-9a3b-14bee88a7364",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MiddleClick",
+                    "type": "PassThrough",
+                    "id": "1150e0ef-73bc-47c0-9ee6-c41bff46b481",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RightClick",
+                    "type": "PassThrough",
+                    "id": "6732f76d-ae4e-44ba-89fa-15e28e132b74",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Point",
+                    "type": "PassThrough",
+                    "id": "98a80a21-4b22-40af-a8f0-58f17858f41a",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Select",
+                    "type": "Button",
+                    "id": "f3b03430-2f63-4ae8-923f-ede0587356c8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Navigate",
+                    "type": "PassThrough",
+                    "id": "484cae80-9653-456f-92e3-1cab7aa412ac",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Submit",
+                    "type": "Button",
+                    "id": "cdf726d4-7006-4492-9180-7d4f143def19",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Cancel",
+                    "type": "Button",
+                    "id": "65fbeab4-d995-485c-a15c-43cd7c902a84",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ScrollWheel",
+                    "type": "PassThrough",
+                    "id": "90247f59-68b2-48b5-8de7-ab002278584f",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Move",
+                    "type": "Button",
+                    "id": "c51ba341-2773-4c2d-8296-cece8ebf629e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Tracked Position",
+                    "type": "PassThrough",
+                    "id": "816f1f50-ddcf-4552-928d-68ea35c93ad0",
+                    "expectedControlType": "Vector3",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Tracked Orientation",
+                    "type": "PassThrough",
+                    "id": "de3870f2-d085-4614-8f26-8ab3973cb476",
+                    "expectedControlType": "Quaternion",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "e55d7564-dc00-4c91-aa60-25b738fe459e",
+                    "path": "<XRController>{RightHand}/{PrimaryButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f208acf2-b991-4482-a2f3-0561c023eaf6",
+                    "path": "<XRController>{LeftHand}/{PrimaryButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b1b1e6e6-62bd-48ad-8f34-146f702b24d5",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "MiddleClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "712845a4-1ec7-4515-b8b8-b89dc9b692b1",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "RightClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "46a2dba8-e1d0-4f4d-8b21-94c5db4150d5",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "df6ed4ce-2153-44ce-9c09-361ad96d4ffe",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Point",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d4761107-680a-4cc6-a907-e809ebd3a9b7",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Navigate",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b2620894-7087-4a9e-9691-34249e5bfe67",
+                    "path": "<XRController>{RightHand}/{SecondaryTrigger}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "eef5b6da-b040-4dd0-9481-bc2773fe02ef",
+                    "path": "<XRController>{LeftHand}/{SecondaryTrigger}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "957a1c6a-baa9-4b87-b588-41eebf2d2a9e",
+                    "path": "<QuestProTouchController>/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6830477c-0ae8-42ae-9b68-067210887ee3",
+                    "path": "<OculusTouchController>/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b62bd432-820a-4ed5-86f4-2712351e69cf",
+                    "path": "<QuestTouchPlusController>/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a696328f-f1ba-4479-af56-a2b5974989f0",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6d584667-ad6a-4471-910c-55365ac8cb1b",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "ScrollWheel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8cf02b87-b70f-49cf-aee0-2ea7074f6834",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f6388099-de1f-46f8-9888-adc02f1c2e6d",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Tracked Position",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d0fb7616-5140-4ab3-b41c-ece2af64587d",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Tracked Orientation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [
@@ -95,6 +398,42 @@
                 {
                     "devicePath": "<XRHMD>",
                     "isOptional": true,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "XR",
+            "bindingGroup": "XR",
+            "devices": [
+                {
+                    "devicePath": "<XRHMD>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<EyeGaze>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<HandInteractionPoses>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<XRController>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<TrackedDevice>",
+                    "isOptional": false,
+                    "isOR": false
+                },
+                {
+                    "devicePath": "<MetaAimHand>",
+                    "isOptional": false,
                     "isOR": false
                 }
             ]
