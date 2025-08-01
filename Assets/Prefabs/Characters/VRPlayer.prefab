@@ -809,9 +809,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4c3b2a1f0e9876543210987654321cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pauseKey1: 112
+  pauseKey1: 0
   pauseKey2: 27
-  pauseKey3: 109
+  pauseKey3: 0
   menuDistance: 3
   menuHeight: 0
   menuScale: {x: 0.003, y: 0.003, z: 0.003}
