@@ -27,16 +27,17 @@ public class LevelController : NetworkBehaviour
             }
         }
     }
-    /*
     public void OnEnable()
     {
-        levelManager.OnNewLevelActive += SetInitialStates;
+        levelManager.OnNewLevelActive += InitLevel;
+        //levelManager.OnTransitionCompleted += SetInitialStates;
+        
     }
     public void OnDisable()
     {
-        levelManager.OnNewLevelActive -= SetInitialStates;
+        levelManager.OnNewLevelActive -= InitLevel;
+        //levelManager.OnTransitionCompleted -= SetInitialStates;
     }
-    */
     public override void Spawned()
     {
         //Store initial states when level is first loaded
@@ -45,6 +46,14 @@ public class LevelController : NetworkBehaviour
         SetInitialStates();
     }
 
+    private void InitLevel()
+    {
+        
+        InitializeResettableObjects();
+        InitializeFinalStep();
+        SetInitialStates();
+        levelManager.RestartCurrentLevel();
+    }
     private void InitializeResettableObjects()
     {
         resettableComponents.Clear();

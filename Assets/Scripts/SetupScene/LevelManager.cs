@@ -40,8 +40,11 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     private Dictionary<PlayerRef, bool> playersInElevator = new Dictionary<PlayerRef, bool>();
     [SerializeField] private List<PlayerRef> connectedPlayers = new List<PlayerRef>();
 
+    private ChangeDetector _changeDetector;
+
     public override void Spawned()
     {
+        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
         //Initial parameters (I.e first level should bre from right to left elevator)
         posZElevator = elevatorInteriorPosZ.GetComponent<DoorNetworkedController>();
         negZElevator = elevatorInteriorNegZ.GetComponent<DoorNetworkedController>();
@@ -53,17 +56,17 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         {
             _currentElevatorTransform = elevatorInteriorPosZ;
             _currentElevator = posZElevator;
-            IsPosZElevatorCurrentGoal = firstGoalIsPosZ;
         }
         else
         {
             _currentElevatorTransform = elevatorInteriorNegZ;
             _currentElevator = negZElevator;
-            IsPosZElevatorCurrentGoal = firstGoalIsPosZ;
         }
 
         if (Object.HasStateAuthority)
         {
+            CurrentLevelIndex = 0;
+            IsPosZElevatorCurrentGoal = firstGoalIsPosZ;
             ActivateLevel(0);
         }
     }
@@ -104,6 +107,46 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         }
     }
 
+    public override void Render()
+    {
+        foreach (var changedProperty in _changeDetector.DetectChanges(this))
+        {
+            if (changedProperty == nameof(CurrentLevelIndex))
+            {
+                UpdateActiveLevelPrefab();
+            }
+            if (changedProperty == nameof(IsPosZElevatorCurrentGoal))
+            {
+                UpdateCurrentElevatorReference();
+            }
+        }
+    }
+
+    private void UpdateActiveLevelPrefab()
+    {
+        // Deactivate all levels
+        for (int i = 0; i < levelPrefabs.Count; i++)
+        {
+            levelPrefabs[i].SetActive(i == CurrentLevelIndex);
+        }
+    }
+
+    private void UpdateCurrentElevatorReference()
+    {
+        if (IsPosZElevatorCurrentGoal)
+        {
+            _currentElevator = posZElevator;
+            _currentElevatorTransform = elevatorInteriorPosZ;
+            Debug.Log("Switched to PosZ elevator as goal");
+        }
+        else
+        {
+            _currentElevator = negZElevator;
+            _currentElevatorTransform = elevatorInteriorNegZ;
+            Debug.Log("Switched to NegZ elevator as goal");
+        }
+    }
+
     private void CheckPlayersInElevator()
     {
         Debug.Log("CheckPlayersInElevator");
@@ -119,8 +162,8 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
                 float distance = Vector3.Distance(playerObj.transform.position, _currentElevatorTransform.position);
                 bool isInElevator = distance <= elevatorCheckRadius;
 
-                Debug.Log($"Player distance to elevator: {distance}, therefor in elevator:{isInElevator}");
-                Debug.Log($"Player position: {playerObj.transform.position}, Elevator position: {_currentElevatorTransform.position}");
+                //Debug.Log($"Player distance to elevator: {distance}, therefor in elevator:{isInElevator}");
+                //Debug.Log($"Player position: {playerObj.transform.position}, Elevator position: {_currentElevatorTransform.position}");
 
                 playersInElevator[player] = isInElevator;
 
@@ -158,7 +201,7 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             //Open doornetworkedcontrollers door
             if(_currentElevator != null)
             {
-                Debug.Log($"Opening elevator door: {_currentElevator.gameObject.name}");
+                //Debug.Log($"Opening elevator door: {_currentElevator.gameObject.name}");
                 _currentElevator.RequestOpen();
             }
 
@@ -200,7 +243,7 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         if (nextLevelIndex < levelPrefabs.Count)
         {
             ActivateLevel(nextLevelIndex);
-            //OnNewLevelActive?.Invoke(this);
+            OnNewLevelActive?.Invoke();
         }
 
         IsTransitioning = false;
@@ -274,7 +317,7 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     {
         if (Object.HasStateAuthority)
         {
-            RPC_RestartCurrentLevel();
+            RPC_RestartCurrentLevel(true);
         }
         else
         {
@@ -285,11 +328,17 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RequestRestartCurrentLevel()
     {
-        RPC_RestartCurrentLevel();
+        RPC_RestartCurrentLevel(true);
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_RequestRestartCurrentLevelWithoutPlayerPos()
+    {
+        RPC_RestartCurrentLevel(false);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_RestartCurrentLevel()
+    public void RPC_RestartCurrentLevel(bool restartPosition)
     {
         IsLevelComplete = false;
         IsTransitioning = false;
@@ -301,7 +350,7 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         }
 
         //Reset player pos
-        ResetPlayerPositions();
+        if (restartPosition) ResetPlayerPositions();
 
         var levelController = levelPrefabs[CurrentLevelIndex].GetComponent<LevelController>();
         if(levelController != null)
