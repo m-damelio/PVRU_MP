@@ -38,6 +38,7 @@ namespace Fusion.Addons.ConnectionManagerAddon
         public int gameSceneBuildIndex = 1;
         [Tooltip("Set it to 0 to use the DefaultPlayers value, from the Global NetworkProjectConfig (simulation section)")]
         public int playerCount = 0;
+        public bool isTesting = true;
 
         [Header("Room selection criteria")]
         public ConnectionCriterias connectionCriterias = ConnectionCriterias.RoomName;
@@ -130,9 +131,9 @@ namespace Fusion.Addons.ConnectionManagerAddon
             return sceneInfo;
         }
 
-        public void DoConnect()
+        public async void DoConnect()
         {
-            Connect();
+            await Connect();
         }
 
         public async Task Connect()
@@ -141,22 +142,26 @@ namespace Fusion.Addons.ConnectionManagerAddon
             if (sceneManager == null) sceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>();
             if (onWillConnect != null) onWillConnect.Invoke();
 
-            if (connectOnStart)
-            {
-                var sceneInfo = new NetworkSceneInfo();
-                if (gameSceneBuildIndex >= 0)
-                {
-                    sceneInfo.AddSceneRef(SceneRef.FromIndex(gameSceneBuildIndex), LoadSceneMode.Single);
-                }
-            }
-            
             // Start or join (depends on gamemode) a session with a specific name
-                var args = new StartGameArgs()
+            StartGameArgs args;
+            if (isTesting)
             {
-                GameMode = gameMode,
-                Scene = CurrentSceneInfo(),
-                SceneManager = sceneManager
-            };
+                args = new StartGameArgs()
+                {
+                    GameMode = gameMode,
+                    Scene = CurrentSceneInfo(),
+                    SceneManager = sceneManager
+                };
+            }
+            else
+            {
+                args = new StartGameArgs()
+                {
+                    GameMode = gameMode,
+                    Scene = SceneRef.FromIndex(gameSceneBuildIndex),
+                    SceneManager = sceneManager
+                };
+            }
             // Connection criteria
             if (ShouldConnectWithRoomName)
             {
