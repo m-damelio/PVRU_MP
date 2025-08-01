@@ -79,6 +79,8 @@ public class NetworkedButton : NetworkBehaviour, ISolvable, ILevelResettable
 
     public override void Render()
     {
+        if (!Object.HasStateAuthority) return;
+        
         foreach (var changedProperty in _changeDetector.DetectChanges(this))
         {
             if (changedProperty == nameof(IsPressed))
