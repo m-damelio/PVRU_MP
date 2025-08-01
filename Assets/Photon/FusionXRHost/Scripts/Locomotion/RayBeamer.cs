@@ -50,6 +50,9 @@ namespace Fusion.XR.Host.Locomotion
         public RotateMirror lastMirrorHit = null;
         private bool isHit;
 
+        [Header("ColorObject Actions")]
+        public GameObject lastColorObjectHit = null;
+
         [Header("UI Actions")]
         public GameObject volumeup;
         public GameObject volumedown;
@@ -126,6 +129,7 @@ namespace Fusion.XR.Host.Locomotion
                     lastHit = hit.point;
                     status = Status.BeamHit;
 
+                    /////////////// Mirror /////////////////
                     if (hit.collider.CompareTag("Mirror"))
                     {
                         var currentMirror = hit.collider.gameObject.transform.GetComponentInParent<RotateMirror>();
@@ -138,7 +142,7 @@ namespace Fusion.XR.Host.Locomotion
 
                         }
                         currentMirror.SetHighlight(true); // Aktuellen Spiegel aktivieren
-                        lastMirrorHit = currentMirror; // Speichern f�r sp�ter
+                        lastMirrorHit = currentMirror; // Speichern für später
                         player.SetActiveMirror(currentMirror);
                     }
                     else
@@ -152,7 +156,32 @@ namespace Fusion.XR.Host.Locomotion
                         }
                     }
 
-                    
+                    /////////////// ColorObj /////////////////
+                    if (hit.collider.CompareTag("ColorChange"))
+                    {
+                        var currentColorObject = hit.collider.gameObject;
+                        var colorControl = currentColorObject.transform.GetComponentInParent<colorControl>();
+
+                        if (lastColorObjectHit != null && lastColorObjectHit != currentColorObject)
+                        {
+                            lastColorObjectHit.transform.GetComponentInParent<colorControl>().SetSelectionColor(false, lastColorObjectHit); // Altes Objekt deaktivieren
+                            player.DeselectActiveColorObject(lastColorObjectHit.transform.GetComponentInParent<colorControl>());
+                        }
+                        colorControl.SetSelectionColor(true, currentColorObject); // Aktuelles ColorObject einfärben
+                        lastColorObjectHit = currentColorObject; // Speichern für später
+                        player.SetActiveColorObject(colorControl);
+                    }
+
+                    else
+                    {
+                        // Kein Objekt mehr getroffen
+                        if (lastColorObjectHit != null)
+                        {
+                            lastColorObjectHit.transform.GetComponentInParent<colorControl>().SetSelectionColor(false, lastColorObjectHit);
+                            player.DeselectActiveColorObject(lastColorObjectHit.transform.GetComponentInParent<colorControl>());
+                            lastColorObjectHit = null;
+                        }
+                    }
 
                     if (hit.collider.CompareTag("Buttons"))
                     {
@@ -190,7 +219,6 @@ namespace Fusion.XR.Host.Locomotion
                     }
 
                     isHitVolume = false;
-
 
                 }
                 

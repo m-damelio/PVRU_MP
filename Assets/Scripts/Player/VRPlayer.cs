@@ -93,6 +93,9 @@ public class VRPlayer : NetworkBehaviour
     [SerializeField] private List<RotateMirror> mirrors;
     private bool isSelected;
 
+    [Header("Color Selection")]
+    [SerializeField] private colorControl activeColorObject;
+
     [Header("Movement")]
     public CharacterController characterController;
     //[SerializeField] private float moveSpeed = 3f; 
@@ -160,16 +163,6 @@ public class VRPlayer : NetworkBehaviour
         public string response = "";
         public float requestTime = 0f;
     }
-
-
-
-
-
-
-
-
-
-
 
     void Start()
     {
@@ -314,6 +307,16 @@ public class VRPlayer : NetworkBehaviour
     public void DeselectActiveMirror(RotateMirror mirror)
     {
         activeMirror = null;
+    }
+
+    public void SetActiveColorObject(colorControl colorObj)
+    {
+        activeColorObject = colorObj;
+    }
+
+    public void DeselectActiveColorObject(colorControl colorObj)
+    {
+        activeColorObject = null;
     }
 
     void DetectPlayerType()
@@ -579,9 +582,11 @@ public class VRPlayer : NetworkBehaviour
     {
 
         if (rigInput.yDelta != 0f)
+            Debug.Log(rigInput.yDelta);
             activeMirror.RotateY(rigInput.yDelta);
 
         if (rigInput.zDelta != 0f)
+            Debug.Log(rigInput.yDelta);
             activeMirror.RotateZ(rigInput.zDelta);
 
     }

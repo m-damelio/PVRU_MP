@@ -120,7 +120,7 @@ public class LaserBean : NetworkBehaviour, ISolvable
                 laserNeedsChange = false;
             }
         }
-        Debug.Log("check solution!");
+        
         CheckSolution();
     }
 
