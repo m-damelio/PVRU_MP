@@ -2302,6 +2302,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: LevelSkeleton
       objectReference: {fileID: 0}
+    - target: {fileID: 4845909188675841501, guid: 18328ab153416464080914381835b4c6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4845909188675841501, guid: 18328ab153416464080914381835b4c6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4845909188675841501, guid: 18328ab153416464080914381835b4c6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
     - target: {fileID: 5105956033163513437, guid: 18328ab153416464080914381835b4c6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2342,6 +2354,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8788140349574731824, guid: 18328ab153416464080914381835b4c6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 277aa339cf99e04459047c65fcfd8aaa, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
