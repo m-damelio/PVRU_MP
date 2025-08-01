@@ -25,8 +25,6 @@ public class VRPlayer : NetworkBehaviour
 
 
     public bool isInSneakZoneStatus = true; // Enable sending zone status to ESP32
-
-
     public bool isSneaking = false;
     public float sneakValue = 1.0f;
     private int consecutiveFailures = 0;
@@ -81,6 +79,7 @@ public class VRPlayer : NetworkBehaviour
     [SerializeField] private LayerMask hackerOnlyLayers;
     [SerializeField] private LayerMask sneakerOnlyLayers;
     private LayerMask originalCullingMask;
+    [SerializeField] private bool isSneaker;
 
     [Header("Mirror Rotation")]
     [SerializeField] private RotateMirror activeMirror;
@@ -130,7 +129,7 @@ public class VRPlayer : NetworkBehaviour
     public override void Spawned()
     {
         if (!Object.HasInputAuthority) return;
-        DetectPlayerType();
+        SetPlayerType();
         StartCoroutine(AfterSpawn());
 
     }
@@ -317,10 +316,9 @@ public class VRPlayer : NetworkBehaviour
         activeColorObject = null;
     }
 
-    void DetectPlayerType()
+    void SetPlayerType()
     {
-        bool hasPressurePlate = DetectPressurePlate();
-        playerType = hasPressurePlate ? PlayerType.EnhancedSneaking : PlayerType.EnhancedHacking;
+        playerType = isSneaker ? PlayerType.EnhancedSneaking : PlayerType.EnhancedHacking;
 
         if (Object.HasInputAuthority)
         {

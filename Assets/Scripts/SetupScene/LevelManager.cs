@@ -262,14 +262,31 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
         Debug.Log($"Activating level {levelIndex}");
         //Deactivate current level
-        if (CurrentLevelIndex < levelPrefabs.Count)
+        if (CurrentLevelIndex < levelPrefabs.Count && CurrentLevelIndex != levelIndex)
         {
+            var currentLevelNetworkObjects = levelPrefabs[CurrentLevelIndex].GetComponentsInChildren<NetworkObject>();
+            foreach (var netObj in currentLevelNetworkObjects)
+            {
+                if (netObj.IsValid)
+                {
+                    Runner.Despawn(netObj);
+                }
+            }
             levelPrefabs[CurrentLevelIndex].SetActive(false);
         }
 
         //Activate new level
         CurrentLevelIndex = levelIndex;
         levelPrefabs[CurrentLevelIndex].SetActive(true);
+
+        var newLevelNetworkObjects = levelPrefabs[CurrentLevelIndex].GetComponentsInChildren<NetworkObject>();
+        foreach (var netObj in newLevelNetworkObjects)
+        {
+            if (!netObj.IsValid)
+            {
+                Runner.Spawn(netObj);
+            }
+        }
 
         //Switch elevator goal
         if (IsPosZElevatorCurrentGoal)
