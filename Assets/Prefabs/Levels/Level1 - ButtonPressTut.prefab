@@ -875,6 +875,26 @@ PrefabInstance:
       propertyPath: SortKey
       value: 509212245
       objectReference: {fileID: 0}
+    - target: {fileID: 1863859192633191975, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: NestedObjects.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1863859192633191975, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: NetworkedBehaviours.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1863859192633191975, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: 'NetworkedBehaviours.Array.data[2]'
+      value: 
+      objectReference: {fileID: 7192595141044866429}
+    - target: {fileID: 5763564731426126704, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: Flags
+      value: 262145
+      objectReference: {fileID: 0}
+    - target: {fileID: 5763564731426126704, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: SortKey
+      value: 3787835930
+      objectReference: {fileID: 0}
     - target: {fileID: 6048007165769472765, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
       propertyPath: m_Name
       value: NetworkedButtonHackerOverlay
@@ -933,6 +953,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
   m_PrefabInstance: {fileID: 8585303896937171438}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7192595141044866429 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1509861755870348435, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+  m_PrefabInstance: {fileID: 8585303896937171438}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7996390073787017161 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1863859192633191975, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}

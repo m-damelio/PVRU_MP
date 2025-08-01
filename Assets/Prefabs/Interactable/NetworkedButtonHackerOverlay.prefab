@@ -283,6 +283,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 9092673067758059525}
   - {fileID: 56172277525415131}
+  - {fileID: 1509861755870348435}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &9092673067758059525
 MonoBehaviour:
@@ -296,6 +297,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45bffbe51416245c9b66296dd183e803, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnButtonPressed:
+    m_PersistentCalls:
+      m_Calls: []
+  OnButtonReleased:
+    m_PersistentCalls:
+      m_Calls: []
+  OnButtonSolved:
+    m_PersistentCalls:
+      m_Calls: []
+  OnButtonReset:
+    m_PersistentCalls:
+      m_Calls: []
+  onlyTriggerEventsOnAuthority: 1
+  triggerEventsOnAllClients: 0
   mainColor: {r: 1, g: 1, b: 0, a: 1}
   pressedColor: {r: 0, g: 1, b: 1, a: 1}
   initialPressState: 0
@@ -359,6 +374,7 @@ GameObject:
   - component: {fileID: 7619011609666506189}
   - component: {fileID: 5840057920499636388}
   - component: {fileID: 5158242043401633744}
+  - component: {fileID: 1509861755870348435}
   m_Layer: 0
   m_Name: ButtonTop
   m_TagString: Untagged
@@ -434,3 +450,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1509861755870348435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6806204952144916636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 1
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
