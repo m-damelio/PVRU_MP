@@ -3444,6 +3444,7 @@ MonoBehaviour:
   connectOnStart: 1
   gameSceneBuildIndex: 1
   playerCount: 0
+  isTesting: 1
   connectionCriterias: 1
   additionalSessionProperties: []
   runner: {fileID: 0}
@@ -3808,6 +3809,72 @@ Transform:
   - {fileID: 2093270869}
   m_Father: {fileID: 1004773435}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1096457584
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1598028872}
+    m_Modifications:
+    - target: {fileID: 1485893201851638345, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485893201851638345, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485893201851638345, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485893201851638345, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485893201851638345, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485893201851638345, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485893201851638345, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485893201851638345, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485893201851638345, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1485893201851638345, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7755954748004173789, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+      propertyPath: m_Name
+      value: AudioManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 8306207994288188066, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+      propertyPath: SortKey
+      value: 801859339
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+--- !u!4 &1096457585 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1485893201851638345, guid: a4de5783e384a9947892be72fc3d1b1d, type: 3}
+  m_PrefabInstance: {fileID: 1096457584}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1102300975 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3130720278100887085, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
@@ -5099,235 +5166,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1092551372}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1358537506
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1358537507}
-  - component: {fileID: 1358537509}
-  - component: {fileID: 1358537508}
-  m_Layer: 0
-  m_Name: AudioManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1358537507
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1358537506}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1598028872}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1358537508
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1358537506}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 1653474424
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 1358537509}
-  ForceRemoteRenderTimeframe: 0
---- !u!114 &1358537509
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1358537506}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb5f3ea269a4b419f82c99d89fab5071, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  soundDatabase:
-  - soundName: Elevator_Door_Opening
-    clip: {fileID: 8300000, guid: 3931e36962e744f12aad5e38efe619fe, type: 3}
-    category: 1
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 1
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Elevator_Door_Closing
-    clip: {fileID: 8300000, guid: d7dea6bcb01ab4123bc912c7fbf63be3, type: 3}
-    category: 2
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 0
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Elevator_Running
-    clip: {fileID: 8300000, guid: cc31a8d2d03fd453f8728731b17676c6, type: 3}
-    category: 1
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 0
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Alarm
-    clip: {fileID: 8300000, guid: 2ff56555f65954352bf9d45fb4030692, type: 3}
-    category: 1
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 1
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Button_Clicking
-    clip: {fileID: 8300000, guid: 8b877889eb4624fceb3f69b0452dd2a0, type: 3}
-    category: 1
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 1
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Button_Error
-    clip: {fileID: 8300000, guid: a5071a91dbfa54ffe8c4d17ad2fea190, type: 3}
-    category: 1
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 1
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Prison_Door_Opening
-    clip: {fileID: 8300000, guid: 05fa497857f4e493b85f2bdcc9152ca7, type: 3}
-    category: 1
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 1
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Prison_Door_Closing
-    clip: {fileID: 8300000, guid: 218f91ce5a8cf458daf0ff78c40fd669, type: 3}
-    category: 2
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 0
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Keycard_Accepted
-    clip: {fileID: 8300000, guid: 59ff8d0705416449db00237570304932, type: 3}
-    category: 2
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 1
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Keycard_Grabbed
-    clip: {fileID: 8300000, guid: bf84e026eb2284e4badc23ae5a139567, type: 3}
-    category: 2
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 1
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Keycard_Reading
-    clip: {fileID: 8300000, guid: 72907da119743470b923fb7c6c5a1e72, type: 3}
-    category: 2
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 1
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Laser_Background
-    clip: {fileID: 8300000, guid: a06b5279a66a948ceb3cc85cc5f4be82, type: 3}
-    category: 1
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 1
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Laser_Moving
-    clip: {fileID: 8300000, guid: d304cb8b425464bb19921380629c3250, type: 3}
-    category: 2
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 1
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Player_Sneaking
-    clip: {fileID: 8300000, guid: 0b630984b67fb4650a8f730cc4777a33, type: 3}
-    category: 2
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 1
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Player_Teleporting
-    clip: {fileID: 8300000, guid: bd0c7c1b2d24d46bfb8988e73ef18c36, type: 3}
-    category: 2
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 1
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Guard_Walking
-    clip: {fileID: 8300000, guid: 1f6b36ae9b7394a9883769f92c526b1a, type: 3}
-    category: 2
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 1
-    maxDistance: 15
-    minDistance: 1
-  - soundName: Background_Music
-    clip: {fileID: 8300000, guid: bd6f2423e10e2460087e25a590fdde74, type: 3}
-    category: 3
-    priority: 1
-    defaultVolume: 1
-    defaultPitch: 1
-    is3D: 0
-    maxDistance: 15
-    minDistance: 1
-  audioSourcePoolSize: 10
-  audioSourcePrefab: {fileID: 0}
-  uiVolume: 1
-  environmentVolume: 1
-  effectsVolume: 1
-  voiceVolume: 1
-  musicVolume: 1
-  masterVolume: 1
-  enableSpatialAudio: 1
-  reverbZone: {fileID: 0}
-  debugMode: 1
 --- !u!1 &1374823066
 GameObject:
   m_ObjectHideFlags: 0
@@ -6565,8 +6403,8 @@ Transform:
   m_Children:
   - {fileID: 445394322}
   - {fileID: 2105383980}
+  - {fileID: 1096457585}
   - {fileID: 705507995}
-  - {fileID: 1358537507}
   - {fileID: 318629533}
   - {fileID: 1140578473}
   - {fileID: 1374823067}

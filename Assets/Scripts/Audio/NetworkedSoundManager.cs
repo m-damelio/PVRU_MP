@@ -64,7 +64,7 @@ public class NetworkedSoundManager : NetworkBehaviour
     private Queue<AudioSource> audioSourcePool = new Queue<AudioSource>();
     private List<AudioSource> activeAudioSources = new List<AudioSource>();
     private Dictionary<SoundCategory, float> categoryVolumes = new Dictionary<SoundCategory, float>();
-
+    private Dictionary<AudioSource, float> sceneAudioSources = new Dictionary<AudioSource, float>();
     public static NetworkedSoundManager Instance { get; private set; }
 
     #region Unity Lifecycle
@@ -88,6 +88,8 @@ public class NetworkedSoundManager : NetworkBehaviour
         SetupAudioSourcePool();
         LoadSoundDatabase();
         UpdateCategoryVolumes();
+
+        RegisterSceneAudioSources();
     }
 
     private void Update()
@@ -213,6 +215,8 @@ public class NetworkedSoundManager : NetworkBehaviour
     {
         masterVolume = Mathf.Clamp01(volume);
         UpdateAllAudioSourceVolumes();
+
+        UpdateSceneAudioSources();   
 
         if (debugMode)
             Debug.Log($"NetworkedSoundManager: Set master volume to {masterVolume}");
@@ -426,6 +430,46 @@ public class NetworkedSoundManager : NetworkBehaviour
     }
 
     #endregion
+
+    private void RegisterSceneAudioSources()
+    {
+        sceneAudioSources.Clear();
+        AudioSource[] allSources = FindObjectsOfType<AudioSource>(true); 
+
+        foreach (var src in allSources)
+        {
+            if (!audioSourcePool.Contains(src) && !sceneAudioSources.ContainsKey(src))
+            {
+                sceneAudioSources.Add(src, src.volume);
+            }
+        }
+
+        if (debugMode)
+            Debug.Log($"NetworkedSoundManager: {sceneAudioSources.Count} static audio sources registered");
+    }
+
+    private void UpdateSceneAudioSources()
+    {
+        foreach (var kvp in sceneAudioSources)
+        {
+            if (kvp.Key != null) 
+            {
+                kvp.Key.volume = kvp.Value * masterVolume;
+            }
+        }
+    }
+
+    private void LateUpdate()
+    {
+        AudioSource[] allSources = FindObjectsOfType<AudioSource>(true);
+        foreach (var src in allSources)
+        {
+            if (!sceneAudioSources.ContainsKey(src) && !audioSourcePool.Contains(src))
+            {
+                sceneAudioSources.Add(src, src.volume);
+            }
+        }
+    }
 
     private void DebugSoundPlayback(string soundName, AudioSource audioSource, SoundClipData soundData)
     {
