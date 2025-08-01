@@ -140,7 +140,7 @@ public class VRPlayer : NetworkBehaviour
 
         // Set player type based on hardware detection
         DetectPlayerType();
-        StartCoroutine(AfterSpawn);
+        StartCoroutine(AfterSpawn());
 
     }
 
