@@ -129,10 +129,7 @@ public class VRPlayer : NetworkBehaviour
 
     public override void Spawned()
     {
-        // Get reference to NetworkRig
-        
-
-        // Set player type based on hardware detection
+        if (!Object.HasInputAuthority) return;
         DetectPlayerType();
         StartCoroutine(AfterSpawn());
 
