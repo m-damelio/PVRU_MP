@@ -135,7 +135,7 @@ Animator:
   m_GameObject: {fileID: 8024945065736129075}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 256710501c3d63a4086ed02418231d26, type: 2}
+  m_Controller: {fileID: 9100000, guid: bee7e3a0a3bbc8247a376f996e7040be, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -183,6 +183,7 @@ MonoBehaviour:
   _IsOpen: 0
   _HasInitialized: 0
   doorAudioSource: {fileID: 0}
+  doorType: 1
   startOpen: 0
 --- !u!65 &1474845134093892047
 BoxCollider:
@@ -217,7 +218,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8872a05ae259e4859b4c29dd35f8bfc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boolParameters: []
+  boolParameters:
+  - InitialOpen
   intParameters: []
   floatParameters: []
   triggerParameters:

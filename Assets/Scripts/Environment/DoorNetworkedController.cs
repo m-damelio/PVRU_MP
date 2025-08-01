@@ -37,7 +37,7 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
         if (doorCollider == null) doorCollider = GetComponent<Collider>();
     }
 
-    //Doors didnt appear open when spawned with startOPen = true there added spawned and other methods
+    //Doors didnt appear open when spawned with startOpen = true there added spawned and other methods
     public override void Spawned()
     {
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
@@ -56,10 +56,7 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
 
         if (Object.HasStateAuthority && !HasInitialized)
         {
-            if (startOpen)
-            {
-                RPC_SetInitialOpenState();
-            }
+            RPC_SetInitialState();
             HasInitialized = true;
         }
     }
@@ -70,18 +67,21 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
         {
             if (changedProperty == nameof(IsOpen))
             {
+                Debug.Log($"DoorNetworkedController: State change detected to IsOpen, value is {IsOpen}");
                 OnDoorsStateChanged();
             }
         }
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_SetInitialOpenState()
+    private void RPC_SetInitialState()
     {
-        int openStateHash = Animator.StringToHash("Base Layer.OpenDoor");
-        _animator.Play(openStateHash, 0, 1.0f); //Jump to end of animation
+        if (_animatorSync != null)
+        {
+            _animatorSync.SetNetworkBool("InitialOpen", startOpen);
+        }
 
-        if (doorCollider != null) doorCollider.enabled = false;
+        if (doorCollider != null) doorCollider.enabled = !startOpen;
 
         Debug.Log("Door: Set to initial open state");
     }
@@ -91,6 +91,7 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
     {
         if (Object.HasStateAuthority)
         {
+            Debug.Log($"DoorNetworkedController: State was {IsOpen}, setting to initial {startOpen}");
             IsOpen = startOpen;
             if (doorCollider != null) doorCollider.enabled = !startOpen;
         }
@@ -104,7 +105,7 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
 
             if (startOpen)
             {
-                RPC_SetInitialOpenState();
+                RPC_SetInitialState();
             }
             else
             {

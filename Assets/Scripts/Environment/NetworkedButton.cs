@@ -229,6 +229,10 @@ public class NetworkedButton : NetworkBehaviour, ISolvable, ILevelResettable
     {
         return IsSolved;
     }
+    public void SetSolved()
+    {
+        IsSolved = true;
+    }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
     private void RPC_PressChanged()

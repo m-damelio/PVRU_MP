@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6059326420509382910
 Transform:
   m_ObjectHideFlags: 0
@@ -57,7 +57,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resettableObjects: []
   autoFindResettableObjects: 1
-  finalStepGameobject: {fileID: 0}
+  finalStepGameobject: {fileID: 2884628247612532558}
   levelManager: {fileID: 0}
 --- !u!114 &6732896980155523929
 MonoBehaviour:

@@ -957,11 +957,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameMode: 6
-  roomName: JosiTesting
+  roomName: test
   connectOnStart: 0
   gameSceneBuildIndex: 1
   playerCount: 0
-  isTesting: 1
+  isTesting: 0
   connectionCriterias: 1
   additionalSessionProperties: []
   runner: {fileID: 0}

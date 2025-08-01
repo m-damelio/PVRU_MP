@@ -4,7 +4,7 @@ using Fusion.XR.Host.Grabbing;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(NetworkGrabbable))]
-public class NetworkedKeyCard : NetworkBehaviour
+public class NetworkedKeyCard : NetworkBehaviour, ILevelResettable
 {
     [Header("Keycard parameters")]
     [SerializeField] private string _keyID;
@@ -22,6 +22,9 @@ public class NetworkedKeyCard : NetworkBehaviour
 
     private static Dictionary<int, string> hashToStringMap = new Dictionary<int, string>();
     private string _currentKeyID;
+
+    private Vector3 initialPosition;
+    private Quaternion initialRotation;
 
     public string KeyID
     {
@@ -72,6 +75,22 @@ public class NetworkedKeyCard : NetworkBehaviour
         _grabbable.onDidGrab.AddListener(OnGrab);
         _grabbable.onDidUngrab.AddListener(OnRelease);
 
+        SetInitialState();
+
+    }
+
+    public void SetInitialState()
+    {
+        initialPosition = transform.position;
+        initialRotation = transform.rotation;
+    }
+
+    public void ResetToInitialState()
+    {
+        Holder = PlayerRef.None;
+        transform.position = initialPosition;
+        transform.rotation = initialRotation;
+        UpdateVisualState();
     }
 
     protected virtual void OnGrab(NetworkGrabber grabber)
