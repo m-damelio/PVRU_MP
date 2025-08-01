@@ -8528,7 +8528,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &4208948367758898827
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8739,6 +8739,12 @@ MonoBehaviour:
       m_Calls: []
   isRayEnabled: 0
   lastMirrorHit: {fileID: 0}
+  lastColorObjectHit: {fileID: 0}
+  volumeup: {fileID: 0}
+  volumedown: {fileID: 0}
+  volume_display: {fileID: 0}
+  volume: 0
+  isHitVolume: 0
   status: 0
 --- !u!1 &4208948367876442782
 GameObject:
@@ -8983,6 +8989,12 @@ MonoBehaviour:
       m_Calls: []
   isRayEnabled: 0
   lastMirrorHit: {fileID: 0}
+  lastColorObjectHit: {fileID: 0}
+  volumeup: {fileID: 0}
+  volumedown: {fileID: 0}
+  volume_display: {fileID: 0}
+  volume: 0
+  isHitVolume: 0
   status: 0
 --- !u!4 &4208948369573918834
 Transform:

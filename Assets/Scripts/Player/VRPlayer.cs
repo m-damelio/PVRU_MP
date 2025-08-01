@@ -581,13 +581,16 @@ public class VRPlayer : NetworkBehaviour
     void HandleMirrorInput(RigInput rigInput)
     {
 
-        if (rigInput.yDelta != 0f)
+        if (rigInput.yDelta != 0f && activeMirror != null)
+        {
             Debug.Log(rigInput.yDelta);
             activeMirror.RotateY(rigInput.yDelta);
+        }
 
-        if (rigInput.zDelta != 0f)
+        if (rigInput.zDelta != 0f && activeMirror != null) {
             Debug.Log(rigInput.yDelta);
             activeMirror.RotateZ(rigInput.zDelta);
+        }
 
     }
 
