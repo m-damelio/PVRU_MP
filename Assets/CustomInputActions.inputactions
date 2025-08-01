@@ -287,7 +287,7 @@
                 {
                     "name": "",
                     "id": "957a1c6a-baa9-4b87-b588-41eebf2d2a9e",
-                    "path": "<QuestProTouchController>/primaryButton",
+                    "path": "<QuestProTouchController>{RightHand}/primaryButton",
                     "interactions": "",
                     "processors": "",
                     "groups": ";XR",
@@ -298,7 +298,7 @@
                 {
                     "name": "",
                     "id": "6830477c-0ae8-42ae-9b68-067210887ee3",
-                    "path": "<OculusTouchController>/primaryButton",
+                    "path": "<QuestTouchPlusController>{RightHand}/primaryButton",
                     "interactions": "",
                     "processors": "",
                     "groups": ";XR",
@@ -309,7 +309,40 @@
                 {
                     "name": "",
                     "id": "b62bd432-820a-4ed5-86f4-2712351e69cf",
-                    "path": "<QuestTouchPlusController>/primaryButton",
+                    "path": "<OculusTouchController>{RightHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "58d25dda-a9e6-486e-beec-e6f9c3d33eb5",
+                    "path": "<QuestProTouchController>{LeftHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ceebf4c2-9f81-4fe7-b8e9-43686e670a3f",
+                    "path": "<QuestTouchPlusController>{LeftHand}/primaryButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fd06ef2e-05cf-404e-8ba6-27d728170e98",
+                    "path": "<OculusTouchController>/primaryButton",
                     "interactions": "",
                     "processors": "",
                     "groups": ";XR",
