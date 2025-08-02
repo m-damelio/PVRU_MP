@@ -31,7 +31,7 @@ public class MainMenu : MonoBehaviour
         SetVolumeStep(maxSteps);
     }
 
-    [ContextMenu("Trigger Connect")]
+    // [ContextMenu("Trigger Connect")]
     public void Connect()
     {
         Debug.Log("Trigger Connect on connectionManager over UI");
@@ -45,7 +45,7 @@ public class MainMenu : MonoBehaviour
         connectionManager.DoConnectAsHacker();
     }
 
-    [ContextMenu("Trigger Connect as Hacker")]
+    [ContextMenu("Trigger Connect as Sneacker")]
 
     public void ConnectAsSneaker()
     {
