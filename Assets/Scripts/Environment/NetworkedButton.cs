@@ -83,13 +83,13 @@ public class NetworkedButton : NetworkBehaviour, ISolvable, ILevelResettable
         {
             if (changedProperty == nameof(IsPressed))
             {
-                RPC_PressChanged();
+                ChangeColor();
                 HandlePressStateChanged();
             }
             if (changedProperty == nameof(IsSolved))
             {
                 CheckSolution();
-                HandlePressStateChanged();
+                HandleSolvedStateChange();
             }
         }
     }
@@ -234,12 +234,6 @@ public class NetworkedButton : NetworkBehaviour, ISolvable, ILevelResettable
         IsSolved = true;
     }
 
-    [Rpc(RpcSources.All, RpcTargets.All)]
-    private void RPC_PressChanged()
-    {
-        ChangeColor();
-    }
-
 
     private void ChangeColor()
     {
@@ -261,12 +255,6 @@ public class NetworkedButton : NetworkBehaviour, ISolvable, ILevelResettable
         {
             NetworkedSoundManager.Instance.PlayEnvironmentSound("Keycard_Grabbed", transform.position);
         }
-    }
-
-    [ContextMenu("Test Trigger Press")]
-    public void DebugTriggerPress()
-    {
-        RPC_PressChanged();
     }
     
     [ContextMenu("Test Press Event")]

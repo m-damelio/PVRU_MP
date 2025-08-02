@@ -86,48 +86,52 @@ public class animateButton : NetworkBehaviour, ILevelResettable
     }
     public void OnTriggerEnter(Collider other)
     {
+        if (OnCoolDown)
+        {
+            Debug.Log("Button on cooldown, ignoring trigger");
+            return;
+        }  //If there is not supposed to be a cooldown skip the active timer check
         Debug.Log($"Trigger entered by: {other.gameObject.name}");
         if (Object == null)
         {
             Debug.Log("Object is null in OnTriggerEnter");
             return;
         }
-        if (OnCoolDown)
-        {
-            Debug.Log("Button on cooldown, ignoring trigger");
-            return;
-        }  //If there is not supposed to be a cooldown skip the active timer check
         if (!Object.HasStateAuthority)
         {
             Debug.Log("No state authority in OnTriggerEnter, requesting press");
-            if (!wasPressed)
-            {
-                wasPressed = true;
-                RPC_RequestStartPress();
-            }
+            RPC_RequestStartPress();
             return;
         }
 
-        RPC_StartPress();
+        PressButton();
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RequestStartPress()
     {
+        if (!OnCoolDown);
+        {
+            PressButton();
+        }
+            
+    }
+
+    private void PressButton()
+    {
         if (!Object.HasStateAuthority) return;
-        RPC_StartPress();
+
+        ActiveTimer = TickTimer.CreateFromSeconds(Runner, coolDownTime);
+        
+        if (buttonController != null) buttonController.IsPressed = true;
+
+        RPC_AnimateAndSound();
+       
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_StartPress()
+    private void RPC_AnimateAndSound()
     {
-        wasPressed = false;
-        if (Object.HasStateAuthority)
-        {
-            ActiveTimer = TickTimer.CreateFromSeconds(Runner, coolDownTime);
-        }
-        
-        if (buttonController != null) buttonController.IsPressed = true;
         if (currentAnimation != null)
         {
             StopCoroutine(currentAnimation);
