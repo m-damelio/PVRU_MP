@@ -107,6 +107,7 @@ namespace Fusion.XR.Host.Rig
         [SerializeField] private Renderer rightHandLocalVisual;
         [SerializeField] private GameObject leftHandUIBeam;
         [SerializeField] private GameObject rightHandUIBeam;
+        public GameObject hardwareVisual; 
         [SerializeField] private GameObject knob1;
         [SerializeField] private GameObject knob2;
 
@@ -338,6 +339,10 @@ namespace Fusion.XR.Host.Rig
                         if (vrPlayer != null)
                         {
                             Debug.Log($"Found VRPlayer for local player: {runner.LocalPlayer}");
+                            if (vrPlayer.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedSneaking)
+                            {
+                                hardwareVisual.SetActive(false);
+                            }
                             break;
                         }
                     }
@@ -482,6 +487,7 @@ namespace Fusion.XR.Host.Rig
             {
                 hasSearchedForVRPlayer = false;
                 vrPlayer = null;
+
             }
         }
 

@@ -5232,6 +5232,7 @@ MonoBehaviour:
   rightHandLocalVisual: {fileID: 6345864757392513459}
   leftHandUIBeam: {fileID: 1421013012986833179}
   rightHandUIBeam: {fileID: 3949825310219039124}
+  hardwareVisual: {fileID: 5978398180447641129}
   knob1: {fileID: 1463097650658913051}
   knob2: {fileID: 2793112609286614050}
   enableFingerTracking: 0
@@ -7832,5 +7833,10 @@ GameObject:
 --- !u!1 &2793112609286614050 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8809892864307517568, guid: db86f7c2f0020364aa7be73784aa07d5, type: 3}
+  m_PrefabInstance: {fileID: 6665371413949265058}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5978398180447641129 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1042493724460935819, guid: db86f7c2f0020364aa7be73784aa07d5, type: 3}
   m_PrefabInstance: {fileID: 6665371413949265058}
   m_PrefabAsset: {fileID: 0}
