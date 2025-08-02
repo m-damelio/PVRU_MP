@@ -44,9 +44,9 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     public override void Spawned()
     {
+         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
         if (!Object.HasStateAuthority) return;
 
-        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
         //Initial parameters (I.e first level should bre from right to left elevator)
         posZElevator = elevatorInteriorPosZ.GetComponent<DoorNetworkedController>();
         negZElevator = elevatorInteriorNegZ.GetComponent<DoorNetworkedController>();
