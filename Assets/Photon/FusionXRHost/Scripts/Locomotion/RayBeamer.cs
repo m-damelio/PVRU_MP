@@ -1,3 +1,4 @@
+using Fusion.XR.Host.Grabbing;
 using Fusion.XR.Host.Rig;
 using Meta.XR.ImmersiveDebugger.UserInterface.Generic;
 using NUnit.Framework.Constraints;
@@ -85,8 +86,7 @@ namespace Fusion.XR.Host.Locomotion
             }
             
             if (origin == null) origin = transform;
-            if (hand == null) hand = GetComponentInParent<HardwareHand>();
-
+            if (hand == null) hand = GetComponentInParent<HardwareHand>();  
             isHit = false;
             isHitVolume = false;
         }
@@ -123,6 +123,7 @@ namespace Fusion.XR.Host.Locomotion
                 ray.origin = origin.position;
                 if (BeamCast(out RaycastHit hit))
                 {
+                    Debug.Log(hit.collider.name);
                     lastHitCollider = hit.collider;
                     ray.target = hit.point;
                     ray.color = hitColor;
