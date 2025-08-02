@@ -12,6 +12,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
     [SerializeField] private Transform alarmSpot;
     [SerializeField] private float restDuration = 10f;
     [SerializeField] private NetworkedAlarmBooth alarmBooth;
+    [SerializeField] private float distanceToCenter = 1f;
 
     [Header("Character Settings")]
     //[SerializeField] private float moveSpeed; 
@@ -154,7 +155,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
                 _agent.speed = 5f;
 
                 //Check if guard reached alarm spot 
-                if(Vector3.Distance(transform.position, alarmSpot.position) < 1.0f)
+                if(Vector3.Distance(transform.position, alarmSpot.position) < distanceToCenter)
                 {
                     _state = State.Rest;
                 }

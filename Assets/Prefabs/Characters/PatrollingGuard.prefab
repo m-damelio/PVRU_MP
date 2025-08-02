@@ -379,6 +379,7 @@ MonoBehaviour:
   alarmSpot: {fileID: 0}
   restDuration: 60
   alarmBooth: {fileID: 0}
+  distanceToCenter: 0.8
   _IsAlert: 0
   _IsAlarmRunning: 0
   _ResetCalled: 0
