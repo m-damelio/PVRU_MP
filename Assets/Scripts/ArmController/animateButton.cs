@@ -90,17 +90,25 @@ public class animateButton : NetworkBehaviour, ILevelResettable
             Debug.Log("Object is null in OnTriggerEnter");
             return;
         }
-        if (!Object.HasStateAuthority)
-        {
-            Debug.Log("No state authority in OnTriggerEnter");
-            return;
-        }
         if (OnCoolDown)
         {
             Debug.Log("Button on cooldown, ignoring trigger");
             return;
         }  //If there is not supposed to be a cooldown skip the active timer check
+        if (!Object.HasStateAuthority)
+        {
+            Debug.Log("No state authority in OnTriggerEnter, requesting press");
+            RPC_RequestStartPress();
+            return;
+        }
 
+        RPC_StartPress();
+    }
+
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RPC_RequestStartPress()
+    {
+        if (!Object.HasStateAuthority) return;
         RPC_StartPress();
     }
 
