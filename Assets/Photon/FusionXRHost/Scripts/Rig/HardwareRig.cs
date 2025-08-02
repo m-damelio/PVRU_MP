@@ -411,7 +411,7 @@ namespace Fusion.XR.Host.Rig
                 keyPressBuffer.Clear();
 
                 //See what keys are sent here
-                //if(rigInput.keyPressed1 != KeyCode.None) Debug.Log($"Sending keyboard input over network: {rigInput.keyPressed1}, {rigInput.keyPressed2}, {rigInput.keyPressed3}, {rigInput.keyPressed4}");
+                if(rigInput.keyPressed1 != KeyCode.None) Debug.Log($"Sending keyboard input over network: {rigInput.keyPressed1}, {rigInput.keyPressed2}, {rigInput.keyPressed3}, {rigInput.keyPressed4}");
 
 
                 if (rigInput.keyPressed1 == KeyCode.LeftArrow)

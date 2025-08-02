@@ -184,41 +184,6 @@ namespace Fusion.XR.Host.Locomotion
                         }
                     }
 
-                    if (hit.collider.CompareTag("Buttons"))
-                    {
-                        Debug.Log("Button hit");
-                        
-                    }
-
-                    else if (hit.collider.CompareTag("VolumeUP"))
-                    {
-                        if (!isHitVolume)
-                        {
-                            Debug.Log("Volume up");
-                            volume += 1;
-                            volume_display.text = volume.ToString();
-                            isHitVolume = true;
-                        }
-                        
-                    }
-
-                    else if (hit.collider.CompareTag("VolumeDOWN"))
-                    {
-                        if (!isHitVolume)
-                        {
-                            if (volume >0)
-                            {
-                                Debug.Log("Volume up");
-                                volume -= 1;
-                                volume_display.text = volume.ToString();
-                                isHitVolume = true;
-                            }
-                            
-                        }
-
-
-                    }
-
                     isHitVolume = false;
 
                 }
