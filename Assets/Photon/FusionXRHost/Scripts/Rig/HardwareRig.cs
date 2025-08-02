@@ -99,6 +99,7 @@ namespace Fusion.XR.Host.Rig
         [Header("Custom Fields")]
         public Camera playerCamera;
         public bool enableKeyboardInput = true;
+        [SerializeField] private InputActionAsset inputActionAsset;
         public bool useUIInteractor = true;
         [SerializeField] private RayBeamer leftHandInteractionBeam;
         [SerializeField] private RayBeamer rightHandInteractionBeam;
@@ -106,6 +107,9 @@ namespace Fusion.XR.Host.Rig
         [SerializeField] private Renderer rightHandLocalVisual;
         [SerializeField] private GameObject leftHandUIBeam;
         [SerializeField] private GameObject rightHandUIBeam;
+        [SerializeField] private GameObject knob1;
+        [SerializeField] private GameObject knob2;
+
         private LineRenderer leftHandInteractionVisual;
         private LineRenderer rightHandInteractionVisual;
         private VRPlayer vrPlayer; //Will be searched dynamically, change if performance is suffering
@@ -114,6 +118,18 @@ namespace Fusion.XR.Host.Rig
         private bool _sneakTestButton = false;
 
         private List<KeyCode> keyPressBuffer = new List<KeyCode>();
+        private InputAction knob1Action;
+        private InputAction knob2Action;
+        private InputAction knob3Action;
+        private InputAction knob4Action;
+        private InputAction buttonsAction;
+        private Dictionary<string, KeyCode> keyMap = new Dictionary<string, KeyCode>()
+        {
+            {"w" , KeyCode.W},  {"a" , KeyCode.A},  {"s" , KeyCode.S},  {"d" , KeyCode.D},
+            {"m" , KeyCode.M},  {"n" , KeyCode.N},  {"l" , KeyCode.L},  {"k" , KeyCode.K},
+
+            {"leftarrow" , KeyCode.LeftArrow}, {"rightarrow" , KeyCode.RightArrow}, {"downarrow" , KeyCode.DownArrow}, {"uparrow" , KeyCode.UpArrow}
+        };
 
         [Header("Local Finger Tracking")]
         [SerializeField] private bool enableFingerTracking;
@@ -190,11 +206,26 @@ namespace Fusion.XR.Host.Rig
             {
                 InitializeHandTracking();
             }
-           
+
             if (leftHandInteractionBeam != null) leftHandInteractionVisual = leftHandInteractionBeam.transform.GetComponent<LineRenderer>();
             if (rightHandInteractionBeam != null) rightHandInteractionVisual = rightHandInteractionBeam.transform.GetComponent<LineRenderer>();
 
             SwitchUIAndInteractionBeam(useUIInteractor);
+
+            if (inputActionAsset != null)
+            {
+                knob1Action = inputActionAsset.FindAction("Hardware/Knob1");
+                knob2Action = inputActionAsset.FindAction("Hardware/Knob2");
+                knob3Action = inputActionAsset.FindAction("Hardware/Knob3");
+                knob4Action = inputActionAsset.FindAction("Hardware/Knob4");
+                buttonsAction = inputActionAsset.FindAction("Hardware/Buttons");
+
+                if (knob1Action != null) knob1Action.performed += OnKeyPressed;
+                if (knob2Action != null) knob2Action.performed += OnKeyPressed;
+                if (knob3Action != null) knob3Action.performed += OnKeyPressed;
+                if (knob4Action != null) knob4Action.performed += OnKeyPressed;
+                if (buttonsAction != null) buttonsAction.performed += OnKeyPressed;
+            }
         }
 
         protected virtual async void Start()
@@ -204,31 +235,22 @@ namespace Fusion.XR.Host.Rig
             {
                 runner.AddCallbacks(this);
             }
+            if (inputActionAsset != null) inputActionAsset.Enable();
         }
 
-        private void Update()
+        private void OnKeyPressed(InputAction.CallbackContext context)
         {
-            if(enableKeyboardInput)
-            {
-                UpdateKeyboardInput();
-            }
-        }
+            if (!enableKeyboardInput) return;
 
-        //Only tracks one keyboard key per frame.
-        private void UpdateKeyboardInput()
-        {
-            foreach (KeyCode key in System.Enum.GetValues(typeof(KeyCode)))
-            {
-                if(Input.GetKeyDown(key))
-                {
-                    keyPressBuffer.Add(key);
-                    //Debug.Log($"Key pressed: {key}");
+            var control = context.control;
+            string keyName = control.name.ToLower();
 
-                    if(keyPressBuffer.Count > 4)
-                    {
-                        keyPressBuffer.RemoveAt(0);
-                    }
-                }
+            if (keyMap.TryGetValue(keyName, out KeyCode keyCode))
+            {
+                keyPressBuffer.Add(keyCode);
+                Debug.Log($"Key pressed: {keyCode}");
+
+                if (keyPressBuffer.Count > 4) keyPressBuffer.RemoveAt(0);
             }
         }
 
@@ -237,13 +259,20 @@ namespace Fusion.XR.Host.Rig
             if (searchingForRunner) Debug.LogError("Cancel searching for runner in HardwareRig");
             searchingForRunner = false;
             if (runner) runner.RemoveCallbacks(this);
-           
+
             if (handSubsystem != null)
             {
                 handSubsystem.trackingAcquired -= OnHandTrackingAcquired;
                 handSubsystem.trackingLost -= OnHandTrackingLost;
                 handSubsystem.updatedHands -= OnHandsUpdated;
             }
+
+            if (knob1Action != null) knob1Action.performed -= OnKeyPressed;
+            if (knob2Action != null) knob2Action.performed -= OnKeyPressed;
+            if (knob3Action != null) knob3Action.performed -= OnKeyPressed;
+            if (knob4Action != null) knob4Action.performed -= OnKeyPressed;
+            if (buttonsAction != null) buttonsAction.performed -= OnKeyPressed;
+            if (inputActionAsset != null) inputActionAsset.Disable();
         }
 
         public void DeactivateLocalHandVisuals()
@@ -408,36 +437,48 @@ namespace Fusion.XR.Host.Rig
                 rigInput.keyPressed3 = keyPressBuffer.Count > 2 ? keyPressBuffer[2] : KeyCode.None;
                 rigInput.keyPressed4 = keyPressBuffer.Count > 3 ? keyPressBuffer[3] : KeyCode.None;
 
-                keyPressBuffer.Clear();
+
 
                 //See what keys are sent here
-                if(rigInput.keyPressed1 != KeyCode.None) Debug.Log($"Sending keyboard input over network: {rigInput.keyPressed1}, {rigInput.keyPressed2}, {rigInput.keyPressed3}, {rigInput.keyPressed4}");
+                if (rigInput.keyPressed1 != KeyCode.None) Debug.Log($"Sending keyboard input over network: {rigInput.keyPressed1}, {rigInput.keyPressed2}, {rigInput.keyPressed3}, {rigInput.keyPressed4}");
 
 
                 if (rigInput.keyPressed1 == KeyCode.LeftArrow)
                 {
                     Debug.Log("Rig OnInput");
                     rigInput.yDelta = -2f;
+                    TurnKnob(knob2, 1f); //reversed for animation
                 }
                 else if (rigInput.keyPressed1 == KeyCode.RightArrow)
                 {
                     rigInput.yDelta = 2f;
+                    TurnKnob(knob2, -1f);
                 }
                 else if (rigInput.keyPressed1 == KeyCode.UpArrow)
                 {
                     rigInput.zDelta = -2f;
+                    TurnKnob(knob1, 1f);
                 }
                 else if (rigInput.keyPressed1 == KeyCode.DownArrow)
                 {
                     rigInput.zDelta = 2f;
+                    TurnKnob(knob1, -1f);
 
                 }
+                
+                keyPressBuffer.Clear();
             }
         }
 
-        public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
+        private void TurnKnob(GameObject knobToTurn, float direction)
+        {   
+            var knobCT = knobToTurn.transform.GetChild(0).transform;
+            knobCT.Rotate(Vector3.up * direction * 300f * Time.deltaTime, Space.Self);
+        }
+
+        public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
         {
-            if(player == runner.LocalPlayer)
+            if (player == runner.LocalPlayer)
             {
                 hasSearchedForVRPlayer = false;
                 vrPlayer = null;

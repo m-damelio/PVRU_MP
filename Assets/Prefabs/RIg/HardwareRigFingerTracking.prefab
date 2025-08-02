@@ -321,7 +321,7 @@ GameObject:
   - component: {fileID: 1056072464741905487}
   - component: {fileID: 8509464530499996807}
   m_Layer: 0
-  m_Name: HardwareRigNew
+  m_Name: HardwareRigFingerTracking
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

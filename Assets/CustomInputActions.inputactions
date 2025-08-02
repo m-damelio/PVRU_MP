@@ -406,6 +406,191 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Hardware",
+            "id": "cf264a7c-70a4-4abc-8081-189c2c892696",
+            "actions": [
+                {
+                    "name": "Knob1",
+                    "type": "Button",
+                    "id": "5d987fa3-ec8b-4e21-abb0-f300c6ae4923",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Knob2",
+                    "type": "Button",
+                    "id": "f4b4b102-ba6e-4df0-87d8-4409bee2a88a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Knob3",
+                    "type": "Button",
+                    "id": "6a40445f-b489-43ce-9bdc-93f3f7b5a439",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Knob4",
+                    "type": "Button",
+                    "id": "27784149-c685-4c8b-b919-669f22340eec",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Buttons",
+                    "type": "Button",
+                    "id": "475672fa-2e41-4089-8a09-d09d60f852be",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "0e1f487b-af3c-4e71-9546-249147a1d906",
+                    "path": "<Keyboard>/n",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Knob2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c9774126-b080-4aa1-ba57-6405d793bd37",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Knob2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5260c4b7-2976-4308-bcb1-c0373630c2b0",
+                    "path": "<Keyboard>/l",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Knob1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "79e9d064-61a8-4490-9a3a-e9f50e3ce835",
+                    "path": "<Keyboard>/k",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Knob1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "398337a4-0912-4357-8e53-5a8fe196b68b",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Knob3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f56429f4-140b-487a-99d4-f0a85febd4b0",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Knob3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d40c5fb6-a893-46b7-a0c2-5ce8a4d941f1",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Knob4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ccb5b7ff-f2e4-4c8c-b5fd-fb176f4461fa",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Knob4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1e51e2e2-d2fc-4d5e-af1d-8dc309c0ed1b",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Buttons",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "02b0f06c-5ce3-42f1-b43f-dc21e091b1c2",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Buttons",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bd25f481-3780-4fe1-b85c-baa12920fc6f",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Buttons",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "912b5a64-5264-4dca-99be-79f7cb3e55d3",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";XR",
+                    "action": "Buttons",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

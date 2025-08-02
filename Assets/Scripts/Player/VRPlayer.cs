@@ -66,10 +66,6 @@ public class VRPlayer : NetworkBehaviour
         500000    // F standalone 
     };
 
-
-    [Header("Hardware Detection")]
-    [SerializeField] private GameObject hardwareIndicator; // Visual indicator for extra hardware
-
     [Header("Sneaking Settings")]
     [SerializeField] private float sneakThreshold = 0.8f;
 
@@ -326,12 +322,6 @@ public class VRPlayer : NetworkBehaviour
         if (Object.HasInputAuthority)
         {
             NetworkedPlayerType = playerType;
-        }
-
-        // Update visual indicator
-        if (hardwareIndicator != null)
-        {
-            hardwareIndicator.SetActive(playerType == PlayerType.EnhancedHacking);
         }
     }
 
@@ -631,11 +621,6 @@ public class VRPlayer : NetworkBehaviour
 
     public override void Render()
     {
-        // Update hardware indicator for all clients
-        if (hardwareIndicator != null)
-        {
-            hardwareIndicator.SetActive(NetworkedPlayerType == PlayerType.EnhancedHacking);
-        }
 
         //Show Key Card if held
         if (heldKeyCard != null && Object.HasInputAuthority)
