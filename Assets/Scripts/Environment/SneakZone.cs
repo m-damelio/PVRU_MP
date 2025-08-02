@@ -78,7 +78,7 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
         if (player.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedSneaking)
         {
             Debug.Log("Networked sneakable player detected.");
-            player.isInSneakZoneStatus = true;
+            player.IsInSneakZoneStatus = true;
             if (player.NetworkedPlayerState == VRPlayer.PlayerState.Sneaking)
             {
                 Debug.Log("Is Sneaking");
@@ -111,7 +111,7 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
         if (player.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedSneaking)
         {
             Debug.Log("Networked sneakable player exited.");
-            player.isInSneakZoneStatus = false;
+            player.IsInSneakZoneStatus = false;
         }
     }
 

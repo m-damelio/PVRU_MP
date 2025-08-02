@@ -357,7 +357,6 @@ namespace Fusion.XR.Host.Rig
             return vrPlayer;
         }
 
-
         #region Locomotion
         // Update the hardware rig rotation. This will trigger a Riginput network update
         public virtual void Rotate(float angle)

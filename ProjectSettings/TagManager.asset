@@ -47,11 +47,11 @@ TagManager:
   - NeonLayer
   - KeyCardLayer
   - NPC
-  - Player
+  - SneakingPlayer
   - HackerOnly
   - SneakerOnly
-  - 
-  - 
+  - HackingPlayer
+  - LazerLayer
   - 
   - 
   - 

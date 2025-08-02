@@ -10,6 +10,7 @@ using UnityEngine.Networking;
 using UnityEngine.UIElements;
 using UnityEngine.XR;
 using UnityEngine.XR.Hands;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 using static RotateMirror;
 
 public class VRPlayer : NetworkBehaviour
@@ -17,7 +18,7 @@ public class VRPlayer : NetworkBehaviour
     //--------------SNEAKING------------------------
 
 
-    [Header("Network Settings")]
+    [Header("Network Settings for sneak device")]
     [SerializeField] private string deviceIP = "192.168.137.42";
     [SerializeField] private float checkInterval = 1.0f;
     [SerializeField] private int maxRetries = 3;
@@ -25,8 +26,8 @@ public class VRPlayer : NetworkBehaviour
     [SerializeField] private bool currentlyGettingSneakState = false;
 
 
-    public bool isInSneakZoneStatus = false; // Enable sending zone status to ESP32
-    public bool isSneaking = false;
+    public bool IsInSneakZoneStatus = false; // Enable sending zone status to ESP32
+    public bool IsSneaking = false;
     public float sneakValue = 1.0f;
     private int consecutiveFailures = 0;
     private float lastSuccessfulRequest = 0f;
@@ -87,26 +88,27 @@ public class VRPlayer : NetworkBehaviour
 
     [Header("Movement")]
     public CharacterController characterController;
-    //[SerializeField] private float moveSpeed = 3f; 
-    // Reference to the NetworkRig which handles visuals for hands/body, etc.
     private Vector3 lastHeadsetPosition;
     private bool isFirstFrame = true;
 
     [Header("Key Card Interaction")]
     [SerializeField] private float pickupRange = 2f;
-    [SerializeField] private LayerMask keyCardLayer = -1; //All layers by default
+    [SerializeField] private LayerMask keyCardLayer = -1; 
     [SerializeField] private LayerMask interactionLayer = -1;
     [SerializeField] private NetworkedKeyCard heldKeyCard;
 
     [Header("Networked properties")]
     [Networked] public PlayerType NetworkedPlayerType { get; set; }
     [Networked] public PlayerState NetworkedPlayerState { get; set; }
+    [Networked] public bool NetworkedInSneakingZone { get; set; }
     [SerializeField] private NetworkRig networkRig;
+    private ChangeDetector _changeDetector;
 
     // Quest 3 specific
     [Header("Quest 3 Hand Tracking")]
     [SerializeField] private XRHandSubsystem handSubsystem;
     //[SerializeField] private bool useHandTracking = true;
+
 
     
     public enum PlayerType
@@ -123,9 +125,11 @@ public class VRPlayer : NetworkBehaviour
 
     public override void Spawned()
     {
+        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
         if (!Object.HasInputAuthority) return;
         SetPlayerType();
         StartCoroutine(AfterSpawn());
+        NetworkedInSneakingZone = false;
 
     }
 
@@ -183,7 +187,7 @@ public class VRPlayer : NetworkBehaviour
             
             
             float oldSneakValue = sneakValue;
-            sneakValue = isSneaking ? 0.0f : 1.0f;
+            sneakValue = IsSneaking ? 0.0f : 1.0f;
             
             if (enableLogs && oldSneakValue != sneakValue)
             {
@@ -215,7 +219,7 @@ public class VRPlayer : NetworkBehaviour
 
             if (result.success)
             {
-                isSneaking = result.sneakingState;
+                IsSneaking = result.sneakingState;
                 consecutiveFailures = 0;
                 lastSuccessfulRequest = Time.time;
                 currentlyGettingSneakState = false;
@@ -254,7 +258,7 @@ public class VRPlayer : NetworkBehaviour
             if (request.result == UnityWebRequest.Result.Success)
             {
                 result.response = request.downloadHandler.text.Trim();
-                bool wasSneaking = isSneaking;
+                bool wasSneaking = IsSneaking;
                 result.sneakingState = result.response == "1" || result.response.ToLower() == "true";
                 result.success = true;
 
@@ -275,7 +279,7 @@ public class VRPlayer : NetworkBehaviour
             }
         }
 
-        using (UnityWebRequest requestZone = UnityWebRequest.Get($"http://{deviceIP}/setregion?s={(isInSneakZoneStatus ? "1" : "0")}"))
+        using (UnityWebRequest requestZone = UnityWebRequest.Get($"http://{deviceIP}/setregion?s={(IsInSneakZoneStatus ? "1" : "0")}"))
         {
             yield return requestZone.SendWebRequest();
 
@@ -347,12 +351,6 @@ public class VRPlayer : NetworkBehaviour
 
     }
 
-    bool DetectPressurePlate()
-    {
-        //TODO: Implement detecting of hardware
-        return true;
-    }
-
     public override void FixedUpdateNetwork()
     {
         //update if we have input authority
@@ -375,11 +373,6 @@ public class VRPlayer : NetworkBehaviour
                 HandleInteraction();
             }
 
-            if (playerType == PlayerType.EnhancedSneaking)
-            {
-                HandleSneakingInput(rigInput);
-            }
-
             if (playerType == PlayerType.EnhancedHacking)
             {
                 HandleMirrorInput(rigInput);
@@ -389,10 +382,6 @@ public class VRPlayer : NetworkBehaviour
 
             UpdatePlayerState();
             UpdateHeldKeyCardReference();
-
-            // Quest 3 hand tracking status can be tracked here
-            // for gameplay logic (separate from the visual hand representation)
-            UpdateHandTrackingStatus();
         }
 
     }
@@ -422,23 +411,6 @@ public class VRPlayer : NetworkBehaviour
         }
 
         heldKeyCard = null;
-    }
-    void UpdateHandTrackingStatus()
-    {
-        // Visual hand representation is handled by NetworkRig/NetworkHand
-        if (handSubsystem != null && handSubsystem.running)
-        {
-            bool leftHandTracked = IsHandTracked(Handedness.Left);
-            bool rightHandTracked = IsHandTracked(Handedness.Right);
-
-            // Use this info for gameplay decisions
-        }
-    }
-
-    bool IsHandTracked(Handedness handedness)
-    {
-        if (handSubsystem == null) return false;
-        return handSubsystem.running;
     }
 
     void HandleMovement(RigInput rigInput)
@@ -493,6 +465,7 @@ public class VRPlayer : NetworkBehaviour
 
     void HandleHackingInput(RigInput rigInput)
     {
+        //Currently not being used at all 
         KeyCode pressedKey1 = rigInput.keyPressed1;
         KeyCode pressedKey2 = rigInput.keyPressed2;
         KeyCode pressedKey3 = rigInput.keyPressed3;
@@ -538,20 +511,6 @@ public class VRPlayer : NetworkBehaviour
         // For example, you could use RPCs or a custom network message
         Debug.Log($"Sending function code: {code}");
         // Implement your network sending logic here
-    }
-
-
-    void HandleSneakingInput(RigInput rigInput)
-    {
-
-        if (sneakValue < sneakThreshold)
-        {
-            playerState = PlayerState.Sneaking;
-        }
-        else
-        {
-            playerState = PlayerState.Walking;
-        }
     }
 
     void HandleMirrorInput(RigInput rigInput)
@@ -622,12 +581,13 @@ public class VRPlayer : NetworkBehaviour
     public override void Render()
     {
 
-        //Show Key Card if held
-        if (heldKeyCard != null && Object.HasInputAuthority)
+        foreach (var changedProperty in _changeDetector.DetectChanges(this))
         {
-            //Debug.Log($"Holding key card: {heldKeyCard.KeyID}");
+            if (changedProperty == nameof(NetworkedInSneakingZone))
+            {
+                UpdateTeleportAbilitySneaker();
+            }
         }
-
         // Apply sneaking effects
         ApplySneakingEffects();
 
@@ -635,6 +595,17 @@ public class VRPlayer : NetworkBehaviour
         if (NetworkedPlayerType == PlayerType.EnhancedSneaking)
         {
 
+        }
+    }
+
+    private void UpdateTeleportAbilitySneaker()
+    {
+        if (playerType == PlayerType.EnhancedSneaking)
+        {
+            if (networkRig != null && networkRig.hardwareRig != null)
+            {
+                //TODO enable/disable beamer ray casts
+            }
         }
     }
 

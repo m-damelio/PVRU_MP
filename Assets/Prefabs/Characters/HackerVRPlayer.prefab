@@ -431,7 +431,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 82848160101703959, guid: 477f02bca0b59924aa984e240cb28cc4, type: 3}
       propertyPath: m_Layer
-      value: 14
+      value: 17
       objectReference: {fileID: 0}
     - target: {fileID: 82848160101704041, guid: 477f02bca0b59924aa984e240cb28cc4, type: 3}
       propertyPath: leftGrabber
