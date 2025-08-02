@@ -933,7 +933,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameMode: 6
-  roomName: switch
+  roomName: LocalTest
   connectOnStart: 0
   gameSceneBuildIndex: 1
   playerCount: 0
