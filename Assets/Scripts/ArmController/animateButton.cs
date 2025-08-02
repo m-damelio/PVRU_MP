@@ -19,6 +19,8 @@ public class animateButton : NetworkBehaviour, ILevelResettable
     [Networked] public TickTimer ActiveTimer { get; set; }
     [Networked] public bool OnCoolDown { get; set; }
 
+    private bool wasPressed = false;
+
     private Coroutine currentAnimation;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public override void Spawned()
@@ -98,7 +100,11 @@ public class animateButton : NetworkBehaviour, ILevelResettable
         if (!Object.HasStateAuthority)
         {
             Debug.Log("No state authority in OnTriggerEnter, requesting press");
-            RPC_RequestStartPress();
+            if (!wasPressed)
+            {
+                wasPressed = true;
+                RPC_RequestStartPress();
+            }
             return;
         }
 
@@ -115,6 +121,7 @@ public class animateButton : NetworkBehaviour, ILevelResettable
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_StartPress()
     {
+        wasPressed = false;
         if (Object.HasStateAuthority)
         {
             ActiveTimer = TickTimer.CreateFromSeconds(Runner, coolDownTime);

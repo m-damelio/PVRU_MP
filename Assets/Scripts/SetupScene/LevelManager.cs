@@ -109,33 +109,41 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     public override void Render()
     {
-        if (!Object.HasStateAuthority) return;
-
         foreach (var changedProperty in _changeDetector.DetectChanges(this))
         {
             if (changedProperty == nameof(CurrentLevelIndex))
             {
-                RPC_UpdateActiveLevelPrefab();
+                UpdateActiveLevelPrefab();
             }
             if (changedProperty == nameof(IsPosZElevatorCurrentGoal))
             {
-                RPC_UpdateCurrentElevatorReference();
+                UpdateCurrentElevatorReference();
             }
         }
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_UpdateActiveLevelPrefab()
+    private void UpdateActiveLevelPrefab()
     {
         // Deactivate all levels
         for (int i = 0; i < levelPrefabs.Count; i++)
         {
             levelPrefabs[i].SetActive(i == CurrentLevelIndex);
         }
+
+        if (levelPrefabs[CurrentLevelIndex].activeSelf)
+        {
+            var networkObjects = levelPrefabs[CurrentLevelIndex].GetComponentsInChildren<NetworkObject>(true);
+            foreach (var netObj in networkObjects)
+            {
+                if (!netObj.gameObject.activeSelf)
+                {
+                    netObj.gameObject.SetActive(true);
+                }
+            }
+        }
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    private void RPC_UpdateCurrentElevatorReference()
+    private void UpdateCurrentElevatorReference()
     {
         if (IsPosZElevatorCurrentGoal)
         {
@@ -274,7 +282,6 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         //Activate new level
         CurrentLevelIndex = levelIndex;
         levelPrefabs[CurrentLevelIndex].SetActive(true);
-        if (Object.HasStateAuthority) RPC_SetNetworkObjectsActive();
 
         //Switch elevator goal
         if (IsPosZElevatorCurrentGoal)
@@ -299,16 +306,6 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         //ResetPlayerPositions(); ? maybe
     }
 
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    public void RPC_SetNetworkObjectsActive()
-    {
-        var currentLevelNetworkObjects = levelPrefabs[CurrentLevelIndex].GetComponentsInChildren<NetworkObject>();
-        Debug.Log($"Number of gameObjects = {currentLevelNetworkObjects.Length}");
-        foreach (var netObj in currentLevelNetworkObjects)
-        {
-            netObj.gameObject.SetActive(true);
-        }
-    }
 
     private void ResetPlayerPositions()
     {
