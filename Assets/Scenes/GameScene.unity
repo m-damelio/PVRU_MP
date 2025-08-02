@@ -1212,6 +1212,10 @@ PrefabInstance:
       propertyPath: levelManager
       value: 
       objectReference: {fileID: 318629535}
+    - target: {fileID: 4924851251050351989, guid: 70a9f52c826e92546983bc7b55ee881e, type: 3}
+      propertyPath: finalStepGameobject
+      value: 
+      objectReference: {fileID: 2069350947}
     - target: {fileID: 5555757915670151027, guid: 70a9f52c826e92546983bc7b55ee881e, type: 3}
       propertyPath: SortKey
       value: 1911912042
@@ -1292,6 +1296,11 @@ PrefabInstance:
 --- !u!1 &2069350946 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1122341476038420287, guid: 70a9f52c826e92546983bc7b55ee881e, type: 3}
+  m_PrefabInstance: {fileID: 2069350945}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2069350947 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2974789967929153729, guid: 70a9f52c826e92546983bc7b55ee881e, type: 3}
   m_PrefabInstance: {fileID: 2069350945}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2105383978

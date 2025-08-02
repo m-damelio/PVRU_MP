@@ -375,7 +375,7 @@ public class VRPlayer : NetworkBehaviour
         {
 
             HandleMovement(rigInput);
-            HandleMirrorInput(rigInput);
+            
 
             if (rigInput.customButtons.IsSet(RigInput.INTERACTIONBUTTON))
             {
@@ -389,6 +389,7 @@ public class VRPlayer : NetworkBehaviour
 
             if (playerType == PlayerType.EnhancedHacking)
             {
+                HandleMirrorInput(rigInput);
                 HandleHackingInput(rigInput);
             }
 
