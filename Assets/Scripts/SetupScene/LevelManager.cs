@@ -44,6 +44,8 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     public override void Spawned()
     {
+        if (!Object.HasStateAuthority) return;
+
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
         //Initial parameters (I.e first level should bre from right to left elevator)
         posZElevator = elevatorInteriorPosZ.GetComponent<DoorNetworkedController>();
@@ -63,12 +65,10 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
             _currentElevator = negZElevator;
         }
 
-        if (Object.HasStateAuthority)
-        {
-            CurrentLevelIndex = 0;
-            IsPosZElevatorCurrentGoal = firstGoalIsPosZ;
-            ActivateLevel(0);
-        }
+        CurrentLevelIndex = 0;
+        IsPosZElevatorCurrentGoal = firstGoalIsPosZ;
+        ActivateLevel(0);
+
     }
 
     public void PlayerJoined(PlayerRef player)
@@ -109,20 +109,23 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
 
     public override void Render()
     {
+        if (!Object.HasStateAuthority) return;
+
         foreach (var changedProperty in _changeDetector.DetectChanges(this))
         {
             if (changedProperty == nameof(CurrentLevelIndex))
             {
-                UpdateActiveLevelPrefab();
+                RPC_UpdateActiveLevelPrefab();
             }
             if (changedProperty == nameof(IsPosZElevatorCurrentGoal))
             {
-                UpdateCurrentElevatorReference();
+                RPC_UpdateCurrentElevatorReference();
             }
         }
     }
 
-    private void UpdateActiveLevelPrefab()
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_UpdateActiveLevelPrefab()
     {
         // Deactivate all levels
         for (int i = 0; i < levelPrefabs.Count; i++)
@@ -131,7 +134,8 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         }
     }
 
-    private void UpdateCurrentElevatorReference()
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_UpdateCurrentElevatorReference()
     {
         if (IsPosZElevatorCurrentGoal)
         {
