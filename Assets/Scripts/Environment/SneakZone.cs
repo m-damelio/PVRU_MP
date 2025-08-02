@@ -89,10 +89,37 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
             }
         }
     }
+    
+    void onTriggerExit(Collider other)
+    {
+        if(Object == null) return;
+        if (!Object.HasStateAuthority) return;
+        if(!IsSneakZoneActive) return;
+        
+        var nb = other.GetComponent<NetworkObject>();
+        if (nb == null)
+        {
+            return;
+        }
+
+        var player = other.GetComponentInParent<VRPlayer>();
+        if (player == null)
+        {
+            return;
+        }
+
+        if (player.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedSneaking)
+        {
+            Debug.Log("Networked sneakable player exited.");
+            player.isInSneakZoneStatus = false;
+        }
+    }
+
+    
 
     public void SetActive(bool shouldEnable)
     {
-        if(Object.HasStateAuthority)
+        if (Object.HasStateAuthority)
         {
             IsSneakZoneActive = shouldEnable;
         }

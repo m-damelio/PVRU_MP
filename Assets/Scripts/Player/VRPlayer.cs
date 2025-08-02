@@ -18,13 +18,13 @@ public class VRPlayer : NetworkBehaviour
 
 
     [Header("Network Settings")]
-    [SerializeField] private string deviceIP = "192.168.178.51";
+    [SerializeField] private string deviceIP = "192.168.137.42";
     [SerializeField] private float checkInterval = 1.0f;
     [SerializeField] private int maxRetries = 3;
     [SerializeField] private float retryDelay = 1.0f;
 
 
-    public bool isInSneakZoneStatus = true; // Enable sending zone status to ESP32
+    public bool isInSneakZoneStatus = false; // Enable sending zone status to ESP32
     public bool isSneaking = false;
     public float sneakValue = 1.0f;
     private int consecutiveFailures = 0;
