@@ -110,7 +110,7 @@ public class animateButton : NetworkBehaviour, ILevelResettable
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_RequestStartPress()
     {
-        if (!OnCoolDown);
+        if (!OnCoolDown)
         {
             PressButton();
         }

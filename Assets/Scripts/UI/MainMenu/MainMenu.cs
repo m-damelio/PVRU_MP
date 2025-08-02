@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Fusion.Addons.ConnectionManagerAddon;
+using System.Collections;
 
 public class MainMenu : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class MainMenu : MonoBehaviour
     public Color SoundActiveColor = Color.magenta;
     public Color SoundInactiveColor = Color.white;
     public TextMeshProUGUI soundText;
+    public TextMeshProUGUI countDowntext;
     public Image[] soundBars;
 
     [Header("Sound Logic")]
@@ -68,6 +70,7 @@ public class MainMenu : MonoBehaviour
 
     public void ProceedToSelection()
     {
+        if(countDowntext != null) countDowntext.text = "";
         mainPanel.SetActive(false);
         selectionPanel.SetActive(true);
     }
@@ -115,6 +118,26 @@ public class MainMenu : MonoBehaviour
             soundBars[i].color = (i < currentStep) ? SoundActiveColor : SoundInactiveColor;
         }
     }
+
+    public void StartCountDown()
+    {
+        StartCoroutine(CountDownStart());
+    }
+
+    private IEnumerator CountDownStart()
+    {
+        if(countDowntext != null) countDowntext.text = "5";
+        yield return new WaitForSeconds(1f);
+        if(countDowntext != null) countDowntext.text = "4";
+        yield return new WaitForSeconds(1f);
+        if(countDowntext != null) countDowntext.text = "3";
+        yield return new WaitForSeconds(1f);
+        if(countDowntext != null) countDowntext.text = "2";
+        yield return new WaitForSeconds(1f);
+        if(countDowntext != null) countDowntext.text = "1";
+        yield return new WaitForSeconds(1f);
+        if(countDowntext != null) countDowntext.text = "...";
+    }
     
 
     public void QuitGame()
@@ -123,9 +146,9 @@ public class MainMenu : MonoBehaviour
 
         Application.Quit();
 
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
-    #endif
+#endif
     }
 
 }

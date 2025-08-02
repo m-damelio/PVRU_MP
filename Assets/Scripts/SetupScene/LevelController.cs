@@ -29,13 +29,13 @@ public class LevelController : NetworkBehaviour
     }
     public void OnEnable()
     {
-        levelManager.OnNewLevelActive += InitLevel;
+        if(levelManager != null) levelManager.OnNewLevelActive += InitLevel;
         //levelManager.OnTransitionCompleted += SetInitialStates;
         
     }
     public void OnDisable()
     {
-        levelManager.OnNewLevelActive -= InitLevel;
+        if (levelManager != null) levelManager.OnNewLevelActive -= InitLevel;
         //levelManager.OnTransitionCompleted -= SetInitialStates;
     }
     public override void Spawned()
