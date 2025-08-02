@@ -129,6 +129,7 @@ namespace Fusion.XR.Host.Locomotion
                     ray.color = hitColor;
                     lastHit = hit.point;
                     status = Status.BeamHit;
+                    var allowSelection = hit.collider.gameObject.transform.GetComponentInParent<ColorMirror>();
 
                     /////////////// Mirror /////////////////
                     if (hit.collider.CompareTag("Mirror"))
@@ -136,22 +137,32 @@ namespace Fusion.XR.Host.Locomotion
                         var currentMirror = hit.collider.gameObject.transform.GetComponentInParent<RotateMirror>();
                         
 
+
                         if (lastMirrorHit != null && lastMirrorHit != currentMirror)
                         {
                             lastMirrorHit.SetHighlight(false); // Alten Spiegel deaktivieren
+                            lastMirrorHit.gameObject.GetComponent<ColorMirror>().isSelected = false;
                             player.DeselectActiveMirror(lastMirrorHit);
 
                         }
-                        currentMirror.SetHighlight(true); // Aktuellen Spiegel aktivieren
-                        lastMirrorHit = currentMirror; // Speichern für später
-                        player.SetActiveMirror(currentMirror);
+
+                        if (!allowSelection.inactive) {
+                            currentMirror.SetHighlight(true); // Aktuellen Spiegel aktivieren
+                            allowSelection.isSelected = true;
+                            lastMirrorHit = currentMirror; // Speichern für später
+                            player.SetActiveMirror(currentMirror);
+                        }
+
+                        
                     }
+                           
                     else
                     {
                         // Kein Spiegel mehr getroffen
                         if (lastMirrorHit != null)
                         {
                             lastMirrorHit.SetHighlight(false);
+                            lastMirrorHit.gameObject.GetComponent<ColorMirror>().isSelected = false;
                             player.DeselectActiveMirror(lastMirrorHit);
                             lastMirrorHit = null;
                         }
