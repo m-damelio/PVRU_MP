@@ -571,7 +571,9 @@ MonoBehaviour:
   mirror5: {fileID: 6354713135272349398}
   mirror6: {fileID: 5094484255417193303}
   testBool: 0
-  firstPressed: 0
+  firstPressedP1: 0
+  firstPressedP2: 0
+  firstPressedP3: 0
 --- !u!114 &2944392813635943976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -809,6 +811,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 2cf687bd7b1a46b4595ec74e3de8550d, type: 2}
+    - target: {fileID: 1688043512124906072, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
+      propertyPath: laser
+      value: 
+      objectReference: {fileID: 5698697698758396736}
     - target: {fileID: 3130720278100887085, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
       propertyPath: SortKey
       value: 3359274994
@@ -999,6 +1005,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 2cf687bd7b1a46b4595ec74e3de8550d, type: 2}
+    - target: {fileID: 1688043512124906072, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
+      propertyPath: laser
+      value: 
+      objectReference: {fileID: 5698697698758396736}
     - target: {fileID: 3130720278100887085, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
       propertyPath: SortKey
       value: 2371045488
@@ -1189,6 +1199,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 2cf687bd7b1a46b4595ec74e3de8550d, type: 2}
+    - target: {fileID: 1688043512124906072, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
+      propertyPath: laser
+      value: 
+      objectReference: {fileID: 5698697698758396736}
     - target: {fileID: 3130720278100887085, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
       propertyPath: SortKey
       value: 1644879113
@@ -1379,6 +1393,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 2cf687bd7b1a46b4595ec74e3de8550d, type: 2}
+    - target: {fileID: 1688043512124906072, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
+      propertyPath: laser
+      value: 
+      objectReference: {fileID: 5698697698758396736}
     - target: {fileID: 3130720278100887085, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
       propertyPath: SortKey
       value: 1799863412
@@ -2030,6 +2048,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 2cf687bd7b1a46b4595ec74e3de8550d, type: 2}
+    - target: {fileID: 1688043512124906072, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
+      propertyPath: laser
+      value: 
+      objectReference: {fileID: 5698697698758396736}
     - target: {fileID: 3130720278100887085, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
       propertyPath: SortKey
       value: 244240895
@@ -2377,6 +2399,17 @@ MonoBehaviour:
   m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5698697698758396736 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4063392210039744515, guid: cbbfa0175c12c5e43916bd4cf9489da3, type: 3}
+  m_PrefabInstance: {fileID: 8606879108222591811}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2884628247612532558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13509301ed48dc54d8d39a674d31d57c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &6060566005635362839 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2552048235822879572, guid: cbbfa0175c12c5e43916bd4cf9489da3, type: 3}
@@ -2411,6 +2444,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 2cf687bd7b1a46b4595ec74e3de8550d, type: 2}
+    - target: {fileID: 1688043512124906072, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
+      propertyPath: laser
+      value: 
+      objectReference: {fileID: 5698697698758396736}
     - target: {fileID: 3130720278100887085, guid: d47addea7deeb7a4294876cd54acedf1, type: 3}
       propertyPath: SortKey
       value: 548231577
