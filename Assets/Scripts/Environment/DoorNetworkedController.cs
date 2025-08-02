@@ -44,22 +44,9 @@ public class DoorNetworkedController : NetworkBehaviour, ILevelResettable
         if (Object.HasStateAuthority)
         {
             IsOpen = startOpen;
-            HasInitialized = false;
-        }
-
-        StartCoroutine(InitializeAfterFrame());
-    }
-
-    private IEnumerator InitializeAfterFrame()
-    {
-        yield return null;
-
-        if (Object.HasStateAuthority && !HasInitialized)
-        {
-            RPC_SetInitialState();
-            HasInitialized = true;
         }
     }
+
 
     public override void Render()
     {
