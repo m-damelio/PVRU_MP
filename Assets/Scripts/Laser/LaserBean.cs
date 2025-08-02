@@ -102,7 +102,8 @@ public class LaserBean : NetworkBehaviour, ISolvable
     {
         if (HasStateAuthority)
         {
-            NetworkedStartPosition = startPos;
+            Vector3 newPosition = startPos + transform.localPosition;
+            NetworkedStartPosition = newPosition;
             NetworkedDirection = dir;
         }
     }

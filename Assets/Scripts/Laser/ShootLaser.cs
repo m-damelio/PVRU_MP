@@ -33,8 +33,7 @@ public class ShootLaser : NetworkBehaviour
     {
         if (!HasStateAuthority)
             return;
-        Vector3 add = new Vector3(0, 0.2f, 0);
-        Vector3 currentPosition = transform.position + add;
+        Vector3 currentPosition = transform.position;
         Vector3 currentDirection = transform.forward;
 
         // Nur bei Änderungen aktualisieren

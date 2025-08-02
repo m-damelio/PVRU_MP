@@ -154,7 +154,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
                 _agent.speed = 5f;
 
                 //Check if guard reached alarm spot 
-                if(Vector3.Distance(transform.position, alarmSpot.position) < 0.5f)
+                if(Vector3.Distance(transform.position, alarmSpot.position) < 2.0f)
                 {
                     _state = State.Rest;
                 }
