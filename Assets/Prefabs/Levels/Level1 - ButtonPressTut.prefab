@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2250152589072606587}
-  - component: {fileID: 8907035449975933043}
   m_Layer: 0
   m_Name: NetworkedButtonSneakerOverlay
   m_TagString: Untagged
@@ -25,35 +24,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 296016002324338868}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 1, y: 0, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.3, y: 0.1, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7100291799179309815}
   m_Father: {fileID: 3623628551499212903}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &8907035449975933043
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 296016002324338868}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
 --- !u!1 &1439598141855999768
 GameObject:
   m_ObjectHideFlags: 0
@@ -180,7 +158,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1500773136597495588
 Transform:
   m_ObjectHideFlags: 0
@@ -268,7 +246,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 3, y: 1, z: 1}
+  m_LocalScale: {x: 3, y: 1, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3441893856172253985}
@@ -373,6 +351,10 @@ PrefabInstance:
       value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 8653051560757947591, guid: 7de394d0fca4f0b4b80928eb549a3947, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: 7de394d0fca4f0b4b80928eb549a3947, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.2
       objectReference: {fileID: 0}
@@ -454,6 +436,10 @@ PrefabInstance:
       value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 8653051560757947591, guid: 7de394d0fca4f0b4b80928eb549a3947, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: 7de394d0fca4f0b4b80928eb549a3947, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -533,6 +519,10 @@ PrefabInstance:
     - target: {fileID: 8653051560757947591, guid: 7de394d0fca4f0b4b80928eb549a3947, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: 7de394d0fca4f0b4b80928eb549a3947, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 8653051560757947591, guid: 7de394d0fca4f0b4b80928eb549a3947, type: 3}
       propertyPath: m_LocalPosition.x
@@ -706,6 +696,10 @@ PrefabInstance:
       value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 8653051560757947591, guid: 3708a500c0796e2408dba472cd72ff28, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: 3708a500c0796e2408dba472cd72ff28, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.4
       objectReference: {fileID: 0}
@@ -837,13 +831,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8970326398656537589, guid: f14f47f9d583c47bd973cf9aa6280661, type: 3}
       propertyPath: m_text
-      value: 'Buttons can be pressed.
+      value: 'Buttons can be pressed with your hands.
 
 '
       objectReference: {fileID: 0}
     - target: {fileID: 8970326398656537589, guid: f14f47f9d583c47bd973cf9aa6280661, type: 3}
       propertyPath: m_fontSize
-      value: 58.5
+      value: 44.85
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -902,6 +896,10 @@ PrefabInstance:
     - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
       propertyPath: m_LocalPosition.x

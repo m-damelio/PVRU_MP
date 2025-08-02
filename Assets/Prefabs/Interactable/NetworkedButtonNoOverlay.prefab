@@ -296,6 +296,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45bffbe51416245c9b66296dd183e803, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OnButtonPressed:
+    m_PersistentCalls:
+      m_Calls: []
+  OnButtonReleased:
+    m_PersistentCalls:
+      m_Calls: []
+  OnButtonSolved:
+    m_PersistentCalls:
+      m_Calls: []
+  OnButtonReset:
+    m_PersistentCalls:
+      m_Calls: []
+  onlyTriggerEventsOnAuthority: 1
+  triggerEventsOnAllClients: 0
   mainColor: {r: 1, g: 1, b: 0, a: 1}
   pressedColor: {r: 0, g: 1, b: 1, a: 1}
   initialPressState: 0
@@ -344,8 +358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonController: {fileID: 9092673067758059525}
   buttonTop: {fileID: 7619011609666506189}
-  coolDownTime: 1
-  originalPos: {x: 0, y: 0, z: 0}
+  coolDownTime: 2
   bounceDistance: 0
   bounceDuration: 0
   _OnCoolDown: 0
