@@ -268,29 +268,13 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         //Deactivate current level
         if (CurrentLevelIndex < levelPrefabs.Count && CurrentLevelIndex != levelIndex)
         {
-            var currentLevelNetworkObjects = levelPrefabs[CurrentLevelIndex].GetComponentsInChildren<NetworkObject>();
-            foreach (var netObj in currentLevelNetworkObjects)
-            {
-                if (netObj.IsValid)
-                {
-                    Runner.Despawn(netObj);
-                }
-            }
             levelPrefabs[CurrentLevelIndex].SetActive(false);
         }
 
         //Activate new level
         CurrentLevelIndex = levelIndex;
         levelPrefabs[CurrentLevelIndex].SetActive(true);
-
-        var newLevelNetworkObjects = levelPrefabs[CurrentLevelIndex].GetComponentsInChildren<NetworkObject>();
-        foreach (var netObj in newLevelNetworkObjects)
-        {
-            if (!netObj.IsValid)
-            {
-                Runner.Spawn(netObj);
-            }
-        }
+        if (Object.HasStateAuthority) RPC_SetNetworkObjectsActive();
 
         //Switch elevator goal
         if (IsPosZElevatorCurrentGoal)
@@ -315,6 +299,17 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         //ResetPlayerPositions(); ? maybe
     }
 
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_SetNetworkObjectsActive()
+    {
+        var currentLevelNetworkObjects = levelPrefabs[CurrentLevelIndex].GetComponentsInChildren<NetworkObject>();
+        Debug.Log($"Number of gameObjects = {currentLevelNetworkObjects.Count}");
+        foreach (var netObj in currentLevelNetworkObjects)
+        {
+            netObj.gameObject.SetActive(true);
+        }
+    }
+
     private void ResetPlayerPositions()
     {
         //Get spawn points in new level
@@ -324,7 +319,7 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         foreach (var player in connectedPlayers)
         {
             var playerObj = Runner.GetPlayerObject(player);
-            if(playerObj != null && spawnPoints.Length > spawnIndex)
+            if (playerObj != null && spawnPoints.Length > spawnIndex)
             {
                 playerObj.transform.position = spawnPoints[spawnIndex].transform.position;
                 playerObj.transform.rotation = spawnPoints[spawnIndex].transform.rotation;
