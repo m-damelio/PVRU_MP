@@ -303,7 +303,7 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     public void RPC_SetNetworkObjectsActive()
     {
         var currentLevelNetworkObjects = levelPrefabs[CurrentLevelIndex].GetComponentsInChildren<NetworkObject>();
-        Debug.Log($"Number of gameObjects = {currentLevelNetworkObjects.Count}");
+        Debug.Log($"Number of gameObjects = {currentLevelNetworkObjects.Length}");
         foreach (var netObj in currentLevelNetworkObjects)
         {
             netObj.gameObject.SetActive(true);
