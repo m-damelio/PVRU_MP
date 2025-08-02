@@ -9,6 +9,7 @@ public class MainMenu : MonoBehaviour
 
     [Header("Panels")]
     public GameObject mainPanel;
+    public GameObject selectionPanel;
     public GameObject settingsPanel;
 
     [Header("Settings UI")]
@@ -35,11 +36,26 @@ public class MainMenu : MonoBehaviour
         connectionManager.DoConnect();
     }
 
+    [ContextMenu("Trigger Connect as Hacker")]
+
+    public void ConnectAsHacker()
+    {
+        connectionManager.DoConnectAsHacker();
+    }
+
+    [ContextMenu("Trigger Connect as Hacker")]
+
+    public void ConnectAsSneaker()
+    {
+        connectionManager.DoConnectAsSneaker();
+    }
+
     [ContextMenu("Trigger ShowMainMenu")]
     public void ShowMainMenu()
     {
         mainPanel.SetActive(true);
         settingsPanel.SetActive(false);
+        selectionPanel.SetActive(false);
     }
 
     [ContextMenu("Trigger ShowSettings")]
@@ -48,6 +64,12 @@ public class MainMenu : MonoBehaviour
         mainPanel.SetActive(false);
         settingsPanel.SetActive(true);
         UpdateVolumeUI();
+    }
+
+    public void ProceedToSelection()
+    {
+        mainPanel.SetActive(false);
+        selectionPanel.SetActive(true);
     }
 
     [ContextMenu("Increase Volume +10%")]

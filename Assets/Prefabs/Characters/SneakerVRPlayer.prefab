@@ -579,7 +579,7 @@ MonoBehaviour:
   sneakerOnlyLayers:
     serializedVersion: 2
     m_Bits: 65536
-  isSneaker: 0
+  isSneaker: 1
   activeMirror: {fileID: 0}
   mirrors: []
   activeColorObject: {fileID: 0}

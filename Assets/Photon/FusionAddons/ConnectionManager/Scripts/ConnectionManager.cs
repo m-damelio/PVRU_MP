@@ -63,11 +63,16 @@ namespace Fusion.Addons.ConnectionManagerAddon
         [Header("Info")]
         public List<StringSessionProperty> actualSessionProperties = new List<StringSessionProperty>();
 
+        [Header("Network Property")]
+        [Networked] private int PlayerSpawnIndex { get; set; }
+
         // Dictionary of spawned user prefabs, to store them on the server for host topology, and destroy them on disconnection (for shared topology, use Network Objects's "Destroy When State Authority Leaves" option)
         private Dictionary<PlayerRef, NetworkObject> _spawnedUsers = new Dictionary<PlayerRef, NetworkObject>();
 
         bool ShouldConnectWithRoomName => (connectionCriterias & ConnectionManager.ConnectionCriterias.RoomName) != 0;
         bool ShouldConnectWithSessionProperties => (connectionCriterias & ConnectionManager.ConnectionCriterias.SessionProperties) != 0;
+
+        private bool isHacker = false;
 
         private void Awake()
         {
@@ -139,6 +144,18 @@ namespace Fusion.Addons.ConnectionManagerAddon
             await Connect();
         }
 
+        public async void DoConnectAsHacker()
+        {
+            isHacker = true;
+            await Connect();
+        }
+
+        public async void DoConnectAsSneaker()
+        {
+            isHacker = false;
+            await Connect();
+        }
+
         public async Task Connect()
         {
             // Create the scene manager if it does not exist
@@ -205,7 +222,7 @@ namespace Fusion.Addons.ConnectionManagerAddon
                 Vector3 spawnPosition;
                 Quaternion spawnRotation;
 
-                if (GetPlayerIndex(player) == 0)
+                if (isHacker)
                 {
                     prefabToSpawn = hackerPrefab;
                     spawnPosition = hackerSpawnPoint != null ? hackerSpawnPoint.position : transform.position;
@@ -245,9 +262,25 @@ namespace Fusion.Addons.ConnectionManagerAddon
             // The user's prefab has to be spawned by the host
             if (runner.IsServer)
             {
+                NetworkObject prefabToSpawn;
+                Vector3 spawnPosition;
+                Quaternion spawnRotation;
                 Debug.Log($"OnPlayerJoined. PlayerId: {player.PlayerId}");
                 // We make sure to give the input authority to the connecting player for their user's object
-                NetworkObject networkPlayerObject = runner.Spawn(hackerPrefab, position: transform.position, rotation: transform.rotation, inputAuthority: player, (runner, obj) =>
+                if (isHacker)
+                {
+                    prefabToSpawn = hackerPrefab;
+                    spawnPosition = hackerSpawnPoint != null ? hackerSpawnPoint.position : transform.position;
+                    spawnRotation = hackerSpawnPoint != null ? hackerSpawnPoint.rotation : transform.rotation;
+                }
+                else
+                {
+                    prefabToSpawn = sneakerPrefab;
+                    spawnPosition = sneakerSpawnPoint != null ? sneakerSpawnPoint.position : transform.position;
+                    spawnRotation = sneakerSpawnPoint != null ? sneakerSpawnPoint.rotation : transform.rotation;
+                }
+                
+                NetworkObject networkPlayerObject = runner.Spawn(prefabToSpawn, position: spawnPosition, rotation:spawnRotation, inputAuthority: player, (runner, obj) =>
                 {
                 });
                 runner.SetPlayerObject(player, networkPlayerObject);

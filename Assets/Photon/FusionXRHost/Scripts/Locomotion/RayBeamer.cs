@@ -123,7 +123,7 @@ namespace Fusion.XR.Host.Locomotion
                 ray.origin = origin.position;
                 if (BeamCast(out RaycastHit hit))
                 {
-                    Debug.Log(hit.collider.name);
+                    //Debug.Log(hit.collider.name);
                     lastHitCollider = hit.collider;
                     ray.target = hit.point;
                     ray.color = hitColor;
