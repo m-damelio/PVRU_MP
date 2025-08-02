@@ -22,9 +22,10 @@ public class VRPlayer : NetworkBehaviour
     [SerializeField] private float checkInterval = 1.0f;
     [SerializeField] private int maxRetries = 3;
     [SerializeField] private float retryDelay = 1.0f;
+    [SerializeField] private bool currentlyGettingSneakState = false;
 
 
-    public bool isInSneakZoneStatus = true; // Enable sending zone status to ESP32
+    public bool isInSneakZoneStatus = false; // Enable sending zone status to ESP32
     public bool isSneaking = false;
     public float sneakValue = 1.0f;
     private int consecutiveFailures = 0;
@@ -68,7 +69,6 @@ public class VRPlayer : NetworkBehaviour
 
     [Header("Hardware Detection")]
     [SerializeField] private GameObject hardwareIndicator; // Visual indicator for extra hardware
-    [SerializeField] private bool testHardware = false;
 
     [Header("Sneaking Settings")]
     [SerializeField] private float sneakThreshold = 0.8f;
@@ -105,7 +105,6 @@ public class VRPlayer : NetworkBehaviour
     [Header("Networked properties")]
     [Networked] public PlayerType NetworkedPlayerType { get; set; }
     [Networked] public PlayerState NetworkedPlayerState { get; set; }
-    [Networked] public float NetworkedSneakValue { get; set; }
     [SerializeField] private NetworkRig networkRig;
 
     // Quest 3 specific
@@ -169,7 +168,7 @@ public class VRPlayer : NetworkBehaviour
 
 
         // Start the coroutine to check sneak state
-        if(testHardware) StartCoroutine(CheckDeviceLoop());
+        if(isSneaker) StartCoroutine(CheckDeviceLoop());
     }
 
 
@@ -202,41 +201,45 @@ public class VRPlayer : NetworkBehaviour
             }
         }
     }
-    
+
     IEnumerator GetDeviceSneakStateWithRetry()
     {
         RequestResult result = null;
-        
+        currentlyGettingSneakState = true;
         for (int attempt = 0; attempt < maxRetries; attempt++)
         {
             if (attempt > 0)
             {
                 yield return new WaitForSeconds(retryDelay);
             }
-            
+
             // Create new result object for each attempt
             result = new RequestResult();
             yield return StartCoroutine(GetDeviceSneakState(attempt + 1, result));
-            
+
             if (result.success)
             {
                 isSneaking = result.sneakingState;
                 consecutiveFailures = 0;
                 lastSuccessfulRequest = Time.time;
+                currentlyGettingSneakState = false;
                 break; // Success, exit retry loop
             }
         }
-        
+
         if (result != null && !result.success)
         {
             consecutiveFailures++;
             if (enableLogs)
                 Debug.LogWarning($"SneakCube: Failed after {maxRetries} attempts. Consecutive failures: {consecutiveFailures}");
         }
+        currentlyGettingSneakState = false;
+        
     }
 
     IEnumerator GetDeviceSneakState(int attemptNumber, RequestResult result)
     {
+        
         string url = $"http://{deviceIP}/sneakstatus";
 
         using (UnityWebRequest request = UnityWebRequest.Get(url))
@@ -292,7 +295,7 @@ public class VRPlayer : NetworkBehaviour
     private void Update()
     {
        
-        if (testHardware) StartCoroutine(GetDeviceSneakStateWithRetry());
+        if (isSneaker && !currentlyGettingSneakState) StartCoroutine(GetDeviceSneakStateWithRetry());
     }
 
 
@@ -500,7 +503,6 @@ public class VRPlayer : NetworkBehaviour
 
     void HandleHackingInput(RigInput rigInput)
     {
-        if (!testHardware) return;
         KeyCode pressedKey1 = rigInput.keyPressed1;
         KeyCode pressedKey2 = rigInput.keyPressed2;
         KeyCode pressedKey3 = rigInput.keyPressed3;
@@ -551,19 +553,6 @@ public class VRPlayer : NetworkBehaviour
 
     void HandleSneakingInput(RigInput rigInput)
     {
-        float sneakValue = NetworkedSneakValue;
-
-        if (rigInput.customButtons.IsSet(RigInput.SNEAKTESTBUTTON))
-        {
-            sneakValue = (sneakValue < sneakThreshold) ? 1.0f : 0.0f;
-            Debug.Log($"Sneak Test Button - Setting sneak value to {sneakValue}");
-        }
-        else
-        {
-            sneakValue = GetPressurePlateInput();
-        }
-
-        NetworkedSneakValue = sneakValue;
 
         if (sneakValue < sneakThreshold)
         {
@@ -616,11 +605,6 @@ public class VRPlayer : NetworkBehaviour
         NetworkedPlayerState = playerState;
     }
 
-    float GetPressurePlateInput()
-    {
-        //TODO 
-        return NetworkedSneakValue;
-    }
 
     private DoorOpener FindNearbyDoorOpener()
     {
@@ -665,7 +649,7 @@ public class VRPlayer : NetworkBehaviour
         // Debug display for all clients
         if (NetworkedPlayerType == PlayerType.EnhancedSneaking)
         {
-            //Debug.Log($"Player {Object.InputAuthority}: SneakValue={NetworkedSneakValue:F2}, State={NetworkedPlayerState}");
+
         }
     }
 
