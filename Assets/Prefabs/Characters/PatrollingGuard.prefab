@@ -377,7 +377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   patrolPoints: []
   alarmSpot: {fileID: 0}
-  restDuration: 5
+  restDuration: 60
   alarmBooth: {fileID: 0}
   _IsAlert: 0
   _IsAlarmRunning: 0

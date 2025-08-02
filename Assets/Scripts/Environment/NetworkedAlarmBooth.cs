@@ -11,7 +11,7 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
 
     [Header("Guard")]
     [SerializeField] private GuardNetworkedController guardChecker;
-    
+
     [Header("Visual & Audio settings")]
     [SerializeField] private Light alarmLight;
     [SerializeField] private Color normalColor = Color.white;
@@ -25,21 +25,30 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
     [SerializeField] private AudioClip alarmSound;
 
     [Header("Networked Properties")]
-    [Networked] public float HackingProgress {get;set;}
-    [Networked] public PlayerRef HackingPlayer {get; set;}
-    [Networked] public bool IsAlarmedActive {get;set;}
-    [Networked] public bool IsHacked {get;set;}
-    [Networked] public bool IsBeingHacked {get;set;}
+    [Networked] public float HackingProgress { get; set; }
+    [Networked] public PlayerRef HackingPlayer { get; set; }
+    [Networked] public bool IsAlarmedActive { get; set; }
+    [Networked] public bool IsHacked { get; set; }
+    [Networked] public bool IsBeingHacked { get; set; }
 
-    private enum AlarmState {Normal, Hacking, Hacked, Alarmed}
+    [Header("Laser to activate Alarm Booth")]
+    [SerializeField] private LaserBean linkedLaserBean;
+
+
+    private enum AlarmState { Normal, Hacking, Hacked, Alarmed }
     private AlarmState _currentState = AlarmState.Normal;
 
-    public enum SoundType {Success, Failure, Alarm}
+    public enum SoundType { Success, Failure, Alarm }
 
 
     public override void Spawned()
     {
         UpdateVisuals();
+
+        if (linkedLaserBean != null)
+        {
+            linkedLaserBean.OnSolved += HandleLaserBeanSolved;
+        }
     }
 
     public void SetInitialState()
@@ -49,7 +58,7 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
 
     public void ResetToInitialState()
     {
-        if(Object.HasStateAuthority)
+        if (Object.HasStateAuthority)
         {
             RPC_ResetAlarmBooth();
         }
@@ -57,13 +66,13 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
 
     public override void FixedUpdateNetwork()
     {
-        if(!Object.HasStateAuthority) return;
+        if (!Object.HasStateAuthority) return;
 
-        if(IsBeingHacked && HackingPlayer != PlayerRef.None)
+        if (IsBeingHacked && HackingPlayer != PlayerRef.None)
         {
             HackingProgress += Runner.DeltaTime;
 
-            if(HackingProgress >= hackDuration)
+            if (HackingProgress >= hackDuration)
             {
                 CompleteHack();
             }
@@ -79,19 +88,19 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
 
     private void UpdateState()
     {
-        if(IsHacked)
+        if (IsHacked)
         {
             _currentState = AlarmState.Hacked;
         }
-        else if(IsAlarmedActive)
+        else if (IsAlarmedActive)
         {
             _currentState = AlarmState.Alarmed;
         }
-        else if(IsBeingHacked)
+        else if (IsBeingHacked)
         {
             _currentState = AlarmState.Hacking;
         }
-        else 
+        else
         {
             _currentState = AlarmState.Normal;
         }
@@ -99,7 +108,7 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
 
     private void UpdateVisuals()
     {
-        if(alarmLight != null && hackedStatusLight != null)
+        if (alarmLight != null && hackedStatusLight != null)
         {
             switch (_currentState)
             {
@@ -107,7 +116,7 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
                     alarmLight.color = normalColor;
                     break;
                 case AlarmState.Hacking:
-                    float pulseValue = Mathf.PingPong(Time.time *2f, 1f);
+                    float pulseValue = Mathf.PingPong(Time.time * 2f, 1f);
                     alarmLight.color = Color.Lerp(normalColor, alarmColor, pulseValue);
                     break;
                 case AlarmState.Hacked:
@@ -124,16 +133,16 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_StartHacking(PlayerRef player)
     {
-        if(IsHacked || IsBeingHacked) return;
+        if (IsHacked || IsBeingHacked) return;
         HackingPlayer = player;
         IsBeingHacked = true;
         HackingProgress = 0f;
     }
 
-    [Rpc(RpcSources.All,RpcTargets.StateAuthority)]
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_StopHacking()
     {
-        if(!IsBeingHacked) return;
+        if (!IsBeingHacked) return;
         IsBeingHacked = false;
         HackingProgress = 0f;
         HackingPlayer = PlayerRef.None;
@@ -178,15 +187,15 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
         {
             switch (soundToPlay)
             {
-            case SoundType.Alarm:
-                NetworkedSoundManager.Instance.PlayEnvironmentSound("Alarm", transform.position);
-                break;
-            case SoundType.Success:
-                NetworkedSoundManager.Instance.PlayEnvironmentSound("Keycard_Accepted", transform.position);
-                break;
-            case SoundType.Failure:
-                NetworkedSoundManager.Instance.PlayEnvironmentSound("Button_Error", transform.position);
-                break;
+                case SoundType.Alarm:
+                    NetworkedSoundManager.Instance.PlayEnvironmentSound("Alarm", transform.position);
+                    break;
+                case SoundType.Success:
+                    NetworkedSoundManager.Instance.PlayEnvironmentSound("Keycard_Accepted", transform.position);
+                    break;
+                case SoundType.Failure:
+                    NetworkedSoundManager.Instance.PlayEnvironmentSound("Button_Error", transform.position);
+                    break;
             }
         }
     }
@@ -194,7 +203,7 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     public void RPC_ResetAlarmBooth()
     {
-        if(Object.HasStateAuthority)
+        if (Object.HasStateAuthority)
         {
             IsAlarmedActive = false;
             IsHacked = false;
@@ -208,24 +217,56 @@ public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
     [ContextMenu("Test Alarm")]
     public void TestTriggerAlarm()
     {
-        if(Runner!=null)
+        if (Runner != null)
         {
             if (guardChecker != null)
             {
                 guardChecker.RPC_TriggerAlarm();
                 RPC_PlaySound(SoundType.Alarm);
             }
-            
+
         }
     }
+
+    [ContextMenu("Simulate LaserBean Solved")]
+    public void SimulateLaserBeanSolved()
+    {
+        Debug.Log("Simulating LaserBean solved event...");
+
+        if (linkedLaserBean != null)
+        {
+            HandleLaserBeanSolved(linkedLaserBean);
+        }
+        else
+        {
+            Debug.LogWarning("No linked LaserBean assigned to simulate.");
+        }
+    }
+
     //Utility function
     public bool IsPlayerInRange(Transform playerTransform)
     {
-        return Vector3.Distance(transform.position, playerTransform.position) <=interactionRange;
+        return Vector3.Distance(transform.position, playerTransform.position) <= interactionRange;
     }
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, interactionRange);
+    }
+
+    private void HandleLaserBeanSolved(ISolvable solvable)
+    {
+        if (Object.HasStateAuthority && !IsAlarmedActive)
+        {
+            TriggerAlarmFromHack();
+        }
+    }
+    
+    private void OnDestroy()
+    {
+        if (linkedLaserBean != null)
+        {
+            linkedLaserBean.OnSolved -= HandleLaserBeanSolved;
+        }
     }
 }
