@@ -119,7 +119,20 @@ namespace Fusion.XR.Host.Locomotion
             ray.isRayEnabled = isRayEnabled;
             if (ray.isRayEnabled)
             {
-                var player = FindFirstObjectByType<VRPlayer>();
+                var players = FindObjectsByType<VRPlayer>(FindObjectsSortMode.None);
+                VRPlayer player = null;
+                foreach (var playerObj in players)
+                {
+                    if (playerObj.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedHacking)
+                    {
+                        player = playerObj; break;
+                    }
+                }
+
+                if (player == null){
+                    return;
+                }
+
                 ray.origin = origin.position;
                 if (BeamCast(out RaycastHit hit))
                 {
