@@ -114,64 +114,6 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
             if (changedProperty == nameof(IsSneakZoneActive)) UpdateSneakZoneVisuals();
         }
     }
-    void OnTriggerEnter(Collider other)
-    {
-        if(Object == null) return;
-        if (!Object.HasStateAuthority) return;
-        if(!IsSneakZoneActive) return;
-
-        var nb = other.GetComponent<NetworkObject>();
-        if (nb == null)
-        {
-            return;
-        }
-
-        var player = other.GetComponentInParent<VRPlayer>();
-        if (player == null)
-        {
-            return;
-        }
-
-        if (player.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedSneaking)
-        {
-            Debug.Log("Networked sneakable player detected.");
-            player.IsInSneakZoneStatus = true;
-            if (player.NetworkedPlayerState == VRPlayer.PlayerState.Sneaking)
-            {
-                Debug.Log("Is Sneaking");
-            }
-            else
-            {
-                Debug.Log("Is Walking");
-            }
-        }
-    }
-    
-    void onTriggerExit(Collider other)
-    {
-        if(Object == null) return;
-        if (!Object.HasStateAuthority) return;
-        if(!IsSneakZoneActive) return;
-        
-        var nb = other.GetComponent<NetworkObject>();
-        if (nb == null)
-        {
-            return;
-        }
-
-        var player = other.GetComponentInParent<VRPlayer>();
-        if (player == null)
-        {
-            return;
-        }
-
-        if (player.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedSneaking)
-        {
-            Debug.Log("Networked sneakable player exited.");
-            player.IsInSneakZoneStatus = false;
-        }
-    }
-
     
 
     public void SetActive(bool shouldEnable)
@@ -207,6 +149,36 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
 
         Debug.Log($"SneakZone: Updated to active={IsSneakZoneActive}");
     }
+
+    #if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        // Try to get the collider component if it's not already cached.
+        // This is useful for seeing the gizmo outside of Play Mode.
+        Collider sneakZoneCollider = _sneakZoneCollider == null ? GetComponent<Collider>() : _sneakZoneCollider;
+        if (sneakZoneCollider == null) return;
+
+        // Set the color for the gizmo
+        Gizmos.color = new Color(0.1f, 1f, 0.2f, 0.75f); // A nice, visible green
+
+        // The OverlapBox query uses the collider's world-space bounds and the transform's rotation.
+        // We will replicate those exact parameters for the gizmo.
+        Vector3 boxCenter = sneakZoneCollider.bounds.center;
+        Vector3 boxSize = sneakZoneCollider.bounds.size;
+        Quaternion boxRotation = transform.rotation;
+
+        // To draw a rotated wire cube, we must set the Gizmos.matrix.
+        // It's good practice to save and restore the original matrix.
+        Matrix4x4 originalMatrix = Gizmos.matrix;
+        Gizmos.matrix = Matrix4x4.TRS(boxCenter, boxRotation, Vector3.one);
+        
+        // Draw the wire cube with the correct size.
+        Gizmos.DrawWireCube(Vector3.zero, boxSize);
+        
+        // Restore the original matrix
+        Gizmos.matrix = originalMatrix;
+    }
+    #endif
 
     [ContextMenu("Test switch active")]
     public void TestSwitchActive()
