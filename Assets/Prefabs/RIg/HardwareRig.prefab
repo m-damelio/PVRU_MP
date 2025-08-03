@@ -6345,7 +6345,7 @@ MonoBehaviour:
   hand: {fileID: 6932174637695919998}
   useRayActionInput: 1
   rayAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
       m_Name: Ray
       m_Type: 0
@@ -6355,7 +6355,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 0}
+    m_Reference: {fileID: -3682805884294511683, guid: 2d9ee07076de64cb98d3b204c3c8aa68, type: 3}
   origin: {fileID: 7164694185220106194}
   targetLayerMask:
     serializedVersion: 2
@@ -7533,7 +7533,7 @@ MonoBehaviour:
   hand: {fileID: 7349627357679257452}
   useRayActionInput: 1
   rayAction:
-    m_UseReference: 0
+    m_UseReference: 1
     m_Action:
       m_Name: Ray
       m_Type: 0
@@ -7543,7 +7543,7 @@ MonoBehaviour:
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
-    m_Reference: {fileID: 0}
+    m_Reference: {fileID: 9145292390659218384, guid: 2d9ee07076de64cb98d3b204c3c8aa68, type: 3}
   origin: {fileID: 1372951262842945531}
   targetLayerMask:
     serializedVersion: 2

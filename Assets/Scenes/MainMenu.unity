@@ -4568,6 +4568,22 @@ PrefabInstance:
       propertyPath: m_InteractionManager
       value: 
       objectReference: {fileID: 2077725153}
+    - target: {fileID: 1042639820773240180, guid: b2295c9ece7ffa24eb9497760c964327, type: 3}
+      propertyPath: rayAction.m_Reference
+      value: 
+      objectReference: {fileID: -3682805884294511683, guid: 2d9ee07076de64cb98d3b204c3c8aa68, type: 3}
+    - target: {fileID: 1042639820773240180, guid: b2295c9ece7ffa24eb9497760c964327, type: 3}
+      propertyPath: rayAction.m_UseReference
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1917440309282445896, guid: b2295c9ece7ffa24eb9497760c964327, type: 3}
+      propertyPath: rayAction.m_Reference
+      value: 
+      objectReference: {fileID: 9145292390659218384, guid: 2d9ee07076de64cb98d3b204c3c8aa68, type: 3}
+    - target: {fileID: 1917440309282445896, guid: b2295c9ece7ffa24eb9497760c964327, type: 3}
+      propertyPath: rayAction.m_UseReference
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2751892356929607759, guid: b2295c9ece7ffa24eb9497760c964327, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
