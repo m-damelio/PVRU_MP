@@ -23,48 +23,9 @@ public class VRPlayer : NetworkBehaviour
     [SerializeField] private int maxRetries = 3;
     [SerializeField] private float retryDelay = 1.0f;
     [SerializeField] private bool currentlyGettingSneakState = false;
-
-
-    public bool IsInSneakZoneStatus = false; // Enable sending zone status to ESP32
-    public bool isSneaking = false;
-    public float sneakValue = 1.0f;
     private int consecutiveFailures = 0;
     private float lastSuccessfulRequest = 0f;
     public bool enableLogs = true; // Add this missing variable
-
-    //--------------------------------------------
-
-
-    // Hardware input code
-    public int keypressed = 0; // Counter for pressed keys
-    public int functionCode = 0;   
-    
-    // Binary array: First 3 bits for QWER (001-100), Next 3 bits for numbers 1-4 (001-100)
-    // Format: QWER_NUM (6 bits total)
-    // Q=001, W=010, E=011, R=100
-    // 1=001, 2=010, 3=011, 4=100
-    public List<int> functionCodeList = new List<int> {     
-        001001, // Q+1 (001001) = 9
-        001010, // Q+2 (001010) = 10
-        001011, // Q+3 (001011) = 11
-        001100, // Q+4 (001100) = 12
-        010001, // W+1 (010001) = 17
-        010010, // W+2 (010010) = 18
-        010011, // W+3 (010011) = 19
-        010100, // W+4 (010100) = 20
-        011001, // E+1 (011001) = 25
-        011010, // E+2 (011010) = 26
-        011011, // E+3 (011011) = 27
-        011100, // E+4 (011100) = 28
-        100001, // R+1 (100001) = 33
-        100010, // R+2 (100010) = 34
-        100011, // R+3 (100011) = 35
-        100100, // R+4 (100100) = 36
-        200000,   // A standalone 
-        300000,   // S standalone  
-        400000,   // D standalone 
-        500000    // F standalone 
-    };
 
     [Header("Sneaking Settings")]
     [SerializeField] private float sneakThreshold = 0.8f;
@@ -101,12 +62,13 @@ public class VRPlayer : NetworkBehaviour
     [Header("Networked properties")]
     [Networked] public PlayerType NetworkedPlayerType { get; set; }
     [Networked] public PlayerState NetworkedPlayerState { get; set; }
+    [Networked] public bool IsInSneakZoneStatus { get; set; } // Enable sending zone status to ESP32
     [SerializeField] private NetworkRig networkRig;
+    private ChangeDetector _chanegDetector;
 
-    // Quest 3 specific
-    [Header("Quest 3 Hand Tracking")]
-    [SerializeField] private XRHandSubsystem handSubsystem;
-    //[SerializeField] private bool useHandTracking = true;
+    [Header("Sneaking local")]
+    public bool isSneaking = false;
+    public float sneakValue = 1.0f;
 
     [Header("Hack Device")]
     [SerializeField] private HackDevice hackDevice;
@@ -126,6 +88,7 @@ public class VRPlayer : NetworkBehaviour
 
     public override void Spawned()
     {
+        _chanegDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
         if (!Object.HasInputAuthority) return;
         SetPlayerType();
         StartCoroutine(AfterSpawn());
@@ -281,16 +244,6 @@ public class VRPlayer : NetworkBehaviour
                 }
             }
         }
-
-        using (UnityWebRequest requestZone = UnityWebRequest.Get($"http://{deviceIP}/setregion?s={(IsInSneakZoneStatus ? "1" : "0")}"))
-        {
-            yield return requestZone.SendWebRequest();
-
-            if (requestZone.result != UnityWebRequest.Result.Success)
-            {
-                Debug.LogWarning($"SneakCube: Failed to set region status: {requestZone.error}");
-            }
-        }
     }
 
 
@@ -325,7 +278,6 @@ public class VRPlayer : NetworkBehaviour
     void SetPlayerType()
     {
         playerType = isSneaker ? PlayerType.EnhancedSneaking : PlayerType.EnhancedHacking;
-
         if (Object.HasInputAuthority)
         {
             NetworkedPlayerType = playerType;
@@ -352,12 +304,6 @@ public class VRPlayer : NetworkBehaviour
 
         networkRig.hardwareRig.playerCamera.cullingMask = newCullingMask;
 
-    }
-
-    bool DetectPressurePlate()
-    {
-        //TODO: Implement detecting of hardware
-        return true;
     }
 
     public override void FixedUpdateNetwork()
@@ -396,10 +342,6 @@ public class VRPlayer : NetworkBehaviour
 
             UpdatePlayerState();
             UpdateHeldKeyCardReference();
-
-            // Quest 3 hand tracking status can be tracked here
-            // for gameplay logic (separate from the visual hand representation)
-            UpdateHandTrackingStatus();
         }
 
     }
@@ -429,23 +371,6 @@ public class VRPlayer : NetworkBehaviour
         }
 
         heldKeyCard = null;
-    }
-    void UpdateHandTrackingStatus()
-    {
-        // Visual hand representation is handled by NetworkRig/NetworkHand
-        if (handSubsystem != null && handSubsystem.running)
-        {
-            bool leftHandTracked = IsHandTracked(Handedness.Left);
-            bool rightHandTracked = IsHandTracked(Handedness.Right);
-
-            // Use this info for gameplay decisions
-        }
-    }
-
-    bool IsHandTracked(Handedness handedness)
-    {
-        if (handSubsystem == null) return false;
-        return handSubsystem.running;
     }
 
     void HandleMovement(RigInput rigInput)
@@ -516,16 +441,6 @@ public class VRPlayer : NetworkBehaviour
         if (pressedKey1 == KeyCode.K) hackDevice.AdjustActiveSlot(-1);
     
     }
-
-    // send fuction code to a network object with the code
-    void HandleSendFunctionCode(int code)
-    {
-        // This method can be used to send the function code to a networked object
-        // For example, you could use RPCs or a custom network message
-        Debug.Log($"Sending function code: {code}");
-        // Implement your network sending logic here
-    }
-
 
     void HandleSneakingInput(RigInput rigInput)
     {
@@ -609,26 +524,43 @@ public class VRPlayer : NetworkBehaviour
 
     public override void Render()
     {
-
-        //Show Key Card if held
-        if (heldKeyCard != null && Object.HasInputAuthority)
+        foreach (var changedProperty in _chanegDetector.DetectChanges(this))
         {
-            //Debug.Log($"Holding key card: {heldKeyCard.KeyID}");
+            if (changedProperty == nameof(IsInSneakZoneStatus))
+            {
+                Debug.Log("Sneaking status changed");
+                if (NetworkedPlayerType == PlayerType.EnhancedSneaking)
+                {
+                    StartCoroutine(SendRegionStatusToDevice(IsInSneakZoneStatus));
+                }
+            }
         }
-
         // Apply sneaking effects
-        ApplySneakingEffects();
-
-        // Debug display for all clients
-        if (NetworkedPlayerType == PlayerType.EnhancedSneaking)
-        {
-
-        }
+        UpdateSneakingEffects();
+        
     }
 
-    void ApplySneakingEffects()
+    void UpdateSneakingEffects()
     {
 
+    }
+
+    IEnumerator SendRegionStatusToDevice(bool status)
+    {
+        // Only the player with input authority should talk to their local hardware
+        if (!Object.HasInputAuthority) yield break;
+
+        string url = $"http://{deviceIP}/setregion?s={(status ? "1" : "0")}";
+        using (UnityWebRequest requestZone = UnityWebRequest.Get(url))
+        {
+            Debug.Log($"Sending region status to device: {url}");
+            yield return requestZone.SendWebRequest();
+
+            if (requestZone.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogWarning($"VRPlayer: Failed to set region status: {requestZone.error}");
+            }
+        }
     }
 
     void OnControllerColliderHit(ControllerColliderHit hit)
