@@ -22,6 +22,9 @@ public class RotateMirror : NetworkBehaviour
     [Networked] public float NetworkedYRotation { get; set; }
     [Networked] public float NetworkedZRotation { get; set; }
 
+    // For Laser-Updates
+    private Quaternion lastNetworkedRot;
+
     //struct für Input Struktur für die Rotation
     public struct MirrorInput : INetworkInput
     {
@@ -34,27 +37,31 @@ public class RotateMirror : NetworkBehaviour
 
     public override void Spawned()
     {
-        NetworkedYRotation = gameObject.transform.rotation.eulerAngles.y;
-        NetworkedZRotation = gameObject.transform.rotation.eulerAngles.z;
+        if(Object.HasStateAuthority)
+        {
+            NetworkedYRotation = controlRotation.rotation.eulerAngles.y;
+            NetworkedZRotation = controlRotation.rotation.eulerAngles.z;
+            NetworkedRotation = controlRotation.rotation;
+        }
+        lastNetworkedRot = NetworkedRotation;
     }
 
     public override void FixedUpdateNetwork()
     {
-       
+
         // Input-Handling
         //HandleInput();
 
-        // Prüfen auf Änderungen und Laser-Update triggern
-        if (controlRotation.rotation != lastRot)
+        // Check if networked rotation has changed (for all clients)
+        if (NetworkedRotation != lastNetworkedRot)
         {
-            Debug.Log("Rotation change");
-            TriggerLaserUpdate();
-            lastRot = controlRotation.rotation;
-        }
-        else
-        {
-            //Clients folgen der NetworkedRotation
+            // Apply the networked rotation to the transform
             controlRotation.rotation = NetworkedRotation;
+
+            // Trigger laser update when rotation changes
+            TriggerLaserUpdate();
+
+            lastNetworkedRot = NetworkedRotation;
         }
     }
 
@@ -80,16 +87,27 @@ public class RotateMirror : NetworkBehaviour
         }
     }
 
-    public void RotateY(float angle)
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RpcRotateY(float angle)
     {
-        NetworkedYRotation += angle;
-        UpdateRotation();
+        if (Object.HasStateAuthority)
+        {
+            Debug.Log("RPCY " + angle);
+            NetworkedYRotation += angle;
+            UpdateRotation();
+        }
     }
 
-    public void RotateZ(float angle)
+    [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+    public void RpcRotateZ(float angle)
     {
-        NetworkedZRotation += angle;
-        UpdateRotation();
+        if (Object.HasStateAuthority)
+        {
+            Debug.Log("RPCZ " + angle);
+            NetworkedZRotation += angle;
+            UpdateRotation();
+        }
+            
     }
 
     private void UpdateRotation()
