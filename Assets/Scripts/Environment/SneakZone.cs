@@ -83,7 +83,7 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
         else if (foundPlayer == null && _sneakingPlayerInZone != null)
         {
             Debug.Log("Networked sneakable player exited.");
-            _sneakingPlayerInZone.IsInSneakZoneStatus = false;
+            if(_sneakingPlayerInZone.Object != null && _sneakingPlayerInZone.Object.IsValid) _sneakingPlayerInZone.IsInSneakZoneStatus = false;
             _sneakingPlayerInZone = null;
         }
     }
