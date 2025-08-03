@@ -34,10 +34,12 @@ public class RotateMirror : NetworkBehaviour
 
     // For Laser-Updates
     private Quaternion lastRot;
+    private ChangeDetector _changeDetector;
 
     public override void Spawned()
     {
-        if(Object.HasStateAuthority)
+        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
+        if (Object.HasStateAuthority)
         {
             NetworkedYRotation = controlRotation.rotation.eulerAngles.y;
             NetworkedZRotation = controlRotation.rotation.eulerAngles.z;
@@ -62,6 +64,16 @@ public class RotateMirror : NetworkBehaviour
         }
     }
 
+    public override void Render()
+    {
+        foreach (var changedProperty in _changeDetector.DetectChanges(this))
+        {
+            if (changedProperty == nameof(NetworkedYRotation) || changedProperty == nameof(NetworkedZRotation))
+            {
+                UpdateRotation();
+            }
+        }
+    }
     private void TriggerLaserUpdate()
     {
         if (laser != null)
@@ -69,7 +81,7 @@ public class RotateMirror : NetworkBehaviour
             Debug.Log("Trigger update mirror");
             laser.RpcForceUpdate();
         }
-        
+
     }
 
     private void OnTriggerEnter(Collider other)
@@ -89,7 +101,6 @@ public class RotateMirror : NetworkBehaviour
     {
         Debug.Log("RPCY " + angle);
         NetworkedYRotation += angle;
-        UpdateRotation();
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
@@ -98,7 +109,6 @@ public class RotateMirror : NetworkBehaviour
         
         Debug.Log("RPCZ " + angle);
         NetworkedZRotation += angle;
-        UpdateRotation();
        
     }
 
