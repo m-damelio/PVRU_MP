@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 namespace Fusion.Addons.ConnectionManagerAddon
 {
@@ -71,8 +72,6 @@ namespace Fusion.Addons.ConnectionManagerAddon
 
         bool ShouldConnectWithRoomName => (connectionCriterias & ConnectionManager.ConnectionCriterias.RoomName) != 0;
         bool ShouldConnectWithSessionProperties => (connectionCriterias & ConnectionManager.ConnectionCriterias.SessionProperties) != 0;
-
-        private bool isHacker = false;
 
         private void Awake()
         {
@@ -144,17 +143,6 @@ namespace Fusion.Addons.ConnectionManagerAddon
             await Connect();
         }
 
-        public async void DoConnectAsHacker()
-        {
-            isHacker = true;
-            await Connect();
-        }
-
-        public async void DoConnectAsSneaker()
-        {
-            isHacker = false;
-            await Connect();
-        }
 
         public async Task Connect()
         {
@@ -222,7 +210,7 @@ namespace Fusion.Addons.ConnectionManagerAddon
                 Vector3 spawnPosition;
                 Quaternion spawnRotation;
 
-                if (isHacker)
+                if (runner.ActivePlayers.Count() == 1)
                 {
                     prefabToSpawn = hackerPrefab;
                     spawnPosition = hackerSpawnPoint != null ? hackerSpawnPoint.position : transform.position;
@@ -265,16 +253,17 @@ namespace Fusion.Addons.ConnectionManagerAddon
                 NetworkObject prefabToSpawn;
                 Vector3 spawnPosition;
                 Quaternion spawnRotation;
-                Debug.Log($"OnPlayerJoined. PlayerId: {player.PlayerId}, isHacker = {isHacker}");
                 // We make sure to give the input authority to the connecting player for their user's object
-                if (isHacker)
+                if (player == runner.LocalPlayer)
                 {
+                    Debug.Log($"Spawning Host (Hacker) prefab for player {player.PlayerId}");
                     prefabToSpawn = hackerPrefab;
                     spawnPosition = hackerSpawnPoint != null ? hackerSpawnPoint.position : transform.position;
                     spawnRotation = hackerSpawnPoint != null ? hackerSpawnPoint.rotation : transform.rotation;
                 }
                 else
                 {
+                    Debug.Log($"Spawning Client (Sneaker) prefab for player {player.PlayerId}");
                     prefabToSpawn = sneakerPrefab;
                     spawnPosition = sneakerSpawnPoint != null ? sneakerSpawnPoint.position : transform.position;
                     spawnRotation = sneakerSpawnPoint != null ? sneakerSpawnPoint.rotation : transform.rotation;

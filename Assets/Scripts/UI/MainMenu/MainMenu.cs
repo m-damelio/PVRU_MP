@@ -10,29 +10,20 @@ public class MainMenu : MonoBehaviour
 
     [Header("Panels")]
     public GameObject mainPanel;
-    public GameObject selectionPanel;
     public GameObject settingsPanel;
 
     [Header("Settings UI")]
     public Color SoundActiveColor = Color.magenta;
     public Color SoundInactiveColor = Color.white;
     public TextMeshProUGUI soundText;
-    public TextMeshProUGUI countDowntext;
     public Image[] soundBars;
 
     [Header("Sound Logic")]
     public int maxSteps = 10;
     public int currentStep = 10;
     private NetworkedSoundManager soundManager;
-
     [Header("Debugging")]
-    public Button HackerButton;
-    public Button SneakerButton;
     public Button StartGameButton;
-    public Button SettingsBackButton;
-    public Button VolumeUpButton;
-    public Button VolumeDownButton;
-    public Button QuitGameButton;
 
     private void Start()
     {
@@ -40,38 +31,22 @@ public class MainMenu : MonoBehaviour
         SetVolumeStep(maxSteps);
     }
 
-    [ContextMenu("Trigger Connect as Hacker")]
+    [ContextMenu("Trigger Connect")]
 
-    public void DebugConnectAsHacker()
+    public void DebugConnect()
     {
-        ProceedToSelection();
-        HackerButton.onClick.Invoke();
+        StartGameButton.onClick.Invoke();
     }
 
-    [ContextMenu("Trigger Connect as Sneacker")]
-
-    public void DebugConnectAsSneaker()
+    public void ConnectToGame()
     {
-        ProceedToSelection();
-        SneakerButton.onClick.Invoke();
+        connectionManager.DoConnect();
     }
-
-    public void CallConnectAsHacker()
-    {
-        connectionManager.DoConnectAsHacker();
-    }
-
-    public void CallConnectAsSneaker()
-    {
-        connectionManager.DoConnectAsSneaker();
-    }
-
     [ContextMenu("Trigger ShowMainMenu")]
     public void ShowMainMenu()
     {
         mainPanel.SetActive(true);
         settingsPanel.SetActive(false);
-        selectionPanel.SetActive(false);
     }
 
     [ContextMenu("Trigger ShowSettings")]
@@ -80,13 +55,6 @@ public class MainMenu : MonoBehaviour
         mainPanel.SetActive(false);
         settingsPanel.SetActive(true);
         UpdateVolumeUI();
-    }
-
-    public void ProceedToSelection()
-    {
-        if(countDowntext != null) countDowntext.text = "";
-        mainPanel.SetActive(false);
-        selectionPanel.SetActive(true);
     }
 
     [ContextMenu("Increase Volume +10%")]
@@ -132,28 +100,7 @@ public class MainMenu : MonoBehaviour
             soundBars[i].color = (i < currentStep) ? SoundActiveColor : SoundInactiveColor;
         }
     }
-
-    public void StartCountDown()
-    {
-        StartCoroutine(CountDownStart());
-    }
-
-    private IEnumerator CountDownStart()
-    {
-        if(countDowntext != null) countDowntext.text = "5";
-        yield return new WaitForSeconds(1f);
-        if(countDowntext != null) countDowntext.text = "4";
-        yield return new WaitForSeconds(1f);
-        if(countDowntext != null) countDowntext.text = "3";
-        yield return new WaitForSeconds(1f);
-        if(countDowntext != null) countDowntext.text = "2";
-        yield return new WaitForSeconds(1f);
-        if(countDowntext != null) countDowntext.text = "1";
-        yield return new WaitForSeconds(1f);
-        if(countDowntext != null) countDowntext.text = "...";
-    }
     
-
     public void QuitGame()
     {
         Debug.Log("Quit Game triggered");
