@@ -18,7 +18,6 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
     private ScanlineController _scanlineController;
     private Collider _sneakZoneCollider;
     private GameObject _visualGameobject;
-    private GameObject _disallowTeleportColliderHolder;
     private ChangeDetector _changeDetector;
     private VRPlayer _sneakingPlayerInZone = null;
 
@@ -27,7 +26,6 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
         _scanlineController = GetComponent<ScanlineController>();
         _sneakZoneCollider = GetComponent<Collider>();
         _visualGameobject = transform.GetChild(0).gameObject;
-        _disallowTeleportColliderHolder = transform.GetChild(1).gameObject;
     }
 
     public override void Spawned()
@@ -145,7 +143,6 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
 
         //Don't allow teleport when sneak zone is active
         if(_visualGameobject != null) _visualGameobject.layer = IsSneakZoneActive ? disallowTeleport : allowTeleport;
-        if (_disallowTeleportColliderHolder != null) _disallowTeleportColliderHolder.SetActive(IsSneakZoneActive);
 
         Debug.Log($"SneakZone: Updated to active={IsSneakZoneActive}");
     }
@@ -159,7 +156,7 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
         if (sneakZoneCollider == null) return;
 
         // Set the color for the gizmo
-        Gizmos.color = new Color(0.1f, 1f, 0.2f, 0.75f); // A nice, visible green
+        Gizmos.color = Color.blue; // A nice, visible green
 
         // The OverlapBox query uses the collider's world-space bounds and the transform's rotation.
         // We will replicate those exact parameters for the gizmo.
