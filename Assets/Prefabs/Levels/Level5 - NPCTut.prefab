@@ -2747,6 +2747,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4808942498459084327, guid: ceccdbce83e474136963e04594ddb3df, type: 3}
+      propertyPath: _keyID
+      value: GuardKey
+      objectReference: {fileID: 0}
+    - target: {fileID: 4808942498459084327, guid: ceccdbce83e474136963e04594ddb3df, type: 3}
+      propertyPath: levelController
+      value: 
+      objectReference: {fileID: 3482697893225692266}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3193,6 +3201,10 @@ PrefabInstance:
     - target: {fileID: 9039347274475306163, guid: 25de2356844de4e609324240f66897f3, type: 3}
       propertyPath: isFinalStep
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9039347274475306163, guid: 25de2356844de4e609324240f66897f3, type: 3}
+      propertyPath: requireKeyID
+      value: GuardKey
       objectReference: {fileID: 0}
     - target: {fileID: 9039347274475306163, guid: 25de2356844de4e609324240f66897f3, type: 3}
       propertyPath: doorController

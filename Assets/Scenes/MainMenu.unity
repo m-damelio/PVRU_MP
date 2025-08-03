@@ -4513,6 +4513,14 @@ PrefabInstance:
       propertyPath: m_InteractionManager
       value: 
       objectReference: {fileID: 2077725153}
+    - target: {fileID: 1042639820773240180, guid: b2295c9ece7ffa24eb9497760c964327, type: 3}
+      propertyPath: targetLayerMask.m_Bits
+      value: 34598783
+      objectReference: {fileID: 0}
+    - target: {fileID: 1917440309282445896, guid: b2295c9ece7ffa24eb9497760c964327, type: 3}
+      propertyPath: targetLayerMask.m_Bits
+      value: 34598783
+      objectReference: {fileID: 0}
     - target: {fileID: 2751892356929607759, guid: b2295c9ece7ffa24eb9497760c964327, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

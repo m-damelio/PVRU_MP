@@ -139,7 +139,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 1486549025
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 786433
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 6024137561835154095}
@@ -186,13 +186,9 @@ MonoBehaviour:
   guardAttachPoint: {fileID: 0}
   attachedGuard: {fileID: 0}
   isAttachedToGuard: 1
-  stealRange: 1.5
-  requireSneaking: 1
-  stealDuration: 2
-  stealSound: {fileID: 0}
-  audioSource: {fileID: 0}
+  levelController: {fileID: 0}
   _IsAttachedToGuard: 0
-  _StealProgress: 0
+  _IsStealable: 0
 --- !u!114 &7734451009897632213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -259,7 +255,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
@@ -308,7 +304,7 @@ MonoBehaviour:
   ungrabVelocity: {x: 0, y: 0, z: 0}
   ungrabAngularVelocity: {x: 0, y: 0, z: 0}
   isGrabbed: 0
-  rb: {fileID: 0}
+  rb: {fileID: 6543016245660236962}
   followVelocityAttenuation: 0.5
   maxVelocity: 10
   followMode: 0

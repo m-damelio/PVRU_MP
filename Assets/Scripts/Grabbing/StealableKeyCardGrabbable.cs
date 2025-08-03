@@ -13,12 +13,11 @@ public class StealableKeyCardGrabbable : NetworkPhysicsGrabbable
 
     public override void Grab(NetworkGrabber newGrabber, GrabInfo newGrabInfo)
     {
-        if (_stealableKeycard != null && _stealableKeycard.IsAttachedToGuard)
+        if (_stealableKeycard != null && !_stealableKeycard.IsStealable)
         {
             Debug.Log("Cannot grab keycard, it is attached to a guard. must be stolen");
             return;
         }
-
         base.Grab(newGrabber, newGrabInfo);
     }
 }
