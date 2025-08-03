@@ -61,6 +61,8 @@ namespace Fusion.XR.Host.Locomotion
         public int volume;
         public bool isHitVolume;
 
+        private VRPlayer localPlayerCache;
+
         public enum Status
         {
             NoBeam,
@@ -109,127 +111,52 @@ namespace Fusion.XR.Host.Locomotion
         }
 
         public void Update() {
-            // If useRayActionInput is true, we read the rayAction to determine isRayEnabled for this frame
-            //  Usefull for the mouse teleporter of the desktop mode, which disables the action reading to have its own logic to enable the beamer
-            if (useRayActionInput && rayAction != null && rayAction.action != null)
+        // If useRayActionInput is true, we read the rayAction to determine isRayEnabled for this frame
+        if (useRayActionInput && rayAction != null && rayAction.action != null)
+        {
+            isRayEnabled = rayAction.action.ReadValue<float>() == 1;
+        }
+
+        VRPlayer localPlayer = GetLocalVRPlayer();
+
+        ray.isRayEnabled = isRayEnabled;
+        
+        if (ray.isRayEnabled && localPlayer != null) // Ensure the beamer only works if it has a player owner
             {
-                isRayEnabled = rayAction.action.ReadValue<float>() == 1;
-            }
-
-            ray.isRayEnabled = isRayEnabled;
-            if (ray.isRayEnabled)
-            {
-                var players = FindObjectsByType<VRPlayer>(FindObjectsSortMode.None);
-                VRPlayer player = null;
-                foreach (var playerObj in players)
-                {
-                    if (playerObj.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedHacking)
-                    {
-                        player = playerObj; break;
-                    }
-                }
-
-                if (player == null){
-                    return;
-                }
-
                 ray.origin = origin.position;
                 if (BeamCast(out RaycastHit hit))
                 {
-                    //Debug.Log(hit.collider.name);
+                    //for all players
+                    //make the beam visible and set the teleport destination
                     lastHitCollider = hit.collider;
                     ray.target = hit.point;
                     ray.color = hitColor;
                     lastHit = hit.point;
                     status = Status.BeamHit;
-                    var allowSelection = hit.collider.gameObject.transform.GetComponentInParent<ColorMirror>();
 
-                    /////////////// Mirror /////////////////
-                    if (hit.collider.CompareTag("Mirror"))
+                    // Only the Hacker can select and interact with mirrors or color objects
+                    if (localPlayer.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedHacking)
                     {
-                        var currentMirror = hit.collider.gameObject.transform.GetComponentInParent<RotateMirror>();
-                        
-
-
-                        if (lastMirrorHit != null && lastMirrorHit != currentMirror)
-                        {
-                            lastMirrorHit.SetHighlight(false); // Alten Spiegel deaktivieren
-                            lastMirrorHit.gameObject.GetComponent<ColorMirror>().isSelected = false;
-                            player.DeselectActiveMirror(lastMirrorHit);
-
-                        }
-
-                        if (!allowSelection.inactive) {
-                            currentMirror.SetHighlight(true); // Aktuellen Spiegel aktivieren
-                            allowSelection.isSelected = true;
-                            lastMirrorHit = currentMirror; // Speichern für später
-                            player.SetActiveMirror(currentMirror);
-                        }
-
-                        
+                        HandleHackerInteractions(hit, localPlayer);
                     }
-                           
-                    else
-                    {
-                        // Kein Spiegel mehr getroffen
-                        if (lastMirrorHit != null)
-                        {
-                            lastMirrorHit.SetHighlight(false);
-                            lastMirrorHit.gameObject.GetComponent<ColorMirror>().isSelected = false;
-                            player.DeselectActiveMirror(lastMirrorHit);
-                            lastMirrorHit = null;
-                        }
-                    }
-
-                    /////////////// ColorObj /////////////////
-                    if (hit.collider.CompareTag("ColorChange"))
-                    {
-                        var currentColorObject = hit.collider.gameObject;
-                        var colorControl = currentColorObject.transform.GetComponentInParent<colorControl>();
-
-                        if (lastColorObjectHit != null && lastColorObjectHit != currentColorObject)
-                        {
-                            lastColorObjectHit.transform.GetComponentInParent<colorControl>().SetSelectionColor(false, lastColorObjectHit); // Altes Objekt deaktivieren
-                            player.DeselectActiveColorObject(lastColorObjectHit.transform.GetComponentInParent<colorControl>());
-                        }
-                        colorControl.SetSelectionColor(true, currentColorObject); // Aktuelles ColorObject einfärben
-                        lastColorObjectHit = currentColorObject; // Speichern für später
-                        player.SetActiveColorObject(colorControl);
-                    }
-
-                    else
-                    {
-                        // Kein Objekt mehr getroffen
-                        if (lastColorObjectHit != null)
-                        {
-                            lastColorObjectHit.transform.GetComponentInParent<colorControl>().SetSelectionColor(false, lastColorObjectHit);
-                            player.DeselectActiveColorObject(lastColorObjectHit.transform.GetComponentInParent<colorControl>());
-                            lastColorObjectHit = null;
-                        }
-                    }
-
-                    isHitVolume = false;
-
                 }
-                
-
-                else
+                else // The beam hits nothing
                 {
                     lastHitCollider = null;
                     ray.target = ray.origin + origin.forward * maxDistance;
                     ray.color = noHitColor;
                     status = Status.BeamNoHit;
 
-                    // Auch nichts getroffen (Raycast trifft nichts)
-                    if (lastMirrorHit != null)
+                    // If the Hacker was pointing at an object and now isn't, deselect it
+                    if (localPlayer.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedHacking)
                     {
-                        lastMirrorHit.SetHighlight(false);
-                        lastMirrorHit = null;
+                        DeselectAll(localPlayer);
                     }
                 }
             }
-            else
+            else // The beam is off
             {
+                // This part runs when the button is released, triggering the teleport for ALL players
                 if (status == Status.BeamHit)
                 {
                     if (onRelease != null) onRelease.Invoke(lastHitCollider, lastHit);
@@ -238,23 +165,114 @@ namespace Fusion.XR.Host.Locomotion
                 lastHitCollider = null;
             }
 
-            UpdateRay();
-        }
+        UpdateRay();
+    }
 
-        public void CancelHit()
+    private void HandleHackerInteractions(RaycastHit hit, VRPlayer player)
+    {
+        // Mirror Interaction Logic
+        bool hitMirror = hit.collider.CompareTag("Mirror");
+        if (hitMirror)
         {
-            status = Status.NoBeam;
-        }
+            var currentMirror = hit.collider.gameObject.transform.GetComponentInParent<RotateMirror>();
+            var colorMirror = currentMirror.GetComponent<ColorMirror>();
 
-        void UpdateRay() { 
-            lineRenderer.enabled = ray.isRayEnabled;
-            if (ray.isRayEnabled)
+            if (lastMirrorHit != null && lastMirrorHit != currentMirror)
             {
-                lineRenderer.SetPositions(new Vector3[] { ray.origin, ray.target });
-                lineRenderer.positionCount = 2;
-                lineRenderer.startColor = ray.color;
-                lineRenderer.endColor = ray.color;
+                DeselectMirror(player);
+            }
+
+            if (colorMirror != null && !colorMirror.inactive) {
+                currentMirror.SetHighlight(true);
+                colorMirror.isSelected = true;
+                lastMirrorHit = currentMirror;
+                player.SetActiveMirror(currentMirror);
             }
         }
+        else
+        {
+            DeselectMirror(player);
+        }
+
+        // Color Object Interaction Logic
+        bool hitColorObject = hit.collider.CompareTag("ColorChange");
+        if (hitColorObject)
+        {
+            var currentColorObject = hit.collider.gameObject;
+            var colorControl = currentColorObject.transform.GetComponentInParent<colorControl>();
+
+            if (lastColorObjectHit != null && lastColorObjectHit != currentColorObject)
+            {
+                DeselectColorObject(player);
+            }
+            
+            colorControl.SetSelectionColor(true, currentColorObject);
+            lastColorObjectHit = currentColorObject;
+            player.SetActiveColorObject(colorControl);
+        }
+        else
+        {
+            DeselectColorObject(player);
+        }
+    }
+
+    private void DeselectMirror(VRPlayer player)
+    {
+        if (lastMirrorHit != null)
+        {
+            lastMirrorHit.SetHighlight(false);
+            lastMirrorHit.gameObject.GetComponent<ColorMirror>().isSelected = false;
+            player.DeselectActiveMirror(lastMirrorHit);
+            lastMirrorHit = null;
+        }
+    }
+
+    private void DeselectColorObject(VRPlayer player)
+    {
+        if (lastColorObjectHit != null)
+        {
+            lastColorObjectHit.transform.GetComponentInParent<colorControl>().SetSelectionColor(false, lastColorObjectHit);
+            player.DeselectActiveColorObject(lastColorObjectHit.transform.GetComponentInParent<colorControl>());
+            lastColorObjectHit = null;
+        }
+    }
+
+    private void DeselectAll(VRPlayer player)
+    {
+        DeselectMirror(player);
+        DeselectColorObject(player);
+    }
+    private VRPlayer GetLocalVRPlayer()
+    {
+        // Return the cached player if we've already found it
+        if (localPlayerCache != null) return localPlayerCache;
+
+        // Find the NetworkObject that has input authority for this client
+        foreach (var player in FindObjectsByType<VRPlayer>(FindObjectsSortMode.None))
+        {
+            if (player.Object.HasInputAuthority)
+            {
+                localPlayerCache = player;
+                return player;
+            }
+        }
+        return null;
+    }
+
+    public void CancelHit()
+    {
+        status = Status.NoBeam;
+    }
+
+    void UpdateRay() { 
+        lineRenderer.enabled = ray.isRayEnabled;
+        if (ray.isRayEnabled)
+        {
+            lineRenderer.SetPositions(new Vector3[] { ray.origin, ray.target });
+            lineRenderer.positionCount = 2;
+            lineRenderer.startColor = ray.color;
+            lineRenderer.endColor = ray.color;
+        }
+    }
     }
 }

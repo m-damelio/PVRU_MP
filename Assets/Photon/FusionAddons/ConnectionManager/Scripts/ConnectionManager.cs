@@ -265,7 +265,7 @@ namespace Fusion.Addons.ConnectionManagerAddon
                 NetworkObject prefabToSpawn;
                 Vector3 spawnPosition;
                 Quaternion spawnRotation;
-                Debug.Log($"OnPlayerJoined. PlayerId: {player.PlayerId}");
+                Debug.Log($"OnPlayerJoined. PlayerId: {player.PlayerId}, isHacker = {isHacker}");
                 // We make sure to give the input authority to the connecting player for their user's object
                 if (isHacker)
                 {
