@@ -7,6 +7,9 @@ public class HackDevice : NetworkBehaviour
     [Header("Activation Button")]
     [SerializeField] private NetworkedButton activationButton;
 
+    [Header("Laser Control")]
+    [SerializeField] private GameObject laserObject;
+
     [Header("Combination Settings")]
     [SerializeField] private int[] correctCombination = new int[4] { 1, 2, 3, 4 };
     [Networked, Capacity(4)] public NetworkArray<int> currentCombination => default;
@@ -97,6 +100,8 @@ public class HackDevice : NetworkBehaviour
         IsHackActive = false;
         selectedIndex = -1;
         Debug.Log($"{name}: Richtige Kombination! Hack beendet.");
+
+        RPC_DeactivateLaser();
         RPC_UpdateVisuals();
     }
 
@@ -120,6 +125,17 @@ public class HackDevice : NetworkBehaviour
             }
         }
     }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_DeactivateLaser()
+    {
+        if (laserObject != null)
+        {
+            laserObject.SetActive(false);
+            Debug.Log($"{name}: deactivate mirror to activate laser");
+        }
+    }
+
 
     // --------------------------
     // DEBUGGING METHODS
