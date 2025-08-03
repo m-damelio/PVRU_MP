@@ -53,8 +53,8 @@ namespace Fusion.Addons.ConnectionManagerAddon
         public INetworkSceneManager sceneManager;
 
         [Header("Local user spawner")]
-        public NetworkObject hackerPrefab;
-        public NetworkObject sneakerPrefab;
+        public NetworkObject hostPrefab;
+        public NetworkObject clientPrefab;
         public Transform hackerSpawnPoint;
         public Transform sneakerSpawnPoint;
 
@@ -212,13 +212,13 @@ namespace Fusion.Addons.ConnectionManagerAddon
 
                 if (runner.ActivePlayers.Count() == 1)
                 {
-                    prefabToSpawn = hackerPrefab;
+                    prefabToSpawn = hostPrefab;
                     spawnPosition = hackerSpawnPoint != null ? hackerSpawnPoint.position : transform.position;
                     spawnRotation = hackerSpawnPoint != null ? hackerSpawnPoint.rotation : transform.rotation;
                 }
                 else
                 {
-                    prefabToSpawn = sneakerPrefab;
+                    prefabToSpawn = clientPrefab;
                     spawnPosition = sneakerSpawnPoint != null ? sneakerSpawnPoint.position : transform.position;
                     spawnRotation = sneakerSpawnPoint != null ? sneakerSpawnPoint.rotation : transform.rotation;
                 }
@@ -257,14 +257,14 @@ namespace Fusion.Addons.ConnectionManagerAddon
                 if (player == runner.LocalPlayer)
                 {
                     Debug.Log($"Spawning Host (Hacker) prefab for player {player.PlayerId}");
-                    prefabToSpawn = hackerPrefab;
+                    prefabToSpawn = hostPrefab;
                     spawnPosition = hackerSpawnPoint != null ? hackerSpawnPoint.position : transform.position;
                     spawnRotation = hackerSpawnPoint != null ? hackerSpawnPoint.rotation : transform.rotation;
                 }
                 else
                 {
                     Debug.Log($"Spawning Client (Sneaker) prefab for player {player.PlayerId}");
-                    prefabToSpawn = sneakerPrefab;
+                    prefabToSpawn = clientPrefab;
                     spawnPosition = sneakerSpawnPoint != null ? sneakerSpawnPoint.position : transform.position;
                     spawnRotation = sneakerSpawnPoint != null ? sneakerSpawnPoint.rotation : transform.rotation;
                 }
