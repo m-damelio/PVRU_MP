@@ -171,14 +171,15 @@ public class GuardVisionDetection : MonoBehaviour
 
             float timeDetected = _playersInVision[player];
             _playersInVision[player] = timeDetected + Time.deltaTime;
-            
+
             //Trigger alert when detection time is reached
-            if(timeDetected >= timeToAlert)
+            if (timeDetected >= timeToAlert)
             {
-                _guardController.RPC_NotifyPlayerSpotted();
-                playersToAlert.Add(player);
-                //Show alert effect to player 
-                ShowDetectionAlert(player);
+                if (_guardController.Object.HasStateAuthority)
+                {
+                    _guardController.HandlePlayerDetected();
+                }
+                break; 
             }
         }
 
@@ -187,6 +188,12 @@ public class GuardVisionDetection : MonoBehaviour
         {
             RemovePlayerFromDetection(player);
         }
+    }
+
+    private IEnumerator RestartLevelAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        FindObjectOfType<LevelManager>()?.RestartCurrentLevel();
     }
 
     private void RemovePlayerFromDetection(GameObject player)
@@ -216,6 +223,12 @@ public class GuardVisionDetection : MonoBehaviour
     {
         Debug.Log($"Guard spotted player: {player.name}");
         //TODO add ui effect for players when they trigger a guard
+
+         GameOverOverlayController overlay = FindObjectOfType<GameOverOverlayController>();
+        if (overlay != null)
+        {
+            overlay.ShowGameOver();
+        }
     }
 
     private void ConfigureRadarSweep()

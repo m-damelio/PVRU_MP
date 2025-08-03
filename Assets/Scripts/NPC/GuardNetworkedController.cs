@@ -20,16 +20,16 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
     //[SerializeField] private float moveSpeed; 
 
     [Header("Fusion synced")]
-    [Networked] public bool IsAlert {get;set;}
-    [Networked] public bool IsAlarmRunning {get;set;}
-    [Networked] public bool ResetCalled {get; set;}
+    [Networked] public bool IsAlert { get; set; }
+    [Networked] public bool IsAlarmRunning { get; set; }
+    [Networked] public bool ResetCalled { get; set; }
     [Networked] public GuardState State { get; set; }
 
     [Header("Initial State")]
     [SerializeField] private Vector3 initialPosition;
     [SerializeField] private Quaternion initialRotation;
 
-    private Animator _animator; 
+    private Animator _animator;
     private NavMeshAgent _agent;
     private AnimatorStateSync _animatorSync;
     private int _patrolIndex = 0;
@@ -65,12 +65,12 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
 
     public void ResetToInitialState()
     {
-        if(!Object.HasStateAuthority) return;
+        if (!Object.HasStateAuthority) return;
 
         //Stop coroutines if running
-        if(_alertCoroutine !=null) StopCoroutine(_alertCoroutine);
-        if(_restCoroutine != null) StopCoroutine(_restCoroutine);
-        if(_resetCoroutine != null) StopCoroutine(_resetCoroutine);
+        if (_alertCoroutine != null) StopCoroutine(_alertCoroutine);
+        if (_restCoroutine != null) StopCoroutine(_restCoroutine);
+        if (_resetCoroutine != null) StopCoroutine(_resetCoroutine);
 
         // Reset networked properties
         IsAlert = false;
@@ -100,17 +100,18 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
 
         //Wait a bit before allowing movement again
         ResetCalled = true;
-        _resetCoroutine = StartCoroutine(DelayThen(_ => {
-            ResetCalled = false; 
-            }, 1f));
+        _resetCoroutine = StartCoroutine(DelayThen(_ =>
+        {
+            ResetCalled = false;
+        }, 1f));
 
     }
 
     public override void FixedUpdateNetwork()
     {
-        if(!Object.HasStateAuthority) return;
-        if(ResetCalled) return;
-        if(patrolPoints.Count == 0) return;
+        if (!Object.HasStateAuthority) return;
+        if (ResetCalled) return;
+        if (patrolPoints.Count == 0) return;
 
         switch (State)
         {
@@ -119,22 +120,23 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
                 break;
 
             case GuardState.Alert:
-                if(!_alertCoroutineStarted)
+                if (!_alertCoroutineStarted)
                 {
                     _alertCoroutineStarted = true;
 
                     //Stop Movement
                     _agent.ResetPath();
                     _agent.velocity = Vector3.zero;
-                    
+
                     _animatorSync.SetNetworkBool("IsAlert", true);
 
                     //For now a few seconds delay before returning to patroling
-                    _alertCoroutine = StartCoroutine(DelayThen(_ => {
-                        _alertCoroutineStarted = false; 
+                    _alertCoroutine = StartCoroutine(DelayThen(_ =>
+                    {
+                        _alertCoroutineStarted = false;
                         _animatorSync.SetNetworkBool("IsAlert", false);
 
-                        if(_previousState == GuardState.RunToAlarm)
+                        if (_previousState == GuardState.RunToAlarm)
                         {
                             State = GuardState.RunToAlarm;
                             _animatorSync.SetNetworkBool("IsAlarmRunning", true);
@@ -143,12 +145,12 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
                         {
                             State = GuardState.Patrol;
                         }
-                        }, 5f));
+                    }, 5f));
                 }
                 break;
-            
+
             case GuardState.RunToAlarm:
-                if(!IsAlarmRunning)
+                if (!IsAlarmRunning)
                 {
                     _animatorSync.SetNetworkBool("IsAlarmRunning", true);
                     IsAlarmRunning = true;
@@ -157,14 +159,14 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
                 _agent.speed = 5f;
 
                 //Check if guard reached alarm spot 
-                if(Vector3.Distance(transform.position, alarmSpot.position) < distanceToCenter)
+                if (Vector3.Distance(transform.position, alarmSpot.position) < distanceToCenter)
                 {
                     State = GuardState.Rest;
                 }
                 break;
-            
+
             case GuardState.Rest:
-                if(!_restCoroutineStarted)
+                if (!_restCoroutineStarted)
                 {
                     _restCoroutineStarted = true;
                     _animatorSync.NetworkTrigger("AtAlarmLocation");
@@ -172,13 +174,13 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
                     _agent.ResetPath();
                     _agent.velocity = Vector3.zero;
 
-                    _restCoroutine = StartCoroutine(DelayThen(_ => 
+                    _restCoroutine = StartCoroutine(DelayThen(_ =>
                     {
                         _animatorSync.NetworkTrigger("AlarmFixed");
-                        if(alarmBooth != null)
+                        if (alarmBooth != null)
                         {
                             alarmBooth.RPC_GuardResetAlarm();
-                         }
+                        }
                         State = GuardState.Return;
                         _restCoroutineStarted = false;
                         IsAlarmRunning = false;
@@ -190,7 +192,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
             case GuardState.Return:
                 _patrolIndex = FindClosestPatrolPoint();
                 _agent.destination = patrolPoints[_patrolIndex].position;
-                if(Vector3.Distance(transform.position, _agent.destination) < 0.2f) State = GuardState.Patrol;
+                if (Vector3.Distance(transform.position, _agent.destination) < 0.2f) State = GuardState.Patrol;
                 break;
         }
 
@@ -202,7 +204,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
     {
         _agent.speed = 1f;
         _agent.destination = patrolPoints[_patrolIndex].position;
-        if(Vector3.Distance(transform.position, _agent.destination) < 0.2f)
+        if (Vector3.Distance(transform.position, _agent.destination) < 0.2f)
         {
             _patrolIndex = (_patrolIndex + 1) % patrolPoints.Count;
         }
@@ -215,7 +217,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
         for (int i = 0; i < patrolPoints.Count; i++)
         {
             float dis = Vector3.Distance(transform.position, patrolPoints[i].position);
-            if(dis < best) 
+            if (dis < best)
             {
                 best = dis;
                 idx = i;
@@ -229,7 +231,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
     public void RPC_NotifyPlayerSpotted()
     {
         //Fixing alarm state aka rest state will not be interrupted by vision so players can steal
-        if(State != GuardState.Alert && State != GuardState.Rest) 
+        if (State != GuardState.Alert && State != GuardState.Rest)
         {
             _previousState = State; //remember what guard was doing (running to alarm/patrolling)
             State = GuardState.Alert;
@@ -240,7 +242,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_TriggerAlarm()
     {
-        if(State != GuardState.RunToAlarm && State != GuardState.Rest) 
+        if (State != GuardState.RunToAlarm && State != GuardState.Rest)
         {
             State = GuardState.RunToAlarm;
         }
@@ -252,5 +254,42 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
         yield return new WaitForSeconds(delay);
         action(null);
     }
+    
+    public void HandlePlayerDetected()
+    {
+        RPC_NotifyPlayerSpotted();
+
+        RPC_ShowGameOverForAll();
+
+        StartCoroutine(RestartLevelAfterDelay(5f));
+    }
+
+    [ContextMenu("Test Player Detection Chain")]
+    public void DebugTriggerPlayerDetection()
+    {
+        if (Object.HasStateAuthority)
+        {
+            Debug.Log("Triggering player detection chain");
+            HandlePlayerDetected();
+        }
+    }
+
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_ShowGameOverForAll()
+    {
+        GameOverOverlayController overlay = FindObjectOfType<GameOverOverlayController>();
+        if (overlay != null)
+        {
+            overlay.ShowGameOver();
+        }
+    }
+
+    private IEnumerator RestartLevelAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        FindObjectOfType<LevelManager>()?.RestartCurrentLevel();
+    }
+
 
 }
