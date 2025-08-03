@@ -49,9 +49,6 @@ public class RotateMirror : NetworkBehaviour
     public override void FixedUpdateNetwork()
     {
 
-        // Input-Handling
-        //HandleInput();
-
         // Check if networked rotation has changed (for all clients)
         if (NetworkedRotation != lastNetworkedRot)
         {
@@ -90,24 +87,19 @@ public class RotateMirror : NetworkBehaviour
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RpcRotateY(float angle)
     {
-        if (Object.HasStateAuthority)
-        {
-            Debug.Log("RPCY " + angle);
-            NetworkedYRotation += angle;
-            UpdateRotation();
-        }
+        Debug.Log("RPCY " + angle);
+        NetworkedYRotation += angle;
+        UpdateRotation();
     }
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RpcRotateZ(float angle)
     {
-        if (Object.HasStateAuthority)
-        {
-            Debug.Log("RPCZ " + angle);
-            NetworkedZRotation += angle;
-            UpdateRotation();
-        }
-            
+        
+        Debug.Log("RPCZ " + angle);
+        NetworkedZRotation += angle;
+        UpdateRotation();
+       
     }
 
     private void UpdateRotation()

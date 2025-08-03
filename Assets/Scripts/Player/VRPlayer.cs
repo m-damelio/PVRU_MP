@@ -561,11 +561,13 @@ public class VRPlayer : NetworkBehaviour
         {
             Debug.Log("Player hat rotation gefunden " + rigInput.yDelta);
             activeMirror.RpcRotateY(rigInput.yDelta);
+            //activeMirror.NetworkedYRotation = rigInput.yDelta;
         }
 
         if (rigInput.zDelta != 0f && activeMirror != null) {
             Debug.Log("Player hat rotation gefunden " + rigInput.zDelta);
             activeMirror.RpcRotateZ(rigInput.zDelta);
+            //activeMirror.NetworkedZRotation = rigInput.zSDelta;
         }
 
     }
