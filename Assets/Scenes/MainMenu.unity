@@ -940,8 +940,8 @@ MonoBehaviour:
   connectionCriterias: 1
   additionalSessionProperties: []
   runner: {fileID: 0}
-  hackerPrefab: {fileID: 2549000073306557744, guid: be2423e70f387864096ab3cd0707e387, type: 3}
-  sneakerPrefab: {fileID: 2549000073306557744, guid: bc638e68f45c74e57af62d5f3a545830, type: 3}
+  hostPrefab: {fileID: 2549000073306557744, guid: be2423e70f387864096ab3cd0707e387, type: 3}
+  clientPrefab: {fileID: 2549000073306557744, guid: bc638e68f45c74e57af62d5f3a545830, type: 3}
   hackerSpawnPoint: {fileID: 356580708}
   sneakerSpawnPoint: {fileID: 16501548}
   onWillConnect:

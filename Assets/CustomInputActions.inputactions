@@ -104,7 +104,7 @@
                     "path": "<QuestTouchPlusController>{LeftHand}/primaryButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";XR",
                     "action": "RaySelectionLeft",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -115,7 +115,7 @@
                     "path": "<OculusTouchController>{LeftHand}/primaryButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";XR",
                     "action": "RaySelectionLeft",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -126,7 +126,7 @@
                     "path": "<OculusTouchController>{RightHand}/primaryButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";XR",
                     "action": "RaySelectionRight",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -137,7 +137,7 @@
                     "path": "<QuestTouchPlusController>{RightHand}/primaryButton",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";XR",
                     "action": "RaySelectionRight",
                     "isComposite": false,
                     "isPartOfComposite": false
