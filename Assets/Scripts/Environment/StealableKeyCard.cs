@@ -10,11 +10,15 @@ public class StealableKeyCard : NetworkedKeyCard
     [SerializeField] private GuardNetworkedController attachedGuard; // Reference to the guard
     [SerializeField] private bool isAttachedToGuard = true; // Start attached to guard
 
+
     [Header("Additional Networked Properties")]
     [Networked] public bool IsAttachedToGuard {get;set;}
+    [Networked] public bool IsStealable { get; set;  }
 
     private Vector3 originalLocalPosition;
     private Quaternion originalLocalRotation;
+    private Material _originalMaterial;
+    private ChangeDetector _changeDetector;
 
     protected override void Awake()
     {
@@ -24,6 +28,7 @@ public class StealableKeyCard : NetworkedKeyCard
     public override void Spawned()
     {
         // Call parent spawned first
+        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
         base.Spawned();
 
         // Initialize guard attachment
@@ -42,54 +47,32 @@ public class StealableKeyCard : NetworkedKeyCard
     {
         if (!Object.HasStateAuthority) return;
 
-        // Handle stealing progress
         if (IsAttachedToGuard && attachedGuard != null && keyCardCollider != null)
         {
-            bool isGrabbable = attachedGuard.State == GuardState.Rest;
-            if (keyCardCollider.enabled != isGrabbable)
-            {
-                keyCardCollider.enabled = isGrabbable;
-            }
-            
+            IsStealable = attachedGuard.State == GuardState.Rest;
+            Debug.Log($"StealableKeyCard: Card is stealable {IsStealable}");
         }
     }
+
 
     public override void Render()
     {
-        // Call parent render first
-        base.Render();
-        
-        // Add our custom visual state updates
-        UpdateAttachmentVisualState();
-    }
-
-    private void UpdateAttachmentVisualState()
-    {
-        if (IsAttachedToGuard && guardAttachPoint != null)
+        foreach (var changedProperty in _changeDetector.DetectChanges(this))
         {
-            if (Holder == PlayerRef.None)
+            if (changedProperty == nameof(IsStealable))
             {
-                transform.position = guardAttachPoint.position;
-                transform.rotation = guardAttachPoint.rotation;
+                if (keyCardCollider != null) keyCardCollider.enabled = IsStealable;
+                if (IsStealable)
+                {
+                    Debug.Log("Client: Card is now stealable");
+                }
+                else
+                {
+                    Debug.Log("Client: card is no longer stealable");
+                }
             }
         }
     }
-
-    private void UpdateVisualState()
-    {
-        bool isHeld = Holder != PlayerRef.None;
-
-        if(keyCardCollider != null) 
-        {
-            if (!IsAttachedToGuard)
-            {
-                //keyCardCollider.enabled = !isHeld;
-            }
-            
-        }
-    }
-
-
     protected override void OnGrab(NetworkGrabber grabber)
     {
         if (Object.HasStateAuthority)
