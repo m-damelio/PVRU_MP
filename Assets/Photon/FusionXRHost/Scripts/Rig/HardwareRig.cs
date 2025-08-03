@@ -339,10 +339,6 @@ namespace Fusion.XR.Host.Rig
                         if (vrPlayer != null)
                         {
                             Debug.Log($"Found VRPlayer for local player: {runner.LocalPlayer}");
-                            if (vrPlayer.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedSneaking)
-                            {
-                                hardwareVisual.SetActive(false);
-                            }
                             break;
                         }
                     }
