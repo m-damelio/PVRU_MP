@@ -158,6 +158,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowTeleport: 9
   disallowTeleport: 8
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 16384
   _IsSneakZoneActive: 0
   startActive: 1
 --- !u!114 &8513553143753976082
@@ -174,7 +177,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 301108779
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 786433
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 5267942086646193083}
