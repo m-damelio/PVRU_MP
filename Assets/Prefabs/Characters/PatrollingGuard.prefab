@@ -222,6 +222,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 90
       objectReference: {fileID: 0}
+    - target: {fileID: 5907659909934921954, guid: f9215ca1f525b9243ab407e4eb09cc7a, type: 3}
+      propertyPath: rb
+      value: 
+      objectReference: {fileID: 5470664166683144234}
     - target: {fileID: 6024137561835154095, guid: f9215ca1f525b9243ab407e4eb09cc7a, type: 3}
       propertyPath: attachedGuard
       value: 
@@ -250,6 +254,11 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!54 &5470664166683144234 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 6543016245660236962, guid: f9215ca1f525b9243ab407e4eb09cc7a, type: 3}
+  m_PrefabInstance: {fileID: 1235889040598453384}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5823201558667955918 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4753242092271878726, guid: f9215ca1f525b9243ab407e4eb09cc7a, type: 3}
@@ -383,6 +392,7 @@ MonoBehaviour:
   _IsAlert: 0
   _IsAlarmRunning: 0
   _ResetCalled: 0
+  _State: 0
   initialPosition: {x: 0, y: 0, z: 0}
   initialRotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!114 &875307369792087486
