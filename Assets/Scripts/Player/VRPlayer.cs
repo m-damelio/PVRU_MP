@@ -91,7 +91,6 @@ public class VRPlayer : NetworkBehaviour
         _chanegDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
         if (!Object.HasInputAuthority) return;
         SetPlayerType();
-        UpdateHardwareVisual();
         StartCoroutine(AfterSpawn());
 
     }
@@ -522,12 +521,9 @@ public class VRPlayer : NetworkBehaviour
         }
         return closestDoorOpener;
     }
-    private bool _hasInitializedRender = false;
 
     public override void Render()
     {
-        bool shouldUpdateHardwareVisual = false;
-
         foreach (var changedProperty in _chanegDetector.DetectChanges(this))
         {
             if (changedProperty == nameof(IsInSneakZoneStatus))
@@ -538,35 +534,9 @@ public class VRPlayer : NetworkBehaviour
                     StartCoroutine(SendRegionStatusToDevice(IsInSneakZoneStatus));
                 }
             }
-
-            if (changedProperty == nameof(NetworkedPlayerType))
-            {
-                shouldUpdateHardwareVisual = true;
-            }
-        }
-
-        if (!_hasInitializedRender)
-        {
-            shouldUpdateHardwareVisual = true;
-            _hasInitializedRender = true;
-        }
-
-        if (shouldUpdateHardwareVisual)
-        {
-            UpdateHardwareVisual();
         }
         // Apply sneaking effects
         UpdateSneakingEffects();
-    }
-
-
-    private void UpdateHardwareVisual()
-    {
-        if (networkRig?.hardwareRig?.hardwareVisual != null)
-        {
-            bool shouldBeVisible = NetworkedPlayerType != PlayerType.EnhancedSneaking;
-            networkRig.hardwareRig.hardwareVisual.SetActive(shouldBeVisible);
-        }
     }
 
     void UpdateSneakingEffects()
