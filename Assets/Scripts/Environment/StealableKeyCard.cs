@@ -3,7 +3,7 @@ using Fusion;
 using Fusion.XR.Host.Grabbing;
 using System.Collections.Generic;
 
-public class StealableKeyCard : NetworkedKeyCard
+public class StealableKeyCard : NetworkedKeyCard, ILevelResettable
 {
     [Header("Guard Attachment")]
     [SerializeField] private Transform guardAttachPoint; // Where the keycard attaches to the guard
@@ -12,9 +12,6 @@ public class StealableKeyCard : NetworkedKeyCard
     [SerializeField] private NetworkObject levelController;
     private NetworkObject originalParentNO;
     private Transform originalParent;
-    private bool wasParentedToGuard;
-
-
 
     [Header("Additional Networked Properties")]
     [Networked] public bool IsAttachedToGuard {get;set;}
@@ -26,12 +23,27 @@ public class StealableKeyCard : NetworkedKeyCard
     private ChangeDetector _changeDetector;
     private Rigidbody _rigidBody;
 
+
+
     protected override void Awake()
     {
         base.Awake();
         _rigidBody = transform.GetComponent<Rigidbody>();
     }
 
+    public void SetInitialState()
+    {
+        AttachToGuard(attachedGuard, guardAttachPoint);
+        base.SetInitialState();
+        
+        
+    }
+
+    public void ResetToInitialState()
+    {
+        AttachToGuard(attachedGuard, guardAttachPoint);
+        base.ResetToInitialState();
+    }
     public override void Spawned()
     {
         // Call parent spawned first
@@ -129,9 +141,10 @@ public class StealableKeyCard : NetworkedKeyCard
         {
             attachedGuard = guard;
             guardAttachPoint = attachPoint;
+            IsStealable = false;
             IsAttachedToGuard = true;
             Holder = PlayerRef.None;
-            if(originalParent != null) transform.SetParent(originalParentNO.transform);
+            if (originalParent != null) transform.SetParent(originalParentNO.transform);
         }
     }
 }

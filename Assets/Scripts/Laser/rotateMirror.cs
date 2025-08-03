@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Oculus.Interaction;
 
 
-public class RotateMirror : NetworkBehaviour
+public class RotateMirror : NetworkBehaviour, ILevelResettable
 {
     [Header("Mirror Settings")]
     public Transform controlRotation; 
@@ -25,6 +25,11 @@ public class RotateMirror : NetworkBehaviour
     // For Laser-Updates
     private Quaternion lastNetworkedRot;
 
+    //IlevelResettable
+    private Quaternion initialControlRotation;
+    private float initialYRotation;
+    private float initialZRotation;
+
     //struct für Input Struktur für die Rotation
     public struct MirrorInput : INetworkInput
     {
@@ -35,6 +40,24 @@ public class RotateMirror : NetworkBehaviour
     // For Laser-Updates
     private Quaternion lastRot;
     private ChangeDetector _changeDetector;
+
+    public void SetInitialState()
+    {
+        isSelected = false;
+        initialControlRotation = controlRotation.rotation;
+        initialYRotation = controlRotation.rotation.eulerAngles.y;
+        initialZRotation = controlRotation.rotation.eulerAngles.y;
+        lastNetworkedRot = initialControlRotation;
+    }
+
+    public void ResetToInitialState()
+    {
+        if (controlRotation != null) controlRotation.rotation = initialControlRotation;
+        isSelected = false;
+        NetworkedYRotation = initialYRotation;
+        NetworkedZRotation = initialZRotation;
+        NetworkedRotation = initialControlRotation;
+    }
 
     public override void Spawned()
     {
