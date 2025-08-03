@@ -251,7 +251,7 @@ public class LaserBean : NetworkBehaviour, ISolvable
         laserIndices.Add(pos);
         Ray ray = new Ray(pos, dir);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 30f, ~0))
+        if (Physics.Raycast(ray, out RaycastHit hit, 30f))
         {
             laserIndices.Add(hit.point);
 

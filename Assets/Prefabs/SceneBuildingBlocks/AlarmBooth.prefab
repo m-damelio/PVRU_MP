@@ -932,6 +932,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6685935163244377712, guid: abb0cc465f1848c41a7615e8f773f101, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6685935163244377712, guid: abb0cc465f1848c41a7615e8f773f101, type: 3}
+      propertyPath: m_Center.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6685935163244377712, guid: abb0cc465f1848c41a7615e8f773f101, type: 3}
+      propertyPath: m_ExcludeLayers.m_Bits
+      value: 262144
+      objectReference: {fileID: 0}
     - target: {fileID: 8513553143753976082, guid: abb0cc465f1848c41a7615e8f773f101, type: 3}
       propertyPath: SortKey
       value: 4033038017
