@@ -5,12 +5,12 @@ using Fusion;
 
 public class LaserBean : NetworkBehaviour, ISolvable
 {
-
-    private LineRenderer laser;
+    [Header("Laser settings")]
+    [SerializeField] private LayerMask targetsToHit = -1;
     public Material laserMaterial;
+    private LineRenderer laser;
 
-    public bool laserNeedsChange = false;
-
+    [Header("Networked Properties")]
     [Networked] public Vector3 NetworkedStartPosition { get; set; }
     [Networked] public Vector3 NetworkedDirection { get; set; }
     [Networked] public bool NetworkedIsHittingLoadTarget { get; set; }
@@ -19,11 +19,12 @@ public class LaserBean : NetworkBehaviour, ISolvable
     [Networked] public NetworkId NetworkedTargetId { get; set; }
     [Networked] public bool IsSolved { get; set; }
 
+    [Header("Others")]
     public chargeBehavior charge;
     public openDoor openD;
-
-    [SerializeField]
-    private List<Vector3> laserIndices = new List<Vector3>();
+   
+    public bool laserNeedsChange = false;
+    [SerializeField] private List<Vector3> laserIndices = new List<Vector3>();
 
     [SerializeField] private List<RotateMirror> mirrors;
 
@@ -251,7 +252,7 @@ public class LaserBean : NetworkBehaviour, ISolvable
         laserIndices.Add(pos);
         Ray ray = new Ray(pos, dir);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, 30f))
+        if (Physics.Raycast(ray, out RaycastHit hit, 30f, targetsToHit))
         {
             laserIndices.Add(hit.point);
 

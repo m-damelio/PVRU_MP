@@ -46,8 +46,9 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
         _animatorSync = GetComponent<AnimatorStateSync>();
+        if (_agent != null) alarmSpot.position = alarmSpot.position.y + _agent.baseOffset;
 
-        if(Object.HasStateAuthority)
+        if (Object.HasStateAuthority)
         {
             _animatorSync.NetworkTrigger("IsSpawned");
         }

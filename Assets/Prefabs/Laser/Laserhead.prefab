@@ -83,8 +83,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13509301ed48dc54d8d39a674d31d57c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetsToHit:
+    serializedVersion: 2
+    m_Bits: 1041537
   laserMaterial: {fileID: 2100000, guid: 7b26c266f81673441a0ef40e809a8610, type: 2}
-  laserNeedsChange: 0
   _NetworkedStartPosition: {x: 0, y: 0, z: 0}
   _NetworkedDirection: {x: 0, y: 0, z: 0}
   _NetworkedIsHittingLoadTarget: 0
@@ -96,6 +98,7 @@ MonoBehaviour:
   _IsSolved: 0
   charge: {fileID: 0}
   openD: {fileID: 0}
+  laserNeedsChange: 0
   laserIndices: []
   mirrors: []
   door: {fileID: 0}
