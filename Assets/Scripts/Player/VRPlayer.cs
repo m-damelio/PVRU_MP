@@ -108,6 +108,9 @@ public class VRPlayer : NetworkBehaviour
     [SerializeField] private XRHandSubsystem handSubsystem;
     //[SerializeField] private bool useHandTracking = true;
 
+    [Header("Hack Device")]
+    [SerializeField] private HackDevice hackDevice;
+
     
     public enum PlayerType
     {
@@ -160,6 +163,10 @@ public class VRPlayer : NetworkBehaviour
     {
         //Get reference of all mirrors in the scene
         mirrors = new List<RotateMirror>(FindObjectsOfType<RotateMirror>());
+
+        //Get reference of hackdevice
+        hackDevice = FindObjectOfType<HackDevice>();
+
         isSelected = false;
 
 
@@ -497,12 +504,16 @@ public class VRPlayer : NetworkBehaviour
         KeyCode pressedKey2 = rigInput.keyPressed2;
         KeyCode pressedKey3 = rigInput.keyPressed3;
         KeyCode pressedKey4 = rigInput.keyPressed4;
+        
+        if (hackDevice == null) return;
 
-        // Check if any key is pressed
-        if (pressedKey1 == KeyCode.W)
-        {
-            
-        }
+        if (pressedKey1 == KeyCode.W) hackDevice.SelectSlot(0);
+        if (pressedKey1 == KeyCode.A) hackDevice.SelectSlot(1);
+        if (pressedKey1 == KeyCode.S) hackDevice.SelectSlot(2);
+        if (pressedKey1 == KeyCode.D) hackDevice.SelectSlot(3);
+
+        if (pressedKey1 == KeyCode.L) hackDevice.AdjustActiveSlot(+1);
+        if (pressedKey1 == KeyCode.K) hackDevice.AdjustActiveSlot(-1);
     
     }
 

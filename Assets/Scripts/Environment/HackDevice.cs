@@ -30,7 +30,6 @@ public class HackDevice : NetworkBehaviour
 
         if (activationButton != null)
         {
-            activationButton.OnSolved += (ISolvable solvable) => ActivateHack();
         }
 
         InitializeDigitDisplays();
@@ -49,7 +48,7 @@ public class HackDevice : NetworkBehaviour
         }
     }
 
-    private void ActivateHack()
+    public void ActivateHack()
     {
         if (Object.HasStateAuthority)
         {
