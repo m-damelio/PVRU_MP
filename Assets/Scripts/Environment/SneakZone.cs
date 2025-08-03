@@ -4,9 +4,10 @@ using Fusion;
 [RequireComponent(typeof(Collider), typeof(ScanlineController))]
 public class SneakZone : NetworkBehaviour, ILevelResettable
 {
-    [Header("Layer allowing/disallowing teleport")]
+    [Header("Layer settings")]
     [SerializeField][Layer] private int allowTeleport;
     [SerializeField][Layer] private int disallowTeleport;
+    [SerializeField] private LayerMask playerLayer;
 
     [Header("Networked Proeperties")]
     [Networked] public bool IsSneakZoneActive {get; set;}
@@ -19,6 +20,7 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
     private GameObject _visualGameobject;
     private GameObject _disallowTeleportColliderHolder;
     private ChangeDetector _changeDetector;
+    private VRPlayer _sneakingPlayerInZone = null;
 
     void Start()
     {
@@ -31,6 +33,61 @@ public class SneakZone : NetworkBehaviour, ILevelResettable
     public override void Spawned()
     {
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
+        {
+            if (Object.HasStateAuthority)
+            {
+                _sneakingPlayerInZone = null;
+            }
+        }
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (!Object.HasStateAuthority) return;
+
+        if (!IsSneakZoneActive)
+        {
+            //represents exit logic
+            if (_sneakingPlayerInZone != null)
+            {
+                _sneakingPlayerInZone.IsInSneakZoneStatus = false;
+                _sneakingPlayerInZone = null;
+            }
+            return;
+        }
+
+        VRPlayer foundPlayer = null;
+        Collider[] hitColliders = Physics.OverlapBox(
+            _sneakZoneCollider.bounds.center,
+            _sneakZoneCollider.bounds.extents,
+            transform.rotation,
+            playerLayer,
+            QueryTriggerInteraction.UseGlobal
+        );
+
+        foreach (var hit in hitColliders)
+        {
+            var player = hit.GetComponentInParent<VRPlayer>();
+            if (player != null && player.NetworkedPlayerType == VRPlayer.PlayerType.EnhancedSneaking)
+            {
+                foundPlayer = player;
+                break; // Found the one sneaking player, no need to check further
+            }
+        }
+        // 2. Check for an "Enter" event
+        if (foundPlayer != null && _sneakingPlayerInZone == null)
+        {
+            Debug.Log("Networked sneakable player entered.");
+            _sneakingPlayerInZone = foundPlayer;
+            _sneakingPlayerInZone.IsInSneakZoneStatus = true;
+        }
+        // 3. Check for an "Exit" event
+        else if (foundPlayer == null && _sneakingPlayerInZone != null)
+        {
+            Debug.Log("Networked sneakable player exited.");
+            _sneakingPlayerInZone.IsInSneakZoneStatus = false;
+            _sneakingPlayerInZone = null;
+        }
     }
 
     public void SetInitialState()
