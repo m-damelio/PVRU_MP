@@ -25,29 +25,43 @@ public class MainMenu : MonoBehaviour
     public int currentStep = 10;
     private NetworkedSoundManager soundManager;
 
+    [Header("Debugging")]
+    public Button HackerButton;
+    public Button SneakerButton;
+    public Button StartGameButton;
+    public Button SettingsBackButton;
+    public Button VolumeUpButton;
+    public Button VolumeDownButton;
+    public Button QuitGameButton;
+
     private void Start()
     {
         //soundManager = NetworkedSoundManager.Instance;
         SetVolumeStep(maxSteps);
     }
 
-    // [ContextMenu("Trigger Connect")]
-    public void Connect()
-    {
-        Debug.Log("Trigger Connect on connectionManager over UI");
-        connectionManager.DoConnect();
-    }
-
     [ContextMenu("Trigger Connect as Hacker")]
 
-    public void ConnectAsHacker()
+    public void DebugConnectAsHacker()
     {
-        connectionManager.DoConnectAsHacker();
+        ProceedToSelection();
+        HackerButton.onClick.Invoke();
     }
 
     [ContextMenu("Trigger Connect as Sneacker")]
 
-    public void ConnectAsSneaker()
+    public void DebugConnectAsSneaker()
+    {
+        ProceedToSelection();
+        SneakerButton.onClick.Invoke();
+    }
+
+    public void CallConnectAsHacker()
+    {
+        connectionManager.DoConnectAsHacker();
+    }
+
+    public void CallConnectAsSneaker()
     {
         connectionManager.DoConnectAsSneaker();
     }
