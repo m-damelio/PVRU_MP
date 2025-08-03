@@ -558,12 +558,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62640100a0e6c4fd190751688be2e8fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deviceIP: 192.168.137.42
+  deviceIP: 192.168.137.119
   checkInterval: 1
   maxRetries: 3
   retryDelay: 1
   currentlyGettingSneakState: 0
-  isInSneakZoneStatus: 0
+  IsInSneakZoneStatus: 0
   isSneaking: 0
   sneakValue: 1
   enableLogs: 1
