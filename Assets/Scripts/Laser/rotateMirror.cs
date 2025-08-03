@@ -32,13 +32,10 @@ public class RotateMirror : NetworkBehaviour
         public float zDelta;
     }
 
-<<<<<<< Updated upstream
     // For Laser-Updates
     private Quaternion lastRot;
     private ChangeDetector _changeDetector;
 
-=======
->>>>>>> Stashed changes
     public override void Spawned()
     {
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);

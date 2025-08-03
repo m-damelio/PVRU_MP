@@ -46,7 +46,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
         _agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
         _animatorSync = GetComponent<AnimatorStateSync>();
-        if (_agent != null) alarmSpot.position = alarmSpot.position.y + _agent.baseOffset;
+        if (_agent != null) alarmSpot.position = new Vector3(alarmSpot.position.x, alarmSpot.position.y + _agent.baseOffset, alarmSpot.position.z);
 
         if (Object.HasStateAuthority)
         {
