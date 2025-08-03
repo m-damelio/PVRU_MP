@@ -917,6 +917,7 @@ MonoBehaviour:
   - {fileID: 7996390073787017161}
   - {fileID: 2367615818534830903}
   - {fileID: 2843543200456633223}
+  - {fileID: 9057055406734638155}
   NetworkedBehaviours:
   - {fileID: 3218382727154390854}
   ForceRemoteRenderTimeframe: 0
@@ -1237,6 +1238,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: AlarmBooth
       objectReference: {fileID: 0}
+    - target: {fileID: 6129378702315126543, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
+      propertyPath: SortKey
+      value: 3873731195
+      objectReference: {fileID: 0}
     - target: {fileID: 6489322057565306972, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.91
@@ -1372,6 +1377,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6489322057565306972, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
   m_PrefabInstance: {fileID: 2936050722416132932}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9057055406734638155 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6129378702315126543, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
+  m_PrefabInstance: {fileID: 2936050722416132932}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5259976474700412625
 PrefabInstance:
   m_ObjectHideFlags: 0

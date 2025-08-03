@@ -1121,10 +1121,6 @@ PrefabInstance:
       propertyPath: SortKey
       value: 3481448786
       objectReference: {fileID: 0}
-    - target: {fileID: 2282145540474212019, guid: db09140c1b178bc458db52533ce01fd4, type: 3}
-      propertyPath: SortKey
-      value: 3313971374
-      objectReference: {fileID: 0}
     - target: {fileID: 2358857929821210450, guid: db09140c1b178bc458db52533ce01fd4, type: 3}
       propertyPath: m_NavMeshData
       value: 
@@ -1193,6 +1189,10 @@ PrefabInstance:
       propertyPath: SortKey
       value: 157073266
       objectReference: {fileID: 0}
+    - target: {fileID: 5220606741768144858, guid: db09140c1b178bc458db52533ce01fd4, type: 3}
+      propertyPath: SortKey
+      value: 3618475286
+      objectReference: {fileID: 0}
     - target: {fileID: 6692406925709865187, guid: db09140c1b178bc458db52533ce01fd4, type: 3}
       propertyPath: m_Name
       value: Level5 - NPCTut
@@ -1209,6 +1209,10 @@ PrefabInstance:
       propertyPath: SortKey
       value: 1118878989
       objectReference: {fileID: 0}
+    - target: {fileID: 7526590123377015291, guid: db09140c1b178bc458db52533ce01fd4, type: 3}
+      propertyPath: SortKey
+      value: 2337478169
+      objectReference: {fileID: 0}
     - target: {fileID: 8501098438198012209, guid: db09140c1b178bc458db52533ce01fd4, type: 3}
       propertyPath: SortKey
       value: 3299805271
@@ -1216,10 +1220,6 @@ PrefabInstance:
     - target: {fileID: 8714736739806726177, guid: db09140c1b178bc458db52533ce01fd4, type: 3}
       propertyPath: SortKey
       value: 2023745634
-      objectReference: {fileID: 0}
-    - target: {fileID: 9157406971171700482, guid: db09140c1b178bc458db52533ce01fd4, type: 3}
-      propertyPath: SortKey
-      value: 3761147565
       objectReference: {fileID: 0}
     - target: {fileID: 9186069829009576617, guid: db09140c1b178bc458db52533ce01fd4, type: 3}
       propertyPath: distanceToCenter

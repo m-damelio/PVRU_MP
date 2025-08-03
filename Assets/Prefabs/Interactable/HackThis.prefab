@@ -565,6 +565,7 @@ Transform:
   - {fileID: 5607346754154154482}
   - {fileID: 828135300465299082}
   - {fileID: 7816958978418070148}
+  - {fileID: 8893373194790815746}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 90}
 --- !u!33 &3061578266622764366
@@ -632,7 +633,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79a86e7bec7dda546aea9ae5ed2971fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activationButton: {fileID: 0}
+  activationButton: {fileID: 9030248023360939200}
   correctCombination: 01000000020000000300000004000000
   digitDisplays:
   - {fileID: 8212779564891371864}
@@ -996,3 +997,124 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 7483993234881399436}
   m_maskType: 0
+--- !u!1001 &251721372871500997
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 679179885743309231}
+    m_Modifications:
+    - target: {fileID: 1863859192633191975, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: SortKey
+      value: 947259917
+      objectReference: {fileID: 0}
+    - target: {fileID: 6048007165769472765, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_Name
+      value: NetworkedButtonHackerOverlay
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.6666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.71
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.26
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 6.88
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9092673067758059525, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: OnButtonPressed.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9092673067758059525, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: OnButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9092673067758059525, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: OnButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 4017912371547756705}
+    - target: {fileID: 9092673067758059525, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: OnButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9092673067758059525, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: OnButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ActivateHack
+      objectReference: {fileID: 0}
+    - target: {fileID: 9092673067758059525, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: OnButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: HackDevice, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 9092673067758059525, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+      propertyPath: OnButtonPressed.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+--- !u!4 &8893373194790815746 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8653051560757947591, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+  m_PrefabInstance: {fileID: 251721372871500997}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &9030248023360939200 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9092673067758059525, guid: e9952a03d9c5148658bbd3bbfa9ed5c9, type: 3}
+  m_PrefabInstance: {fileID: 251721372871500997}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45bffbe51416245c9b66296dd183e803, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

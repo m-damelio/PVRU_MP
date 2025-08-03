@@ -175,6 +175,7 @@ MonoBehaviour:
   - {fileID: 7085307975446426937}
   - {fileID: 9130046802988675459}
   - {fileID: 8726089602851936563}
+  - {fileID: 2584530572482907903}
   - {fileID: 433642908104073350}
   - {fileID: 8837933546882309893}
   - {fileID: 8832655496120812356}
@@ -1187,6 +1188,14 @@ PrefabInstance:
       value: 553055946
       objectReference: {fileID: 0}
     - target: {fileID: 605035519570198643, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
+      propertyPath: NestedObjects.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 605035519570198643, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
+      propertyPath: 'NestedObjects.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2584530572482907903}
+    - target: {fileID: 605035519570198643, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
       propertyPath: NetworkedBehaviours.Array.size
       value: 2
       objectReference: {fileID: 0}
@@ -1225,6 +1234,10 @@ PrefabInstance:
     - target: {fileID: 5212521546843733844, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
       propertyPath: m_Layer
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6129378702315126543, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
+      propertyPath: SortKey
+      value: 3179320386
       objectReference: {fileID: 0}
     - target: {fileID: 6489322057565306972, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1288,6 +1301,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 79a86e7bec7dda546aea9ae5ed2971fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2584530572482907903 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6129378702315126543, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
+  m_PrefabInstance: {fileID: 8561894471978807792}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &3233375278506242476 stripped
