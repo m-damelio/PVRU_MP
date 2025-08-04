@@ -42,6 +42,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
     private Coroutine _restCoroutine;
     private Coroutine _resetCoroutine;
 
+    private Coroutine _restartLevelCoroutine;
     public override void Spawned()
     {
         _agent = GetComponent<NavMeshAgent>();
@@ -52,6 +53,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
         if (Object.HasStateAuthority)
         {
             _animatorSync.NetworkTrigger("IsSpawned");
+            _restartLevelCoroutine = null;
         }
     }
 
@@ -61,6 +63,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
 
         initialPosition = transform.position;
         initialRotation = transform.rotation;
+        _restartLevelCoroutine = null;
     }
 
     public void ResetToInitialState()
@@ -236,7 +239,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
             _previousState = State; //remember what guard was doing (running to alarm/patrolling)
             State = GuardState.Alert;
             RPC_ShowGameOverForAll();
-            StartCoroutine(RestartLevelAfterDelay(5f));
+            if (_restartLevelCoroutine == null) _restartLevelCoroutine = StartCoroutine(RestartLevelAfterDelay(5f));
         }
         
     }
@@ -289,6 +292,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
     {
         yield return new WaitForSeconds(delay);
         FindObjectOfType<LevelManager>()?.RestartCurrentLevel();
+        _restartLevelCoroutine = null;
     }
 
 
