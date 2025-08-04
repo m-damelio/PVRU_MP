@@ -504,7 +504,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad9333b89be824d4ab4a7713bddc7401, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  correctPin: 01000000020000000300000004000000
+  correctPin: 06000000090000000200000004000000
   pinDigits:
   - {fileID: 4122077131132658118}
   - {fileID: 2198172859130153506}
@@ -2153,9 +2153,37 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1344887760546340550}
     - target: {fileID: 8677902364873092428, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
+      propertyPath: activeColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8677902364873092428, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
+      propertyPath: activeColor.g
+      value: 0.7317829
+      objectReference: {fileID: 0}
+    - target: {fileID: 8677902364873092428, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
+      propertyPath: activeColor.r
+      value: 0.015686274
+      objectReference: {fileID: 0}
+    - target: {fileID: 8677902364873092428, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
       propertyPath: activationButton
       value: 
       objectReference: {fileID: 3423080819929770488}
+    - target: {fileID: 8677902364873092428, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
+      propertyPath: 'correctCombination.Array.data[0]'
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8677902364873092428, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
+      propertyPath: 'correctCombination.Array.data[1]'
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8677902364873092428, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
+      propertyPath: 'correctCombination.Array.data[2]'
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8677902364873092428, guid: b6083546335724eb9916d90e8e1e5286, type: 3}
+      propertyPath: 'correctCombination.Array.data[3]'
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

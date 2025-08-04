@@ -44,7 +44,6 @@ GameObject:
   - component: {fileID: 5354703125274069441}
   - component: {fileID: 8521151297007475225}
   - component: {fileID: 30352666822066605}
-  - component: {fileID: 6937398416860217438}
   m_Layer: 18
   m_Name: LaserBeam
   m_TagString: Untagged
@@ -85,7 +84,6 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 30352666822066605}
-  - {fileID: 6937398416860217438}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &30352666822066605
 MonoBehaviour:
@@ -104,37 +102,6 @@ MonoBehaviour:
   SyncParent: 1
   _autoAOIOverride: 1
   DisableSharedModeInterpolation: 0
---- !u!114 &6937398416860217438
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 530019975417277520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13509301ed48dc54d8d39a674d31d57c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetsToHit:
-    serializedVersion: 2
-    m_Bits: 1041537
-  laserMaterial: {fileID: 2100000, guid: 7b26c266f81673441a0ef40e809a8610, type: 2}
-  _NetworkedStartPosition: {x: 0, y: 0, z: 0}
-  _NetworkedDirection: {x: 0, y: 0, z: 0}
-  _NetworkedIsHittingLoadTarget: 0
-  _NetworkedIsHittingTarget: 0
-  _NetworkedLoadTargetId:
-    Raw: 0
-  _NetworkedTargetId:
-    Raw: 0
-  _IsSolved: 0
-  charge: {fileID: 0}
-  openD: {fileID: 0}
-  laserNeedsChange: 0
-  laserIndices: []
-  mirrors: []
-  door: {fileID: 0}
 --- !u!1 &1425041210991202280
 GameObject:
   m_ObjectHideFlags: 0

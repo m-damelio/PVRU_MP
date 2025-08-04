@@ -10,7 +10,7 @@ using Oculus.Interaction;
 
 public class ColorMirror : NetworkBehaviour
 {
-    [Networked] private bool IsInactive { get; set; }
+    [Networked] public bool IsInactive { get; set; }
     public bool inactive = false;
     public bool isSelected = false;
 
@@ -19,9 +19,12 @@ public class ColorMirror : NetworkBehaviour
     private static readonly Color inactiveColor = new Color(1f, 0f, 0f, 1f); // rot
     public Color activeColor;
 
+    private ChangeDetector _changeDetector;
+
 
     public override void Spawned()
     {
+        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
         cachedRenderer = transform.GetChild(0).GetComponentInChildren<Renderer>();
         activeColor = cachedRenderer.material.color;
         UpdateColor();
@@ -30,9 +33,16 @@ public class ColorMirror : NetworkBehaviour
 
     public override void Render()
     {
-        // Wird bei jedem Frame-Update auf dem Client aufgerufen
-        UpdateColor();
+        foreach ( var changedProperty in _changeDetector.DetectChanges(this))
+        {
+            if(changedProperty == nameof(IsInactive))
+            {
+                // Wird bei jedem Frame-Update auf dem Client aufgerufen
+                UpdateColor();
+            }
+        }
     }
+       
 
     private void UpdateColor()
     {
