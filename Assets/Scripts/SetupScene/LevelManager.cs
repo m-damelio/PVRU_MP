@@ -101,8 +101,17 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     {
         if (isEntranceLevelUsed)
         {
-            RPC_CompleteLevel();
+            StartCoroutine(UpdateActiveAndStartFirst());
         }
+    }
+
+    private IEnumerator UpdateActiveAndStartFirst()
+    {
+        yield return new WaitForSeconds(20f);
+
+        UpdateActiveLevelPrefab();
+        UpdateCurrentElevatorReference();
+        RPC_CompleteLevel();
     }
 
     public override void FixedUpdateNetwork()
