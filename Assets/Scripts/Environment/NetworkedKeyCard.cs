@@ -1,6 +1,7 @@
 using UnityEngine;
 using Fusion;
 using Fusion.XR.Host.Grabbing;
+using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(NetworkGrabbable))]
@@ -9,6 +10,7 @@ public class NetworkedKeyCard : NetworkBehaviour, ILevelResettable
     [Header("Keycard parameters")]
     [SerializeField] private string _keyID;
     private string defaultKeyID = "1234";
+    [SerializeField] private float resetDelay = 30f;
 
     [Header("Visual components")]
     public GameObject visualModel;
@@ -25,6 +27,7 @@ public class NetworkedKeyCard : NetworkBehaviour, ILevelResettable
 
     private Vector3 initialPosition;
     private Quaternion initialRotation;
+    private Coroutine resetCoroutine;
 
     public string KeyID
     {
@@ -91,6 +94,12 @@ public class NetworkedKeyCard : NetworkBehaviour, ILevelResettable
         transform.position = initialPosition;
         transform.rotation = initialRotation;
         UpdateVisualState();
+
+        if (resetCoroutine != null)
+        {
+            StopCoroutine(resetCoroutine);
+            resetCoroutine = null;
+        }
     }
 
     protected virtual void OnGrab(NetworkGrabber grabber)
@@ -100,10 +109,16 @@ public class NetworkedKeyCard : NetworkBehaviour, ILevelResettable
             Holder = grabber.Object.InputAuthority;
             Debug.Log($"NetworkedKeyCard: picked up by player: {Holder}");
 
-            if (NetworkedSoundManager.Instance != null)
+            if (Object.HasStateAuthority && resetCoroutine != null)
             {
-                NetworkedSoundManager.Instance.PlayEnvironmentSound("Keycard_Grabbed", transform.position);
+                StopCoroutine(resetCoroutine);
+                resetCoroutine = null;
             }
+
+            if (NetworkedSoundManager.Instance != null)
+                {
+                    NetworkedSoundManager.Instance.PlayEnvironmentSound("Keycard_Grabbed", transform.position);
+                }
         }
     }
 
@@ -112,11 +127,25 @@ public class NetworkedKeyCard : NetworkBehaviour, ILevelResettable
         Debug.Log($"NetworkedKeyCard: Dropped by player {Holder}");
         Holder = PlayerRef.None;
 
-            if (NetworkedSoundManager.Instance != null)
-            {
-                //TODO: Exchange Sound
-                NetworkedSoundManager.Instance.PlayEnvironmentSound("Keycard_Grabbed", transform.position);
-            }
+        if (Object.HasStateAuthority) resetCoroutine = StartCoroutine(ResetAfterDelayCoroutine());
+
+        if (NetworkedSoundManager.Instance != null)
+        {
+            //TODO: Exchange Sound
+            NetworkedSoundManager.Instance.PlayEnvironmentSound("Keycard_Grabbed", transform.position);
+        }
+    }
+
+    private IEnumerator ResetAfterDelayCoroutine()
+    {
+        yield return new WaitForSeconds(resetDelay);
+
+        if (Holder == PlayerRef.None)
+        {
+            Debug.Log($"NetworkedKeyCard: Resetting to initial position after {resetDelay} seconds");
+            ResetToInitialState();
+        }
+        resetCoroutine = null;
     }
 
     public override void Render()

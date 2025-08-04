@@ -3,7 +3,7 @@ using Fusion;
 using TMPro;
 using System.Collections;
 
-public class PinDisplay : NetworkBehaviour
+public class PinDisplay : NetworkBehaviour, ILevelResettable
 {
     [Header("PIN Settings")]
     [SerializeField] private int[] correctPin = new int[4] { 1, 2, 3, 4 };
@@ -24,6 +24,29 @@ public class PinDisplay : NetworkBehaviour
     public override void Spawned()
     {
         InitializePinDisplay();
+    }
+
+    public void SetInitialState()
+    {
+        //Nothing needs to be tracked here currently
+    }
+
+    public void ResetToInitialState()
+    {
+        if (Object.HasStateAuthority)
+        {
+            if (autoHideCoroutine != null)
+            {
+                StopCoroutine(autoHideCoroutine);
+                autoHideCoroutine = null;
+            }
+
+            if (IsPinVisible) // Only send an update if it's currently visible
+            {
+                IsPinVisible = false;
+                RPC_UpdateDisplay();
+            }
+        }
     }
 
     private void InitializePinDisplay()

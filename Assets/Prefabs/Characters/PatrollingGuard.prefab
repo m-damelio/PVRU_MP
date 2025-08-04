@@ -505,10 +505,10 @@ MonoBehaviour:
   visionAngle: 60
   playerLayer:
     serializedVersion: 2
-    m_Bits: 16384
+    m_Bits: 147456
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 3072
+    m_Bits: 263168
   timeToAlert: 2.5
   scanFrequency: 0.1
   eyeHeight: {fileID: 8307230907433214137}

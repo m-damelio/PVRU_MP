@@ -27,8 +27,6 @@ public class RotateMirror : NetworkBehaviour, ILevelResettable
 
     //IlevelResettable
     private Quaternion initialControlRotation;
-    private float initialYRotation;
-    private float initialZRotation;
 
     //struct für Input Struktur für die Rotation
     public struct MirrorInput : INetworkInput
@@ -43,20 +41,21 @@ public class RotateMirror : NetworkBehaviour, ILevelResettable
 
     public void SetInitialState()
     {
-        isSelected = false;
         initialControlRotation = controlRotation.rotation;
-        initialYRotation = controlRotation.rotation.eulerAngles.y;
-        initialZRotation = controlRotation.rotation.eulerAngles.y;
-        lastNetworkedRot = initialControlRotation;
     }
 
     public void ResetToInitialState()
     {
+        if (Object.HasStateAuthority)
+        {
+            NetworkedYRotation = initialControlRotation.eulerAngles.y;
+            NetworkedZRotation = initialControlRotation.eulerAngles.z;
+            NetworkedRotation = initialControlRotation;
+        }
         if (controlRotation != null) controlRotation.rotation = initialControlRotation;
         isSelected = false;
-        NetworkedYRotation = initialYRotation;
-        NetworkedZRotation = initialZRotation;
-        NetworkedRotation = initialControlRotation;
+        TriggerLaserUpdate();
+        
     }
 
     public override void Spawned()

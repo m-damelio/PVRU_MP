@@ -1,5 +1,6 @@
 using UnityEngine;
 using Fusion;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -19,6 +20,7 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
     [Networked] public bool ArePlayersInElevator {get; set;}
     [Networked] public bool IsTransitioning {get; set;}
     [Networked] public bool IsPosZElevatorCurrentGoal {get; set;}
+    private bool isEntranceLevelUsed = true;
 
     [Header("Player Tracking")]
     [SerializeField] private LayerMask playerLayer;
@@ -77,7 +79,12 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         {
             connectedPlayers.Add(player);
             playersInElevator[player] = false;
-            Debug.Log($"Added player: {player}");
+            Debug.Log($"Added player: {player}. Total players: {Runner.ActivePlayers}");
+
+            if (Runner.ActivePlayers.Count() == 2)
+            {
+                OnTwoPlayersJoined();
+            }
         }
     }
 
@@ -90,9 +97,17 @@ public class LevelManager : NetworkBehaviour, IPlayerJoined, IPlayerLeft
         }
     }
 
+    private void OnTwoPlayersJoined()
+    {
+        if (isEntranceLevelUsed)
+        {
+            RPC_CompleteLevel();
+        }
+    }
+
     public override void FixedUpdateNetwork()
     {
-        if(!Object.HasStateAuthority) return;
+        if (!Object.HasStateAuthority) return;
 
         //handles level completion and elevator logic
         if (IsLevelComplete && !IsTransitioning)

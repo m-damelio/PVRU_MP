@@ -235,7 +235,10 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
         {
             _previousState = State; //remember what guard was doing (running to alarm/patrolling)
             State = GuardState.Alert;
+            RPC_ShowGameOverForAll();
+            StartCoroutine(RestartLevelAfterDelay(5f));
         }
+        
     }
 
     //Called from alarm 
@@ -259,9 +262,6 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
     {
         RPC_NotifyPlayerSpotted();
 
-        RPC_ShowGameOverForAll();
-
-        StartCoroutine(RestartLevelAfterDelay(5f));
     }
 
     [ContextMenu("Test Player Detection Chain")]

@@ -5,7 +5,7 @@ using System.Collections;
 public class NetworkedAlarmBooth : NetworkBehaviour, ILevelResettable
 {
     [Header("Hack settings")]
-    [SerializeField] private GameObject hackThis; //TODO how to hack this
+    [SerializeField] private GameObject hackThis;
     [SerializeField] private float hackDuration = 5f;
     [SerializeField] private float interactionRange = 2f;
 

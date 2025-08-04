@@ -2,7 +2,7 @@ using UnityEngine;
 using Fusion;
 using TMPro;
 
-public class HackDevice : NetworkBehaviour
+public class HackDevice : NetworkBehaviour, ILevelResettable
 {
     [Header("Activation Button")]
     [SerializeField] private NetworkedButton activationButton;
@@ -17,7 +17,7 @@ public class HackDevice : NetworkBehaviour
     [Header("UI References")]
     [SerializeField] private TextMeshPro[] digitDisplays;
     [SerializeField] private Color normalColor = Color.white;
-    [SerializeField] private Color activeColor = Color.yellow;
+    [SerializeField] private Color activeColor = Color.cyan;
 
     [Header("State")]
     [Networked] public bool IsUnlocked { get; set; }
@@ -39,6 +39,32 @@ public class HackDevice : NetworkBehaviour
         UpdateVisuals();
     }
 
+    public void SetInitialState()
+    {
+        //Initial state is always the sa,e
+    }
+
+    public void ResetToInitialState()
+    {
+        if (Object.HasStateAuthority)
+        {
+            for (int i = 0; i < currentCombination.Length; i++)
+            {
+                currentCombination.Set(i, 0);
+            }
+        }
+        IsUnlocked = false;
+        IsHackActive = false;
+        selectedIndex = -1; // Reset local state
+
+        // The laser should be active again if it was deactivated
+        if (laserObject != null && !laserObject.activeSelf)
+        {
+            laserObject.SetActive(true);
+        }
+
+        RPC_UpdateVisuals();
+    }
     private void InitializeDigitDisplays()
     {
         for (int i = 0; i < digitDisplays.Length; i++)

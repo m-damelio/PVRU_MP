@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TerminalHull
+  m_Name: UIMaterial
   m_Shader: {fileID: -6465566751694194690, guid: c9921e49de6b27842a9ccad17ba13d09, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
