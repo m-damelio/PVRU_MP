@@ -558,18 +558,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62640100a0e6c4fd190751688be2e8fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deviceIP: 192.168.137.119
+  deviceIP: 192.168.137.42
   checkInterval: 1
   maxRetries: 3
   retryDelay: 1
   currentlyGettingSneakState: 0
-  IsInSneakZoneStatus: 0
-  isSneaking: 0
-  sneakValue: 1
   enableLogs: 1
-  keypressed: 0
-  functionCode: 0
-  functionCodeList: e9030000f2030000f30300004c040000112700001a2700001b27000074270000f92a0000022b0000032b00005c2b0000a1860100aa860100ab86010004870100400d0300e0930400801a060020a10700
   sneakThreshold: 0.8
   playerType: 0
   playerState: 0
@@ -594,7 +588,11 @@ MonoBehaviour:
   heldKeyCard: {fileID: 0}
   _NetworkedPlayerType: 0
   _NetworkedPlayerState: 0
+  _IsInSneakZoneStatus: 0
   networkRig: {fileID: 2549000073306557775}
+  isSneaking: 0
+  sneakValue: 1
+  hackDevice: {fileID: 0}
 --- !u!143 &1475275693075936696
 CharacterController:
   m_ObjectHideFlags: 0

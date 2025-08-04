@@ -651,7 +651,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62640100a0e6c4fd190751688be2e8fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deviceIP: 192.168.178.51
+  deviceIP: 192.168.137.42
   checkInterval: 1
   maxRetries: 3
   retryDelay: 1
