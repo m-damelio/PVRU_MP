@@ -2501,7 +2501,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1122341476038420287, guid: 70a9f52c826e92546983bc7b55ee881e, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2050089789667584847, guid: 70a9f52c826e92546983bc7b55ee881e, type: 3}
       propertyPath: SortKey
@@ -2902,7 +2902,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7267925542639664393, guid: 1c7f2051cfc2fd24186f6031991cac66, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8095836732573410730, guid: 1c7f2051cfc2fd24186f6031991cac66, type: 3}
       propertyPath: levelManager
