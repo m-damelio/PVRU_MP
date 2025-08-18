@@ -17,5 +17,8 @@ Googles Gemini 2.5 model
 Claude Sonnet 4
 
 Audio:
-???
-
+All in-game audio sources were taken from freely available online repositories:
+https://freesound.org
+https://mixkit.co/
+https://pixabay.com
+Ajdustments were made with Audacity (https://www.audacityteam.org/).
