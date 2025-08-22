@@ -5,14 +5,12 @@ using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Oculus.Interaction;
 
 
 public class RotateMirror : NetworkBehaviour, ILevelResettable
 {
     [Header("Mirror Settings")]
     public Transform controlRotation; 
-    private float rotate = 5.0f;
     private bool isSelected;
 
     [Header("Laser Reference")]

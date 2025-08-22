@@ -1,6 +1,5 @@
 using Fusion.XR.Host.Grabbing;
 using Fusion.XR.Host.Rig;
-using Meta.XR.ImmersiveDebugger.UserInterface.Generic;
 using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using TMPro;
@@ -49,7 +48,7 @@ namespace Fusion.XR.Host.Locomotion
 
         [Header("Mirror Actions")]
         public RotateMirror lastMirrorHit = null;
-        private bool isHit;
+        //private bool isHit;
 
         [Header("ColorObject Actions")]
         public GameObject lastColorObjectHit = null;
@@ -89,7 +88,7 @@ namespace Fusion.XR.Host.Locomotion
             
             if (origin == null) origin = transform;
             if (hand == null) hand = GetComponentInParent<HardwareHand>();  
-            isHit = false;
+            //isHit = false;
             isHitVolume = false;
         }
 

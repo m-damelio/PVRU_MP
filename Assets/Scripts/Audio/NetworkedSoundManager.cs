@@ -175,7 +175,7 @@ public class NetworkedSoundManager : NetworkBehaviour
     public void RPC_PlaySoundAtPlayer(string soundName, PlayerRef targetPlayer, float volumeMultiplier = 1f)
     {
         // Find the target player's position
-        var players = FindObjectsOfType<VRPlayer>();
+        var players = FindObjectsByType<VRPlayer>(FindObjectsSortMode.None);
         foreach (var player in players)
         {
             if (player.Object.InputAuthority == targetPlayer)
@@ -314,11 +314,6 @@ public class NetworkedSoundManager : NetworkBehaviour
 
         // Store sound data for volume updates
         audioSource.gameObject.name = $"Playing_{soundName}_{soundData.category}";
-
-        if (debugMode)
-        {
-            DebugSoundPlayback(soundName, audioSource, soundData);
-        }
     }
 
     private float CalculateFinalVolume(SoundClipData soundData, float volumeMultiplier)
@@ -434,7 +429,7 @@ public class NetworkedSoundManager : NetworkBehaviour
     private void RegisterSceneAudioSources()
     {
         sceneAudioSources.Clear();
-        AudioSource[] allSources = FindObjectsOfType<AudioSource>(true); 
+        AudioSource[] allSources = FindObjectsByType<AudioSource>(FindObjectsInactive.Include, FindObjectsSortMode.None); 
 
         foreach (var src in allSources)
         {
@@ -461,7 +456,7 @@ public class NetworkedSoundManager : NetworkBehaviour
 
     private void LateUpdate()
     {
-        AudioSource[] allSources = FindObjectsOfType<AudioSource>(true);
+        AudioSource[] allSources = FindObjectsByType<AudioSource>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         foreach (var src in allSources)
         {
             if (!sceneAudioSources.ContainsKey(src) && !audioSourcePool.Contains(src))
@@ -470,19 +465,5 @@ public class NetworkedSoundManager : NetworkBehaviour
             }
         }
     }
-
-    private void DebugSoundPlayback(string soundName, AudioSource audioSource, SoundClipData soundData)
-    {
-        Debug.Log($"[Sound Debug] Playing '{soundName}' " +
-                  $"| Clip: {(soundData.clip != null ? soundData.clip.name : "MISSING")} " +
-                  $"| Volume: {audioSource.volume:F2} " +
-                  $"| Pitch: {audioSource.pitch:F2} " +
-                  $"| Category: {soundData.category} " +
-                  $"| Is3D: {soundData.is3D} " +
-                  $"| Position: {audioSource.transform.position} " +
-                  $"| Listener Found: {(FindObjectOfType<AudioListener>() != null ? "YES" : "NO")} " +
-                  $"| Listener Pos: {(FindObjectOfType<AudioListener>() ? FindObjectOfType<AudioListener>().transform.position.ToString() : "N/A")}");
-    }
-
 }
 

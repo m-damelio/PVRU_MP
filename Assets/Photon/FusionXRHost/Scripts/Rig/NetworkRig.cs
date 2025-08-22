@@ -45,7 +45,7 @@ namespace Fusion.XR.Host.Rig
             base.Spawned();
             if (IsLocalNetworkRig)
             {
-                hardwareRig = FindObjectOfType<HardwareRig>();
+                hardwareRig = FindObjectsByType<HardwareRig>(FindObjectsSortMode.None)[0];
                 if (hardwareRig == null) Debug.LogError("Missing HardwareRig in the scene");
             }
         }

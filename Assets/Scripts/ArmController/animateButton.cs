@@ -1,6 +1,5 @@
 using UnityEngine;
 using Fusion;
-using Meta.WitAi;
 
 public class animateButton : NetworkBehaviour, ILevelResettable
 {
@@ -19,7 +18,7 @@ public class animateButton : NetworkBehaviour, ILevelResettable
     [Networked] public TickTimer ActiveTimer { get; set; }
     [Networked] public bool OnCoolDown { get; set; }
 
-    private bool wasPressed = false;
+    //private bool wasPressed = false;
 
     private Coroutine currentAnimation;
     // Start is called once before the first execution of Update after the MonoBehaviour is created

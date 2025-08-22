@@ -19,7 +19,7 @@ namespace Fusion.XR.Host.Utils
 
         private void Awake()
         {
-            rig = FindObjectOfType<HardwareRig>();
+            rig = FindObjectsByType<HardwareRig>(FindObjectsSortMode.None)[0];
         }
 
         void ConfigureCamera()

@@ -31,17 +31,12 @@ public class GameOverOverlayController : MonoBehaviour
     {
         if (gameOverCanvas != null)
             gameOverCanvas.enabled = false;
-
-        if (hideRoutine != null)
-        {
-            StopCoroutine(hideRoutine);
-            hideRoutine = null;
-        }
     }
 
     private IEnumerator HideAfterDelay()
     {
         yield return new WaitForSeconds(autoHideDelay);
         HideGameOver();
+        hideRoutine = null;
     }
 }

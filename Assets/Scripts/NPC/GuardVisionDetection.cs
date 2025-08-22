@@ -193,7 +193,7 @@ public class GuardVisionDetection : MonoBehaviour
     private IEnumerator RestartLevelAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        FindObjectOfType<LevelManager>()?.RestartCurrentLevel();
+        FindObjectsByType<LevelManager>(FindObjectsSortMode.None)[0]?.RestartCurrentLevel();
     }
 
     private void RemovePlayerFromDetection(GameObject player)
@@ -222,13 +222,7 @@ public class GuardVisionDetection : MonoBehaviour
     private void ShowDetectionAlert(GameObject player)
     {
         Debug.Log($"Guard spotted player: {player.name}");
-        //TODO add ui effect for players when they trigger a guard
-
-         GameOverOverlayController overlay = FindObjectOfType<GameOverOverlayController>();
-        if (overlay != null)
-        {
-            overlay.ShowGameOver();
-        }
+        _guardController.RPC_NotifyPlayerSpotted();
     }
 
     private void ConfigureRadarSweep()

@@ -281,7 +281,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_ShowGameOverForAll()
     {
-        GameOverOverlayController overlay = FindObjectOfType<GameOverOverlayController>();
+        GameOverOverlayController overlay = FindObjectsByType<GameOverOverlayController>(FindObjectsSortMode.None)[0];
         if (overlay != null)
         {
             overlay.ShowGameOver();
@@ -291,7 +291,7 @@ public class GuardNetworkedController : NetworkBehaviour, ILevelResettable
     private IEnumerator RestartLevelAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        FindObjectOfType<LevelManager>()?.RestartCurrentLevel();
+        FindObjectsByType<LevelManager>(FindObjectsSortMode.None)[0]?.RestartCurrentLevel();
         _restartLevelCoroutine = null;
     }
 

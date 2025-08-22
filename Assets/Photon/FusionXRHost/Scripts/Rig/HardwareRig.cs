@@ -115,8 +115,6 @@ namespace Fusion.XR.Host.Rig
         private LineRenderer rightHandInteractionVisual;
         private VRPlayer vrPlayer; //Will be searched dynamically, change if performance is suffering
         private bool hasSearchedForVRPlayer = false;
-        private bool _interactionButton = false;
-        private bool _sneakTestButton = false;
 
         private List<KeyCode> keyPressBuffer = new List<KeyCode>();
         private InputAction knob1Action;
@@ -172,7 +170,7 @@ namespace Fusion.XR.Host.Rig
                 else
                 {
                     // Try to detect the runner
-                    runner = FindObjectOfType<NetworkRunner>(true);
+                    runner = FindObjectsByType<NetworkRunner>(FindObjectsInactive.Include, FindObjectsSortMode.None)[0];
                     var searchStart = Time.time;
                     while (searchingForRunner && runner == null)
                     {

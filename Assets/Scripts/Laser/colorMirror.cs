@@ -5,7 +5,6 @@ using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Oculus.Interaction;
 
 
 public class ColorMirror : NetworkBehaviour

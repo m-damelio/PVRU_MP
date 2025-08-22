@@ -41,7 +41,6 @@ public class VRPlayer : NetworkBehaviour
     [Header("Mirror Rotation")]
     [SerializeField] private RotateMirror activeMirror;
     [SerializeField] private List<RotateMirror> mirrors;
-    private bool isSelected;
 
     [Header("Color Selection")]
     [SerializeField] private colorControl activeColorObject;
@@ -125,13 +124,10 @@ public class VRPlayer : NetworkBehaviour
     void Start()
     {
         //Get reference of all mirrors in the scene
-        mirrors = new List<RotateMirror>(FindObjectsOfType<RotateMirror>());
+        mirrors = new List<RotateMirror>(FindObjectsByType<RotateMirror>(FindObjectsSortMode.None));
 
         //Get reference of hackdevice
-        hackDevice = FindObjectOfType<HackDevice>();
-
-        isSelected = false;
-
+        hackDevice = FindObjectsByType<HackDevice>(FindObjectsSortMode.None)[0];
 
         // Start the coroutine to check sneak state
         if(isSneaker) StartCoroutine(CheckDeviceLoop());
